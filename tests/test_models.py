@@ -44,9 +44,9 @@ def test_model_entry_requires_known_tokenization_fields(
         load_config(write_models(tmp_path, field, line), ModelsConfig)
 
 
-def test_config_declares_every_converted_checkpoint() -> None:
+def test_config_declares_every_model_entry() -> None:
     config = load_models_config()
-    assert len(config.models) == 10
+    assert len(config.models) == 37
 
 
 def test_default_resolves_to_dclm_baseline_1b_seed0() -> None:

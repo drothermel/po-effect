@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -67,11 +68,50 @@ def prompt_names(config_dir: Path) -> list[str]:
     )
 
 
+SIZE_TOKEN = re.compile(r"\d+[bm]")
+DECIMAL_TOKEN = re.compile(r"\d")
+
+
+class LineBreakHelpFormatter(argparse.HelpFormatter):
+    def _split_lines(self, text: str, width: int) -> list[str]:
+        wrapped: list[str] = []
+        for line in text.splitlines():
+            wrapped.extend(super()._split_lines(line, width))
+        return wrapped
+
+
+def size_prefix(name: str) -> tuple[str, ...]:
+    tokens = name.split("_")
+    for position, token in enumerate(tokens):
+        if SIZE_TOKEN.fullmatch(token):
+            return tuple(tokens[:position])
+    return tuple(tokens)
+
+
+def model_families(names: list[str]) -> dict[str, list[str]]:
+    prefixes = {size_prefix(name) for name in names}
+    families: dict[str, list[str]] = {}
+    for name in names:
+        prefix = size_prefix(name)
+        if (
+            prefix
+            and DECIMAL_TOKEN.fullmatch(prefix[-1])
+            and prefix[:-1] in prefixes
+        ):
+            prefix = prefix[:-1]
+        families.setdefault("_".join(prefix), []).append(name)
+    return families
+
+
 def model_help(models: ModelsConfig) -> str:
-    return (
-        f"model entry from models.toml for --run: "
-        f"{', '.join(sorted(models.models))} (default {models.default})"
-    )
+    lines = ["model entry from models.toml for --run:"]
+    for family, names in model_families(list(models.models)).items():
+        labels = [
+            f"{name} (default)" if name == models.default else name
+            for name in names
+        ]
+        lines.append(f"{family}: {', '.join(labels)}")
+    return "\n".join(lines)
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -82,6 +122,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     models = load_models_config(config_dir)
     parser = argparse.ArgumentParser(
         parents=[config],
+        formatter_class=LineBreakHelpFormatter,
         description=(
             "Print the exact context, candidate continuations, and "
             "unconditional context sent to the model for one "
@@ -139,6 +180,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--model",
         choices=sorted(models.models),
+        metavar="NAME",
         help=model_help(models),
     )
     args = parser.parse_args(argv)
