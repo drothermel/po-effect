@@ -7,6 +7,9 @@ from typing import Protocol
 
 from po_effect.identity import FrozenContract, Identified
 from po_effect.measurement import (
+    Abstention,
+    GenerationAttempt,
+    GenerationSpec,
     IndexCandidate,
     MeasurementSpec,
     RecordStore,
@@ -14,14 +17,13 @@ from po_effect.measurement import (
     Scores,
     SingleCallSpec,
 )
-from po_effect.models import CandidateScore, EvidenceRef, ModelHandle
+from po_effect.models import EvidenceRef, ModelSession, ResponseTemplate
 from po_effect.prompts import PromptSpec
 from po_effect.tasks import (
     IndexReference,
     Item,
     ItemIndex,
     ItemSet,
-    MultipleChoiceProblem,
 )
 
 # Sketch of the primitives not yet built, written against the types that
@@ -102,60 +104,11 @@ def seeded_partition(
 
 
 class ModelCapabilityAdditions(StrEnum):
-    GENERATE = auto()
-    CHAT_TEMPLATE = auto()
     REASONING_CONTROL = auto()
     REASONING_VISIBLE = auto()
 
 
-class ReasoningVisibility(StrEnum):
-    NOT_REQUESTED = auto()
-    INLINE = auto()
-    PROVIDER_CHANNEL = auto()
-    HIDDEN = auto()
-
-
-class ResponseTemplate(FrozenContract):
-    template: Mapping[str, object]
-
-
-class GenerationControls(FrozenContract):
-    max_new_tokens: int
-    temperature: float | None = None
-    stop: tuple[str, ...] = ()
-
-
-class GenerationOutput(FrozenContract):
-    text: str
-    stop_reason: str
-    prompt_tokens: int
-    completion_tokens: int
-    reasoning_text: str | None = None
-
-
-class GeneratingSession(Protocol):
-    handle: ModelHandle
-
-    def generate(
-        self, prompt: RenderedMessages | str, controls: GenerationControls
-    ) -> tuple[GenerationOutput, tuple[EvidenceRef, ...]]: ...
-
-
 # ----------------------------------------------------------------- prompts
-
-
-class LabelStyle(StrEnum):
-    LETTER_DOT = auto()
-    LETTER_COLON = auto()
-    LETTER_PAREN = auto()
-    NUMBER_DOT = auto()
-
-
-class ChoiceListing(FrozenContract):
-    choices_header: str | None
-    label_style: LabelStyle
-    label_prefix: str
-    label_text_separator: str
 
 
 class Message(FrozenContract):
@@ -184,19 +137,7 @@ class CodeRenderer:
 
 
 class AttemptKindAdditions(StrEnum):
-    GENERATION = auto()
     TRAJECTORY = auto()
-
-
-class ResponseSplit(FrozenContract):
-    reasoning: tuple[str, ...]
-    answer: str
-    visibility: ReasoningVisibility
-
-
-class GenerationAttempt(FrozenContract):
-    output: GenerationOutput
-    evidence: tuple[EvidenceRef, ...]
 
 
 class TrajectoryStep(FrozenContract):
@@ -211,11 +152,6 @@ class TrajectoryAttempt(FrozenContract):
 
 
 Attempt = ScoredCandidatesAttempt | GenerationAttempt | TrajectoryAttempt
-
-
-def split_response(
-    output: GenerationOutput, template: ResponseTemplate
-) -> ResponseSplit: ...
 
 
 # ----------------------------------------------------------------- solvers
@@ -233,7 +169,12 @@ class GenerateExecuteRepairSpec(FrozenContract):
     max_rounds: int
 
 
-SolverSpec = SingleCallSpec | RetrieveThenAnswerSpec | GenerateExecuteRepairSpec
+SolverSpec = (
+    SingleCallSpec
+    | GenerationSpec
+    | RetrieveThenAnswerSpec
+    | GenerateExecuteRepairSpec
+)
 
 
 class SpecSlot(FrozenContract):
@@ -248,37 +189,13 @@ def replace_slot(
 ) -> SolverSpec: ...
 
 
-class DirectGenerationSolver:
-    solver_id = "direct_generation"
-
-    def solve(
-        self,
-        item: Item,
-        session: GeneratingSession,
-        spec: SingleCallSpec,
-        items: ItemIndex,
-    ) -> GenerationAttempt: ...
-
-
-class ReasonedGenerationSolver:
-    solver_id = "reasoned_generation"
-
-    def solve(
-        self,
-        item: Item,
-        session: GeneratingSession,
-        spec: SingleCallSpec,
-        items: ItemIndex,
-    ) -> GenerationAttempt: ...
-
-
 class RetrieveThenAnswerSolver:
     solver_id = "retrieve_then_answer"
 
     def solve(
         self,
         item: Item,
-        session: GeneratingSession,
+        session: ModelSession,
         spec: RetrieveThenAnswerSpec,
         items: ItemIndex,
     ) -> TrajectoryAttempt: ...
@@ -292,7 +209,7 @@ class GenerateExecuteRepairSolver:
     def solve(
         self,
         item: Item,
-        session: GeneratingSession,
+        session: ModelSession,
         spec: GenerateExecuteRepairSpec,
         items: ItemIndex,
     ) -> TrajectoryAttempt: ...
@@ -309,29 +226,7 @@ class CodeCandidate(FrozenContract):
     source: str
 
 
-class Abstention(FrozenContract):
-    reason: str
-
-
 Candidate = IndexCandidate | TextCandidate | CodeCandidate | Abstention
-
-
-class FirstLetterReadout:
-    readout_id = "first_letter"
-
-    def __init__(self, labels: tuple[str, ...], *, digit_fallback: bool) -> None: ...
-
-    def read(
-        self, attempt: GenerationAttempt, problem: MultipleChoiceProblem
-    ) -> IndexCandidate | Abstention: ...
-
-
-class ChoiceTextPrefixReadout:
-    readout_id = "choice_text_prefix"
-
-    def read(
-        self, attempt: GenerationAttempt, problem: MultipleChoiceProblem
-    ) -> IndexCandidate | Abstention: ...
 
 
 class AnswerSpanReadout:
@@ -371,7 +266,6 @@ class ScoresAdditions(FrozenContract):
     exact_match: float | None = None
     f1: float | None = None
     passed: float | None = None
-    abstained: float | None = None
 
 
 class LikelihoodProxyJudge:
@@ -501,7 +395,7 @@ class Optimizer(Protocol):
         initial: SolverSpec,
         plan: SplitPlan,
         budget: Budget,
-        proposer: GeneratingSession,
+        proposer: ModelSession,
         seed: int,
     ) -> OptimizationResult: ...
 

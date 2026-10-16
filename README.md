@@ -21,10 +21,10 @@ render through the same path as the target item.
 
 A **model handle** declares a pinned checkpoint and the conditions that
 change its outputs. Hardware and batching are run conditions, recorded with a
-run but not part of any identity. One module owns the dr-providers boundary;
-everything else sees po-effect types. For a model with a chat template, that
-module wraps the rendered prompt as one user message, applies the template,
-and records which template and settings it applied.
+run but not part of any identity. The `po_effect.models` package owns the
+dr-providers boundary; everything else sees po-effect types. For a model with
+a chat template, that package wraps the rendered prompt as one user message,
+applies the template, and records which template and settings it applied.
 
 A **measurement** runs a solver over an item set with a model and stores one
 attempt per item: the raw model output and nothing derived from it.
