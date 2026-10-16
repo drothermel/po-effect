@@ -13,6 +13,7 @@ dependencies = [
     "dr-serialize>=0.1.2,<0.2",
     "pyarrow>=26.0.0,<27",
     "pydantic>=2.14.0,<3",
+    "transformers>=5.20,<6",
 ]
 
 [build-system]
