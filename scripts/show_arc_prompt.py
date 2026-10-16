@@ -198,10 +198,18 @@ def readout_table(
     table.add_column("matches gold")
     judge = IndexMatchJudge()
     for rule in DecisionRule:
-        try:
-            candidate = LikelihoodArgmaxReadout(rule).read(
-                attempt, item.problem
+        readout = LikelihoodArgmaxReadout(rule)
+        reason = readout.inapplicable_reason((attempt,))
+        if reason is not None:
+            table.add_row(
+                Text(rule.value),
+                Text("not applicable"),
+                Text(reason),
+                Text(""),
             )
+            continue
+        try:
+            candidate = readout.read(attempt, item.problem)
         except (ValueError, ZeroDivisionError) as error:
             table.add_row(
                 Text(rule.value),
@@ -237,20 +245,7 @@ def score_item(
     solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
     spec = SingleCallSpec(prompt=prompt)
     with ModelSession(handle, conditions) as session:
-        try:
-            attempt = solver.solve(item, session, spec, items)
-        except ValueError as error:
-            if str(error) != "prompt format has no unconditional context":
-                raise
-            console.print(
-                Panel(
-                    Text(str(error)),
-                    title=Text("scoring error"),
-                    title_align="left",
-                    border_style="red",
-                )
-            )
-            raise SystemExit(1) from error
+        attempt = solver.solve(item, session, spec, items)
     show = args.show_whitespace
     console.print(score_table(attempt, item, show_whitespace=show))
     console.print(readout_table(attempt, item, show_whitespace=show))

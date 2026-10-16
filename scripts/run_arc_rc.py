@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from dr_hf import read_rows
 
-from po_effect.config import DEFAULT_CONFIG_DIR
+from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.measurement import (
     DecisionRule,
     IndexMatchJudge,
@@ -19,6 +19,7 @@ from po_effect.measurement import (
     ScoredCandidatesSolver,
     SingleCallSpec,
     apply_readout,
+    inapplicable_reason,
     run_measurement,
 )
 from po_effect.models import (
@@ -32,6 +33,7 @@ from po_effect.models import (
 )
 from po_effect.prompts import (
     MultipleChoiceRenderer,
+    PromptsConfig,
     load_prompt_config,
     resolve_prompt,
 )
@@ -51,19 +53,27 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 DEFAULT_BATCH_SIZE = 8
-RC_PROMPT = "olmes_rc"
+DEFAULT_PROMPT = "olmes_rc"
+
+
+def prompt_names(config_dir: Path) -> list[str]:
+    return sorted(
+        load_config(config_dir / "prompts.toml", PromptsConfig).prompts
+    )
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     config = argparse.ArgumentParser(add_help=False)
     config.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
-    models = load_models_config(config.parse_known_args(argv)[0].config_dir)
+    config_dir = config.parse_known_args(argv)[0].config_dir
+    names = prompt_names(config_dir)
+    models = load_models_config(config_dir)
     parser = argparse.ArgumentParser(
         parents=[config],
         description=(
-            "Measure ARC-Challenge ranked classification with the pinned "
-            "model, apply the five decision-rule readouts, and export a "
-            "wide parquet table."
+            "Measure ARC-Challenge scored candidates with the pinned model "
+            "under the selected prompt, apply the applicable decision-rule "
+            "readouts, and export a wide parquet table."
         ),
     )
     parser.add_argument(
@@ -74,6 +84,15 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--limit", type=int)
     parser.add_argument(
         "--model", choices=sorted(models.models), help=model_help(models)
+    )
+    parser.add_argument(
+        "--prompt",
+        default=DEFAULT_PROMPT,
+        choices=names,
+        help=(
+            f"prompt entry from prompts.toml: {', '.join(names)} "
+            f"(default {DEFAULT_PROMPT})"
+        ),
     )
     return parser.parse_args(argv)
 
@@ -123,7 +142,7 @@ def measure(  # noqa: PLR0913, PLR0917
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     task = load_arc_challenge(args.config_dir)
-    prompt_config = load_prompt_config(args.config_dir, RC_PROMPT)
+    prompt_config = load_prompt_config(args.config_dir, args.prompt)
     items = build_item_index(task, tuple(read_rows(task.source)))
     full_set = evaluation_item_set(task, items)
     prompt = resolve_prompt(prompt_config, task, items)
@@ -149,16 +168,18 @@ def main(argv: list[str] | None = None) -> None:
     store = FileRecordStore(args.output_dir / "records")
     result, elapsed = measure(spec, conditions, task, items, solver, store)
     measurement_hash = spec.identity_hash
+    skipped = []
     for rule in DecisionRule:
-        apply_readout(
-            ReadoutSpec(
-                measurement_hash=measurement_hash,
-                readout_id=rule,
-                judge_id=IndexMatchJudge.judge_id,
-            ),
-            store,
-            items,
+        readout_spec = ReadoutSpec(
+            measurement_hash=measurement_hash,
+            readout_id=rule,
+            judge_id=IndexMatchJudge.judge_id,
         )
+        reason = inapplicable_reason(readout_spec, store)
+        if reason is None:
+            apply_readout(readout_spec, store, items)
+        else:
+            skipped.append((rule, reason))
     export = args.output_dir / f"{measurement_hash}.parquet"
     export_wide(store, measurement_hash, items, export)
     rate = result.measured / elapsed if elapsed > 0 else 0.0
@@ -166,6 +187,8 @@ def main(argv: list[str] | None = None) -> None:
     print(f"items {len(result.attempts)} ({result.measured} measured)")
     print(f"items per second {rate:.2f}")
     print(f"export {export}")
+    for rule, reason in skipped:
+        print(f"readout {rule} not applicable: {reason}")
 
 
 if __name__ == "__main__":

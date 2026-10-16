@@ -44,7 +44,7 @@ class CandidateScore(FrozenContract):
     token_count: int = Field(gt=0)
     char_count: int = Field(gt=0)
     byte_count: int = Field(gt=0)
-    unconditional_log_likelihood: float
+    unconditional_log_likelihood: float | None
 
 
 class ScoringResult(FrozenContract):
@@ -151,28 +151,32 @@ class ModelSession:
         context: str,
         continuations: Sequence[str],
         *,
-        unconditional_context: str,
+        unconditional_context: str | None,
     ) -> ScoringResult:
         continuations = tuple(continuations)
         conditional, conditional_ref = self._score(context, continuations)
-        unconditional, unconditional_ref = self._score(
-            unconditional_context, continuations
-        )
+        if unconditional_context is None:
+            baselines: tuple[float | None, ...] = (None,) * len(continuations)
+            evidence = (conditional_ref,)
+        else:
+            unconditional, unconditional_ref = self._score(
+                unconditional_context, continuations
+            )
+            baselines = tuple(s.log_likelihood for s in unconditional.scores)
+            evidence = (conditional_ref, unconditional_ref)
         scores = tuple(
             CandidateScore(
                 log_likelihood=score.log_likelihood,
                 token_count=score.token_count,
                 char_count=len(text),
                 byte_count=len(text.encode("utf-8")),
-                unconditional_log_likelihood=baseline.log_likelihood,
+                unconditional_log_likelihood=baseline,
             )
             for text, score, baseline in zip(
                 continuations,
                 conditional.scores,
-                unconditional.scores,
+                baselines,
                 strict=True,
             )
         )
-        return ScoringResult(
-            scores=scores, evidence=(conditional_ref, unconditional_ref)
-        )
+        return ScoringResult(scores=scores, evidence=evidence)

@@ -9,6 +9,8 @@ from po_effect.identity import FrozenContract
 from po_effect.tasks import AttemptKind
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from po_effect.measurement.attempts import ScoredCandidatesAttempt
     from po_effect.models import CandidateScore
     from po_effect.tasks import MultipleChoiceProblem
@@ -21,6 +23,9 @@ class DecisionRule(StrEnum):
     PER_CHAR = auto()
     PER_BYTE = auto()
     PMI = auto()
+
+
+MISSING_UNCONDITIONAL = "attempts have no unconditional log-likelihood"
 
 
 class IndexCandidate(FrozenContract):
@@ -38,6 +43,8 @@ def decision_value(rule: DecisionRule, score: CandidateScore) -> float:
         case DecisionRule.PER_BYTE:
             return score.log_likelihood / score.byte_count
         case DecisionRule.PMI:
+            if score.unconditional_log_likelihood is None:
+                raise ValueError(MISSING_UNCONDITIONAL)
             return score.log_likelihood - score.unconditional_log_likelihood
 
 
@@ -47,6 +54,17 @@ class LikelihoodArgmaxReadout:
     def __init__(self, rule: DecisionRule) -> None:
         self.rule = rule
         self.readout_id = rule
+
+    def inapplicable_reason(
+        self, attempts: Iterable[ScoredCandidatesAttempt]
+    ) -> str | None:
+        if self.rule is DecisionRule.PMI and any(
+            score.unconditional_log_likelihood is None
+            for attempt in attempts
+            for score in attempt.scores
+        ):
+            return MISSING_UNCONDITIONAL
+        return None
 
     def read(
         self,

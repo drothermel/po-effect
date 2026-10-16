@@ -15,6 +15,7 @@ from po_effect.measurement.run import (
     ReadoutSpec,
     RecordStore,
     apply_readout,
+    inapplicable_reason,
     run_measurement,
 )
 from po_effect.measurement.solvers import (
@@ -40,6 +41,7 @@ __all__ = [
     "SingleCallSpec",
     "apply_readout",
     "decision_value",
+    "inapplicable_reason",
     "judge_for",
     "run_measurement",
 ]

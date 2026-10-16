@@ -20,10 +20,12 @@ from po_effect.measurement import (
     LikelihoodArgmaxReadout,
     MeasurementRuntime,
     MeasurementSpec,
+    ReadoutSpec,
     ScoredCandidatesAttempt,
     ScoredCandidatesSolver,
     SingleCallSpec,
     apply_readout,
+    inapplicable_reason,
     run_measurement,
 )
 from po_effect.models import (
@@ -31,8 +33,14 @@ from po_effect.models import (
     Device,
     ModelSession,
     RunConditions,
+    load_model_handle,
 )
-from po_effect.prompts import MultipleChoiceRenderer, PromptSpec
+from po_effect.prompts import (
+    MultipleChoiceRenderer,
+    PromptConfig,
+    PromptSpec,
+    resolve_prompt,
+)
 from po_effect.records import FileRecordStore, MeasurementDocument
 from po_effect.tasks import (
     Item,
@@ -51,6 +59,8 @@ if TYPE_CHECKING:
         ProviderCallRequest,
         ProviderInvocationEvidence,
     )
+
+    from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 
 def test_solver_rejects_shots_in_evaluated_set() -> None:
@@ -374,3 +384,87 @@ def test_resume_proceeds_with_identical_run_conditions(
 ) -> None:
     run_with(example, CPU_CONDITIONS, tmp_path)
     assert run_with(example, CPU_CONDITIONS, tmp_path) == (0, 0)
+
+
+def test_format_without_unconditional_context_scores_conditionally(
+    task: ArcChallengeTask,
+    items: ItemIndex,
+    item_set: ItemSet,
+    prompt_config: PromptConfig,
+    tmp_path: Path,
+) -> None:
+    config = prompt_config.model_copy(
+        update={
+            "item_format": prompt_config.item_format.model_copy(
+                update={"unconditional_context": None}
+            )
+        }
+    )
+    prompt = resolve_prompt(config, task, items)
+    handle = load_model_handle()
+    backend = fake_backend(handle, CPU_CONDITIONS)
+    solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
+    spec = MeasurementSpec(
+        task_id=task.task_id,
+        task_version=task.version,
+        item_set=item_set,
+        model=handle,
+        solver_id=solver.solver_id,
+        solver_spec=SingleCallSpec(prompt=prompt),
+        attempt_kind=solver.kind,
+    )
+    store = FileRecordStore(tmp_path / "records")
+    with ModelSession(handle, CPU_CONDITIONS, backend) as session:
+        result = run_measurement(
+            spec, MeasurementRuntime(task, items, session, solver, store)
+        )
+        assert session.score_requests == len(item_set.item_ids)
+    assert len(backend.calls) == len(item_set.item_ids)
+    for record in result.attempts:
+        assert len(record.attempt.evidence) == 1
+        assert all(
+            score.unconditional_log_likelihood is None
+            for score in record.attempt.scores
+        )
+    assert [s.log_likelihood for s in result.attempts[1].attempt.scores] == [
+        -3,
+        -8,
+    ]
+
+    def rule_spec(rule: DecisionRule) -> ReadoutSpec:
+        return ReadoutSpec(
+            measurement_hash=spec.identity_hash,
+            readout_id=rule,
+            judge_id="index_match",
+        )
+
+    pmi = rule_spec(DecisionRule.PMI)
+    assert inapplicable_reason(pmi, store) is not None
+    with pytest.raises(ValueError, match="'pmi' does not apply"):
+        apply_readout(pmi, store, items)
+    assert store.readouts(spec.identity_hash) == ()
+    applicable = [
+        rule for rule in DecisionRule if rule is not DecisionRule.PMI
+    ]
+    for rule in applicable:
+        assert inapplicable_reason(rule_spec(rule), store) is None
+        records = apply_readout(rule_spec(rule), store, items)
+        assert len(records) == len(item_set.item_ids)
+    assert {s.readout_id for s in store.readouts(spec.identity_hash)} == set(
+        applicable
+    )
+    assert len(store.attempts(spec.identity_hash)) == len(item_set.item_ids)
+    assert len(backend.calls) == len(item_set.item_ids)
+
+
+def test_readouts_apply_to_attempts_with_unconditional_scores(
+    example: ExampleMeasurement,
+) -> None:
+    run_measurement(example.spec, example.runtime)
+    for rule in DecisionRule:
+        assert (
+            inapplicable_reason(
+                readout_spec(example, rule), example.runtime.store
+            )
+            is None
+        )

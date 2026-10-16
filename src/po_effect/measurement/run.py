@@ -183,6 +183,15 @@ def run_measurement(
     )
 
 
+def inapplicable_reason(
+    readout_spec: ReadoutSpec, store: RecordStore
+) -> str | None:
+    attempts = store.attempts(readout_spec.measurement_hash)
+    return LikelihoodArgmaxReadout(
+        readout_spec.readout_id
+    ).inapplicable_reason(record.attempt for record in attempts.values())
+
+
 def apply_readout(
     readout_spec: ReadoutSpec,
     store: RecordStore,
@@ -195,6 +204,14 @@ def apply_readout(
     missing = [i for i in spec.item_set.item_ids if i not in attempts]
     if missing:
         raise ValueError(f"{len(missing)} items have no stored attempt")
+    reason = readout.inapplicable_reason(
+        record.attempt for record in attempts.values()
+    )
+    if reason is not None:
+        raise ValueError(
+            f"readout {readout_spec.readout_id.value!r} does not apply: "
+            f"{reason}"
+        )
     readout_hash = store.put_readout(readout_spec)
     records = []
     for item_id in spec.item_set.item_ids:
