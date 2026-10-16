@@ -107,6 +107,7 @@ class ItemResult:
     candidate: str
     score: float
     feedback: str
+    details: Mapping[str, object] = field(default_factory=dict)
 
 
 class ItemEvaluator(Protocol):
@@ -267,6 +268,7 @@ class RunRecorder:
                     "gold": result.gold,
                     "candidate": result.candidate,
                     "score": result.score,
+                    **result.details,
                 }
                 stream.write(json.dumps(row) + "\n")
 
@@ -322,6 +324,15 @@ class ApiStats:
     cost_usd: float = 0.0
 
 
+@dataclass(frozen=True, slots=True)
+class Completion:
+    content: str
+    provider: str | None
+    finish_reason: str | None
+    usage: Mapping[str, Any]
+    body: Mapping[str, Any]
+
+
 @dataclass(slots=True)
 class OpenRouter:
     log: Callable[[str], None]
@@ -365,6 +376,12 @@ class OpenRouter:
         return {REASONING_PARAMETER: {"effort": effort}}
 
     def chat(self, role: str, body: Mapping[str, Any]) -> str:
+        completion = self.complete(role, body)
+        return completion.content if completion else ""
+
+    def complete(
+        self, role: str, body: Mapping[str, Any]
+    ) -> Completion | None:
         payload = {**body, "usage": {"include": True}}
         error = "no attempt"
         for attempt in range(RETRIES):
@@ -377,8 +394,14 @@ class OpenRouter:
                     reply = response.json()
                     if reply.get("choices"):
                         self._count(role, reply)
-                        message = reply["choices"][0]["message"]
-                        return message.get("content") or ""
+                        choice = reply["choices"][0]
+                        return Completion(
+                            content=choice["message"].get("content") or "",
+                            provider=reply.get("provider"),
+                            finish_reason=choice.get("finish_reason"),
+                            usage=reply.get("usage") or {},
+                            body=reply,
+                        )
                     error = f"no choices: {str(reply)[:200]}"
                 else:
                     error = (
@@ -392,7 +415,7 @@ class OpenRouter:
         with self.lock:
             self._role(role).failures += 1
         self.log(f"{role} call to {body.get('model')} failed: {error}")
-        return ""
+        return None
 
     def _role(self, role: str) -> ApiStats:
         return self.stats.setdefault(role, ApiStats())
