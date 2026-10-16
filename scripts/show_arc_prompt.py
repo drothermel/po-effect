@@ -9,9 +9,10 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from po_effect.config import DEFAULT_CONFIG_DIR
+from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.prompts import (
     MultipleChoiceRenderer,
+    PromptsConfig,
     load_prompt_config,
     resolve_prompt,
 )
@@ -29,20 +30,34 @@ from po_effect.tasks import (
 DEFAULT_PROMPT = "olmes_rc"
 
 
+def prompt_names(config_dir: Path) -> list[str]:
+    return sorted(
+        load_config(config_dir / "prompts.toml", PromptsConfig).prompts
+    )
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    config = argparse.ArgumentParser(add_help=False)
+    config.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
+    names = prompt_names(config.parse_known_args(argv)[0].config_dir)
     parser = argparse.ArgumentParser(
+        parents=[config],
         description=(
             "Print the exact context, candidate continuations, and "
             "unconditional context sent to the model for one "
             "ARC-Challenge item under the selected prompt configuration."
-        )
+        ),
     )
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--native-id")
     selection.add_argument("--index", type=int)
-    parser.add_argument("--format", default=DEFAULT_PROMPT)
+    parser.add_argument(
+        "--format",
+        default=DEFAULT_PROMPT,
+        choices=names,
+        help=f"prompt entry from prompts.toml: {', '.join(names)}",
+    )
     parser.add_argument("--show-whitespace", action="store_true")
-    parser.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
     return parser.parse_args(argv)
 
 
