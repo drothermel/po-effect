@@ -1,0 +1,4 @@
+[response_templates.qwen3_think]
+start_anchor = "<|im_start|>assistant\n"
+reasoning_open = "<think>"
+reasoning_close = "</think>"

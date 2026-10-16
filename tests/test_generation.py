@@ -116,7 +116,7 @@ def generate(  # noqa: PLR0913, PLR0917
         attempt_kind=solver.kind,
     )
     store = FileRecordStore(tmp_path / "records")
-    with ModelSession(handle, CPU_CONDITIONS, backend) as session:
+    with ModelSession(handle, CPU_CONDITIONS, None, backend) as session:
         run_measurement(
             spec, MeasurementRuntime(task, items, session, solver, store)
         )
@@ -191,6 +191,7 @@ def attempt(text: str) -> GenerationAttempt:
             completion_tokens=1,
         ),
         evidence=(),
+        chat_template=None,
     )
 
 
@@ -219,7 +220,7 @@ def attempt(text: str) -> GenerationAttempt:
 def test_first_letter_readout(
     text: str, expected: IndexCandidate | Abstention
 ) -> None:
-    readout = FirstLetterReadout()
+    readout = FirstLetterReadout(None)
     assert readout.read(attempt(text), problem("x", "y", "z")) == expected
 
 
@@ -236,7 +237,7 @@ def test_first_letter_readout(
 def test_choice_text_prefix_readout(
     text: str, expected: IndexCandidate | Abstention
 ) -> None:
-    readout = ChoiceTextPrefixReadout()
+    readout = ChoiceTextPrefixReadout(None)
     choices = problem("blue", " red ", "blue sky")
     assert readout.read(attempt(text), choices) == expected
 
@@ -256,6 +257,7 @@ def readout(measurement: MeasurementSpec, rule: str) -> ReadoutSpec:
             "measurement_hash": measurement.identity_hash,
             "readout_id": rule,
             "judge_id": "index_match",
+            "response_template": None,
         }
     )
 
@@ -310,7 +312,7 @@ def limited_session(
         update={"capabilities": frozenset({capability})}
     )
     backend = fake_backend(handle, CPU_CONDITIONS)
-    return ModelSession(limited, CPU_CONDITIONS, backend), backend
+    return ModelSession(limited, CPU_CONDITIONS, None, backend), backend
 
 
 def test_generate_requires_generate_capability() -> None:
@@ -356,4 +358,8 @@ def test_export_generation_measurement(
         "first_letter_index_match_predicted_index": [1, None],
         "first_letter_index_match_correct": [True, False],
         "first_letter_index_match_abstained": [False, True],
+        "answer_letter_index_match_predicted_index": [1, None],
+        "answer_letter_index_match_correct": [True, False],
+        "answer_letter_index_match_abstained": [False, True],
+        "reasoning_visibility": ["none", "none"],
     }

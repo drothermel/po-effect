@@ -12,6 +12,7 @@ from po_effect.measurement.judges import Scores, judge_for
 from po_effect.measurement.readouts import (
     Candidate,
     ReadoutId,
+    ReasoningVisibility,
     readout_for,
 )
 from po_effect.measurement.solvers import (
@@ -19,7 +20,7 @@ from po_effect.measurement.solvers import (
     SingleCallSpec,
     SolverSpec,
 )
-from po_effect.models import ModelHandle
+from po_effect.models import ModelHandle, NamedResponseTemplate
 from po_effect.tasks import AttemptKind, ItemSet
 
 if TYPE_CHECKING:
@@ -29,13 +30,13 @@ if TYPE_CHECKING:
     from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 MEASUREMENT_SPEC_SCHEMA = "po_effect.measurement_spec"
-MEASUREMENT_SPEC_SCHEMA_VERSION = 7
+MEASUREMENT_SPEC_SCHEMA_VERSION = 8
 ATTEMPT_RECORD_SCHEMA = "po_effect.attempt_record"
-ATTEMPT_RECORD_SCHEMA_VERSION = 3
+ATTEMPT_RECORD_SCHEMA_VERSION = 4
 READOUT_SPEC_SCHEMA = "po_effect.readout_spec"
-READOUT_SPEC_SCHEMA_VERSION = 1
+READOUT_SPEC_SCHEMA_VERSION = 2
 READOUT_RECORD_SCHEMA = "po_effect.readout_record"
-READOUT_RECORD_SCHEMA_VERSION = 2
+READOUT_RECORD_SCHEMA_VERSION = 3
 
 
 class MeasurementSpec(Identified):
@@ -86,6 +87,7 @@ class ReadoutSpec(Identified):
     measurement_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     readout_id: ReadoutId
     judge_id: str
+    response_template: NamedResponseTemplate | None
 
 
 class ReadoutRecord(Identified):
@@ -95,6 +97,7 @@ class ReadoutRecord(Identified):
     readout_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     item_id: str = Field(pattern=r"^[0-9a-f]{64}$")
     candidate: Candidate
+    reasoning_visibility: ReasoningVisibility
     scores: Scores
 
 
@@ -155,6 +158,8 @@ def run_measurement(
         raise ValueError("measurement task differs from runtime or item set")
     if spec.model != runtime.session.handle:
         raise ValueError("measurement model differs from session")
+    if spec.solver_spec.prompt.chat != runtime.session.chat:
+        raise ValueError("measurement chat settings differ from session")
     if spec.solver_id != runtime.solver.solver_id:
         raise ValueError("measurement solver differs from runtime")
     if spec.attempt_kind != runtime.solver.kind:
@@ -211,12 +216,26 @@ def _inapplicable_reason(
     )
 
 
+def _readout(readout_spec: ReadoutSpec, spec: MeasurementSpec) -> Readout:
+    named = readout_spec.response_template
+    name = None if named is None else named.name
+    if name != spec.model.response_template:
+        raise ValueError(
+            f"readout response template {name!r} differs from the model's "
+            f"{spec.model.response_template!r}"
+        )
+    return readout_for(
+        readout_spec.readout_id, None if named is None else named.template
+    )
+
+
 def inapplicable_reason(
     readout_spec: ReadoutSpec, store: RecordStore
 ) -> str | None:
+    spec = store.measurement(readout_spec.measurement_hash)
     return _inapplicable_reason(
-        readout_for(readout_spec.readout_id),
-        store.measurement(readout_spec.measurement_hash),
+        _readout(readout_spec, spec),
+        spec,
         store.attempts(readout_spec.measurement_hash),
     )
 
@@ -227,7 +246,7 @@ def apply_readout(
     items: ItemIndex,
 ) -> tuple[ReadoutRecord, ...]:
     spec = store.measurement(readout_spec.measurement_hash)
-    readout = readout_for(readout_spec.readout_id)
+    readout = _readout(readout_spec, spec)
     judge = judge_for(readout_spec.judge_id)
     attempts = store.attempts(readout_spec.measurement_hash)
     missing = [i for i in spec.item_set.item_ids if i not in attempts]
@@ -243,12 +262,14 @@ def apply_readout(
     records = []
     for item_id in spec.item_set.item_ids:
         item = items.get(item_id)
-        candidate = readout.read(attempts[item_id].attempt, item.problem)
+        attempt = attempts[item_id].attempt
+        candidate = readout.read(attempt, item.problem)
         record = ReadoutRecord(
             measurement_hash=readout_spec.measurement_hash,
             readout_hash=readout_hash,
             item_id=item_id,
             candidate=candidate,
+            reasoning_visibility=readout.reasoning_visibility(attempt),
             scores=judge.judge(candidate, item.reference),
         )
         store.put_readout_record(record)

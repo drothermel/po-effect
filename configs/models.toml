@@ -126,7 +126,8 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
+response_template = "qwen3_think"
 
 [models.qwen3_0_6b_instruct.pin]
 repo_id = "Qwen/Qwen3-0.6B"
@@ -148,7 +149,8 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
+response_template = "qwen3_think"
 
 [models.qwen3_1_7b_instruct.pin]
 repo_id = "Qwen/Qwen3-1.7B"
@@ -170,7 +172,8 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
+response_template = "qwen3_think"
 
 [models.qwen3_4b_instruct.pin]
 repo_id = "Qwen/Qwen3-4B"
@@ -192,7 +195,8 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
+response_template = "qwen3_think"
 
 [models.qwen3_8b_instruct.pin]
 repo_id = "Qwen/Qwen3-8B"
@@ -214,7 +218,8 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
+response_template = "qwen3_think"
 
 [models.qwen3_14b_instruct.pin]
 repo_id = "Qwen/Qwen3-14B"
@@ -357,7 +362,7 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
 
 [models.olmo3_7b_sft.pin]
 repo_id = "allenai/Olmo-3-7B-Instruct-SFT"
@@ -368,7 +373,7 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
 
 [models.olmo3_7b_dpo.pin]
 repo_id = "allenai/Olmo-3-7B-Instruct-DPO"
@@ -379,7 +384,7 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
 
 [models.olmo3_7b_instruct.pin]
 repo_id = "allenai/Olmo-3-7B-Instruct"
@@ -401,7 +406,7 @@ dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["generate", "score"]
+capabilities = ["chat_template", "generate", "score"]
 
 [models.olmoe_1b_7b_instruct.pin]
 repo_id = "allenai/OLMoE-1B-7B-0125-Instruct"

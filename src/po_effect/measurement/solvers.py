@@ -91,6 +91,7 @@ class ScoredCandidatesSolver:
             candidates=rendered.candidates,
             scores=result.scores,
             evidence=result.evidence,
+            chat_template=result.chat_template,
         )
 
 
@@ -116,7 +117,9 @@ class GenerationSolver:
         rendered = _render(self.renderer, item, generation, items)
         result = session.generate(rendered.context, generation.max_new_tokens)
         return GenerationAttempt(
-            output=result.output, evidence=result.evidence
+            output=result.output,
+            evidence=result.evidence,
+            chat_template=result.chat_template,
         )
 
 

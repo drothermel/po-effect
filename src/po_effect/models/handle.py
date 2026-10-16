@@ -10,6 +10,7 @@ from pydantic import (
     ValidationInfo,
     field_serializer,
     field_validator,
+    model_validator,
 )
 
 from po_effect.config import DEFAULT_CONFIG_DIR, load_config
@@ -41,6 +42,7 @@ class ContinuationTokenization(StrEnum):
 class ModelCapability(StrEnum):
     SCORE = auto()
     GENERATE = auto()
+    CHAT_TEMPLATE = auto()
 
 
 class ModelHandle(FrozenContract):
@@ -50,6 +52,18 @@ class ModelHandle(FrozenContract):
     add_bos_token: StrictBool
     continuation_tokenization: ContinuationTokenization
     capabilities: frozenset[ModelCapability] = Field(min_length=1)
+    response_template: str | None = None
+
+    @model_validator(mode="after")
+    def validate_response_template(self) -> ModelHandle:
+        if (
+            self.response_template is not None
+            and ModelCapability.CHAT_TEMPLATE not in self.capabilities
+        ):
+            raise ValueError(
+                "response_template requires the chat_template capability"
+            )
+        return self
 
     @field_serializer("capabilities")
     def serialize_capabilities(
@@ -79,8 +93,58 @@ class ModelsConfig(FrozenContract):
         return default
 
 
+class ResponseTemplate(FrozenContract):
+    start_anchor: str = Field(min_length=1)
+    reasoning_open: str = Field(min_length=1)
+    reasoning_close: str = Field(min_length=1)
+
+
+class NamedResponseTemplate(FrozenContract):
+    name: str
+    template: ResponseTemplate
+
+
+class ResponseTemplatesConfig(FrozenContract):
+    response_templates: dict[str, ResponseTemplate] = Field(min_length=1)
+
+
+def load_response_templates(
+    config_dir: Path = DEFAULT_CONFIG_DIR,
+) -> ResponseTemplatesConfig:
+    return load_config(
+        config_dir / "response_templates.toml", ResponseTemplatesConfig
+    )
+
+
+def load_response_template(
+    config_dir: Path, name: str | None
+) -> NamedResponseTemplate | None:
+    if name is None:
+        return None
+    templates = load_response_templates(config_dir).response_templates
+    template = templates.get(name)
+    if template is None:
+        raise ValueError(
+            f"unknown response template {name!r}; "
+            f"available: {sorted(templates)!r}"
+        )
+    return NamedResponseTemplate(name=name, template=template)
+
+
 def load_models_config(config_dir: Path = DEFAULT_CONFIG_DIR) -> ModelsConfig:
-    return load_config(config_dir / "models.toml", ModelsConfig)
+    config = load_config(config_dir / "models.toml", ModelsConfig)
+    templates = load_response_templates(config_dir).response_templates
+    for name, handle in config.models.items():
+        if (
+            handle.response_template is not None
+            and handle.response_template not in templates
+        ):
+            raise ValueError(
+                f"model {name!r} names unknown response template "
+                f"{handle.response_template!r}; "
+                f"available: {sorted(templates)!r}"
+            )
+    return config
 
 
 def load_model_handle(

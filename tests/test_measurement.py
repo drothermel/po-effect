@@ -180,6 +180,7 @@ def test_five_decision_rules(rule: DecisionRule, index: int) -> None:
             score(-2, -8, tokens=3, chars=2, size=4),
         ),
         evidence=(),
+        chat_template=None,
     )
     assert LikelihoodArgmaxReadout(rule).read(attempt, problem).index == index
 
@@ -189,6 +190,7 @@ def test_ties_select_first() -> None:
         candidates=(" a", " b"),
         scores=(score(-2, -1), score(-2, -1)),
         evidence=(),
+        chat_template=None,
     )
     problem = MultipleChoiceProblem(question="q", choices=("a", "b"))
     assert (
@@ -247,6 +249,7 @@ def test_resume_skips_stored_attempts(example: ExampleMeasurement) -> None:
             candidates=(" a", " éé"),
             scores=(score(-1, -1), score(-5, -1)),
             evidence=(),
+            chat_template=None,
         ),
         wall_time_seconds=0.5,
     )
@@ -365,7 +368,7 @@ def run_with(
     handle = example.spec.model
     backend = fake_backend(handle, conditions)
     runtime = example.runtime
-    with ModelSession(handle, conditions, backend) as session:
+    with ModelSession(handle, conditions, None, backend) as session:
         result = run_measurement(
             example.spec,
             MeasurementRuntime(
@@ -455,7 +458,7 @@ def test_format_without_unconditional_context_scores_conditionally(
         attempt_kind=solver.kind,
     )
     store = FileRecordStore(tmp_path / "records")
-    with ModelSession(handle, CPU_CONDITIONS, backend) as session:
+    with ModelSession(handle, CPU_CONDITIONS, None, backend) as session:
         result = run_measurement(
             spec, MeasurementRuntime(task, items, session, solver, store)
         )
@@ -479,6 +482,7 @@ def test_format_without_unconditional_context_scores_conditionally(
             measurement_hash=spec.identity_hash,
             readout_id=rule,
             judge_id="index_match",
+            response_template=None,
         )
 
     pmi = rule_spec(DecisionRule.PMI)
