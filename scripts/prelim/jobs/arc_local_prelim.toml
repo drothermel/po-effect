@@ -1,0 +1,251 @@
+[[jobs]]
+name = "local-dclm-baseline-150m-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_150m_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "local-dclm-baseline-150m-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_150m_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "local-dclm-baseline-300m-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_300m_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "local-dclm-baseline-300m-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_300m_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "local-dclm-baseline-1b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_1b_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "local-dclm-baseline-1b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_1b_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "local-dclm-baseline-1b-seed1-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_1b_seed1", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "local-dclm-baseline-1b-seed1-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_1b_seed1", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "local-dclm-baseline-1b-seed2-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_1b_seed2", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "local-dclm-baseline-1b-seed2-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dclm_baseline_1b_seed2", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "local-dolma1-7-300m-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_300m_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "local-dolma1-7-300m-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_300m_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "local-dolma1-7-300m-seed1-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_300m_seed1", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "local-dolma1-7-300m-seed1-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_300m_seed1", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "local-dolma1-7-1b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_1b_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "local-dolma1-7-1b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_1b_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "local-dolma1-7-1b-seed1-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_1b_seed1", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "local-dolma1-7-1b-seed1-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_1b_seed1", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "local-dolma1-7-1b-seed2-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_1b_seed2", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "local-dolma1-7-1b-seed2-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "dolma1_7_1b_seed2", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "local-qwen3-0-6b-base-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_0_6b_base", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "local-qwen3-0-6b-base-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_0_6b_base", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "local-qwen3-0-6b-instruct-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_0_6b_instruct", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "local-qwen3-0-6b-instruct-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_0_6b_instruct", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "local-qwen3-1-7b-base-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_1_7b_base", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "local-qwen3-1-7b-base-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_1_7b_base", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "local-qwen3-1-7b-instruct-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_1_7b_instruct", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "local-qwen3-1-7b-instruct-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_1_7b_instruct", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "local-qwen3-4b-base-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_4b_base", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "local-qwen3-4b-base-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_4b_base", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "local-qwen3-4b-instruct-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_4b_instruct", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "local-qwen3-4b-instruct-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "qwen3_4b_instruct", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "local-pythia-160m-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_160m_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "local-pythia-160m-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_160m_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "local-pythia-410m-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_410m_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "local-pythia-410m-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_410m_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "local-pythia-1b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_1b_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "local-pythia-1b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_1b_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "local-pythia-1-4b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_1_4b_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "local-pythia-1-4b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_1_4b_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "local-pythia-2-8b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_2_8b_seed0", "--device", "mps", "--rule", "raw", "--prompt", "olmes_mc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "local-pythia-2-8b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--model", "pythia_2_8b_seed0", "--device", "mps", "--rule", "pmi", "--prompt", "olmes_rc", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_local/{name}"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"

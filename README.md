@@ -55,6 +55,8 @@ uv run pytest
 Hub access uses the Hugging Face client's configured authentication and cache.
 `scripts/` holds the runners and manual utilities; each prints its own
 `--help`.
+`scripts/prelim/` holds untested preliminary-sweep tooling driven by jobs
+files.
 
 Tests exercise po-effect's own behavior with hand-written rows and a fake
 model backend. No test reproduces an upstream artifact, reaches the network,
