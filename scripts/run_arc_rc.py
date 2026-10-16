@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from enum import UNIQUE, StrEnum, auto, verify
 from pathlib import Path
 from time import perf_counter
 from typing import TYPE_CHECKING
@@ -9,7 +10,8 @@ from dr_hf import read_rows
 
 from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.measurement import (
-    DecisionRule,
+    GenerationSolver,
+    GenerationSpec,
     IndexMatchJudge,
     MeasurementResult,
     MeasurementRuntime,
@@ -18,8 +20,11 @@ from po_effect.measurement import (
     RecordStore,
     ScoredCandidatesSolver,
     SingleCallSpec,
+    Solver,
+    SolverSpec,
     apply_readout,
     inapplicable_reason,
+    readout_ids_for,
     run_measurement,
 )
 from po_effect.models import (
@@ -52,8 +57,16 @@ from po_effect.tasks import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+
+@verify(UNIQUE)
+class AttemptChoice(StrEnum):
+    SCORE = auto()
+    GENERATE = auto()
+
+
 DEFAULT_BATCH_SIZE = 8
 DEFAULT_PROMPT = "olmes_rc"
+DEFAULT_MAX_NEW_TOKENS = 16
 
 
 def prompt_names(config_dir: Path) -> list[str]:
@@ -71,9 +84,9 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         parents=[config],
         description=(
-            "Measure ARC-Challenge scored candidates with the pinned model "
-            "under the selected prompt, apply the applicable decision-rule "
-            "readouts, and export a wide parquet table."
+            "Measure ARC-Challenge with the pinned model under the selected "
+            "prompt, either scoring candidates or generating greedily, apply "
+            "the applicable readouts, and export a wide parquet table."
         ),
     )
     parser.add_argument(
@@ -92,6 +105,21 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help=(
             f"prompt entry from prompts.toml: {', '.join(names)} "
             f"(default {DEFAULT_PROMPT})"
+        ),
+    )
+    parser.add_argument(
+        "--attempt",
+        choices=[choice.value for choice in AttemptChoice],
+        default=AttemptChoice.SCORE.value,
+        help="score candidates or generate (default score)",
+    )
+    parser.add_argument(
+        "--max-new-tokens",
+        type=int,
+        default=DEFAULT_MAX_NEW_TOKENS,
+        help=(
+            "generation token limit for --attempt generate "
+            f"(default {DEFAULT_MAX_NEW_TOKENS})"
         ),
     )
     return parser.parse_args(argv)
@@ -125,7 +153,7 @@ def measure(  # noqa: PLR0913, PLR0917
     conditions: RunConditions,
     task: ArcChallengeTask,
     items: ItemIndex,
-    solver: ScoredCandidatesSolver,
+    solver: Solver,
     store: RecordStore,
     open_session: Callable[
         [ModelHandle, RunConditions], ModelSession
@@ -155,21 +183,31 @@ def main(argv: list[str] | None = None) -> None:
     conditions = RunConditions(
         device=Device(args.device), batch_size=args.batch_size
     )
-    solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
+    renderer = MultipleChoiceRenderer()
+    solver: Solver
+    solver_spec: SolverSpec
+    if AttemptChoice(args.attempt) is AttemptChoice.GENERATE:
+        solver = GenerationSolver(renderer)
+        solver_spec = GenerationSpec(
+            prompt=prompt, max_new_tokens=args.max_new_tokens
+        )
+    else:
+        solver = ScoredCandidatesSolver(renderer)
+        solver_spec = SingleCallSpec(prompt=prompt)
     spec = MeasurementSpec(
         task_id=task.task_id,
         task_version=task.version,
         item_set=item_set,
         model=handle,
         solver_id=solver.solver_id,
-        solver_spec=SingleCallSpec(prompt=prompt),
+        solver_spec=solver_spec,
         attempt_kind=solver.kind,
     )
     store = FileRecordStore(args.output_dir / "records")
     result, elapsed = measure(spec, conditions, task, items, solver, store)
     measurement_hash = spec.identity_hash
     skipped = []
-    for rule in DecisionRule:
+    for rule in readout_ids_for(spec.attempt_kind):
         readout_spec = ReadoutSpec(
             measurement_hash=measurement_hash,
             readout_id=rule,

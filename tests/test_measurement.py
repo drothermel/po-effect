@@ -10,6 +10,7 @@ from conftest import (
     fake_backend,
     make_item,
     readout_spec,
+    scored_attempt,
 )
 from dr_providers import ProviderScoreRequest
 from dr_providers.surfaces.testing.fake_backend import ScoreCall
@@ -17,6 +18,7 @@ from dr_providers.surfaces.testing.fake_backend import ScoreCall
 from po_effect.measurement import (
     AttemptRecord,
     DecisionRule,
+    IndexCandidate,
     LikelihoodArgmaxReadout,
     MeasurementRuntime,
     MeasurementSpec,
@@ -162,7 +164,7 @@ def test_attempts_convert_scores_and_log_evidence(
 ) -> None:
     result = run_measurement(example.spec, example.runtime)
     assert result.measured == 2
-    first = result.attempts[0].attempt
+    first = scored_attempt(result.attempts[0])
     assert [s.log_likelihood for s in first.scores] == [-2, -3]
     assert [s.unconditional_log_likelihood for s in first.scores] == [-3, -8]
     assert first.scores[1].char_count == 3
@@ -243,9 +245,10 @@ def test_readouts_derive_from_attempts_without_model_calls(
         records = apply_readout(
             readout_spec(example, rule), store, example.runtime.items
         )
-        assert [
-            (r.candidate.index, r.scores.accuracy) for r in records
-        ] == list(values)
+        assert [(r.candidate, r.scores.accuracy) for r in records] == [
+            (IndexCandidate(index=index), accuracy)
+            for index, accuracy in values
+        ]
         assert store.readout_records(readout_spec(example, rule)) == {
             r.item_id: r for r in records
         }
@@ -308,7 +311,7 @@ def test_scoring_failure_leaves_no_attempt(
         )
 
     monkeypatch.setattr(provider, "invoke", invoke)
-    with pytest.raises(RuntimeError, match=r"another request|scoring failed"):
+    with pytest.raises(RuntimeError, match=r"another request|score failed"):
         run_measurement(example.spec, example.runtime)
     store = example.runtime.store
     first, second = example.spec.item_set.item_ids
@@ -424,9 +427,11 @@ def test_format_without_unconditional_context_scores_conditionally(
         assert len(record.attempt.evidence) == 1
         assert all(
             score.unconditional_log_likelihood is None
-            for score in record.attempt.scores
+            for score in scored_attempt(record).scores
         )
-    assert [s.log_likelihood for s in result.attempts[1].attempt.scores] == [
+    assert [
+        s.log_likelihood for s in scored_attempt(result.attempts[1]).scores
+    ] == [
         -3,
         -8,
     ]

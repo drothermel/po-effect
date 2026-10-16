@@ -61,7 +61,8 @@ def test_export_wide(example: ExampleMeasurement, tmp_path: Path) -> None:
     assert table["pmi_index_match_predicted_index"] == [1, 0]
     assert table["pmi_index_match_correct"] == [True, True]
     assert table["raw_index_match_correct"] == [False, True]
-    assert len(table) == 8 + 2 * len(DecisionRule)
+    assert table["raw_index_match_abstained"] == [False, False]
+    assert len(table) == 8 + 3 * len(DecisionRule)
 
 
 def test_stored_records_must_match_their_paths(

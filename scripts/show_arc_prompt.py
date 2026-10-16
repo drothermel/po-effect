@@ -11,12 +11,19 @@ from rich.text import Text
 
 from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.measurement import (
+    Abstention,
     DecisionRule,
+    GenerationAttempt,
+    GenerationSolver,
+    GenerationSpec,
     IndexMatchJudge,
     LikelihoodArgmaxReadout,
     ScoredCandidatesAttempt,
     ScoredCandidatesSolver,
     SingleCallSpec,
+    readout_for,
+    readout_ids_for,
+    truncated_text,
 )
 from po_effect.models import (
     Device,
@@ -35,6 +42,7 @@ from po_effect.prompts import (
 )
 from po_effect.tasks import (
     ArcChallengeTask,
+    AttemptKind,
     Item,
     ItemIndex,
     ItemSet,
@@ -46,6 +54,7 @@ from po_effect.tasks import (
 
 DEFAULT_PROMPT = "olmes_rc"
 DEFAULT_BATCH_SIZE = 8
+DEFAULT_MAX_NEW_TOKENS = 16
 
 
 def prompt_names(config_dir: Path) -> list[str]:
@@ -56,7 +65,7 @@ def prompt_names(config_dir: Path) -> list[str]:
 
 def model_help(models: ModelsConfig) -> str:
     return (
-        f"model entry from models.toml for --score: "
+        f"model entry from models.toml for --score or --generate: "
         f"{', '.join(sorted(models.models))} (default {models.default})"
     )
 
@@ -85,7 +94,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help=f"prompt entry from prompts.toml: {', '.join(names)}",
     )
     parser.add_argument("--show-whitespace", action="store_true")
-    parser.add_argument(
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument(
         "--score",
         action="store_true",
         help=(
@@ -94,16 +104,36 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
             "--device"
         ),
     )
+    action.add_argument(
+        "--generate",
+        action="store_true",
+        help=(
+            "generate greedily through GenerationSolver and print the raw "
+            "and truncated text, the applicable readout, and the judge's "
+            "scores; requires --device"
+        ),
+    )
     parser.add_argument(
         "--device",
         choices=[device.value for device in Device],
-        help="device for --score",
+        help="device for --score or --generate",
     )
     parser.add_argument(
         "--batch-size",
         type=int,
         default=DEFAULT_BATCH_SIZE,
-        help=f"batch size for --score (default {DEFAULT_BATCH_SIZE})",
+        help=(
+            "batch size for --score or --generate "
+            f"(default {DEFAULT_BATCH_SIZE})"
+        ),
+    )
+    parser.add_argument(
+        "--max-new-tokens",
+        type=int,
+        default=DEFAULT_MAX_NEW_TOKENS,
+        help=(
+            f"token limit for --generate (default {DEFAULT_MAX_NEW_TOKENS})"
+        ),
     )
     parser.add_argument(
         "--model",
@@ -111,8 +141,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help=model_help(models),
     )
     args = parser.parse_args(argv)
-    if args.score and args.device is None:
-        parser.error("--score requires --device")
+    if (args.score or args.generate) and args.device is None:
+        parser.error("--score and --generate require --device")
     return args
 
 
@@ -189,7 +219,11 @@ def score_table(
 
 
 def readout_table(
-    attempt: ScoredCandidatesAttempt, item: Item, *, show_whitespace: bool
+    attempt: ScoredCandidatesAttempt,
+    item: Item,
+    prompt: PromptSpec,
+    *,
+    show_whitespace: bool,
 ) -> Table:
     table = Table(title=Text("decision rules"), highlight=False)
     table.add_column("rule")
@@ -199,7 +233,9 @@ def readout_table(
     judge = IndexMatchJudge()
     for rule in DecisionRule:
         readout = LikelihoodArgmaxReadout(rule)
-        reason = readout.inapplicable_reason((attempt,))
+        reason = readout.inapplicable_reason(
+            attempt.kind, prompt.item_format.candidates, (attempt,)
+        )
         if reason is not None:
             table.add_row(
                 Text(rule.value),
@@ -238,17 +274,105 @@ def score_item(
     item: Item,
     items: ItemIndex,
 ) -> None:
-    handle = load_model_handle(args.config_dir, args.model)
-    conditions = RunConditions(
-        device=Device(args.device), batch_size=args.batch_size
-    )
     solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
     spec = SingleCallSpec(prompt=prompt)
-    with ModelSession(handle, conditions) as session:
+    with open_session(args) as session:
         attempt = solver.solve(item, session, spec, items)
     show = args.show_whitespace
     console.print(score_table(attempt, item, show_whitespace=show))
-    console.print(readout_table(attempt, item, show_whitespace=show))
+    console.print(readout_table(attempt, item, prompt, show_whitespace=show))
+
+
+def open_session(args: argparse.Namespace) -> ModelSession:
+    return ModelSession(
+        load_model_handle(args.config_dir, args.model),
+        RunConditions(device=Device(args.device), batch_size=args.batch_size),
+    )
+
+
+def generation_panels(
+    attempt: GenerationAttempt, *, show_whitespace: bool
+) -> tuple[Panel, Panel]:
+    output = attempt.output
+    raw = Panel(
+        exact(output.text, show_whitespace=show_whitespace),
+        title=Text("generated text"),
+        title_align="left",
+        subtitle=Text(
+            f"stop reason {output.stop_reason}, "
+            f"prompt tokens {output.prompt_tokens}, "
+            f"completion tokens {output.completion_tokens}"
+        ),
+        subtitle_align="left",
+    )
+    truncated = Panel(
+        exact(truncated_text(output), show_whitespace=show_whitespace),
+        title=Text("truncated at the first newline"),
+        title_align="left",
+    )
+    return raw, truncated
+
+
+def generation_table(
+    attempt: GenerationAttempt,
+    item: Item,
+    prompt: PromptSpec,
+    *,
+    show_whitespace: bool,
+) -> Table:
+    table = Table(title=Text("generation readout"), highlight=False)
+    table.add_column("readout")
+    table.add_column("candidate", justify="right")
+    table.add_column("choice or abstention reason", overflow="fold")
+    table.add_column("accuracy", justify="right")
+    table.add_column("abstained", justify="right")
+    judge = IndexMatchJudge()
+    candidates = prompt.item_format.candidates
+    for readout_id in readout_ids_for(AttemptKind.GENERATION):
+        readout = readout_for(readout_id)
+        reason = readout.inapplicable_reason(
+            attempt.kind, candidates, (attempt,)
+        )
+        if reason is not None:
+            continue
+        candidate = readout.read(attempt, item.problem)
+        scores = judge.judge(candidate, item.reference)
+        if isinstance(candidate, Abstention):
+            chosen = Text("abstained")
+            detail = Text(candidate.reason)
+        else:
+            chosen = Text(str(candidate.index))
+            detail = exact(
+                item.problem.choices[candidate.index],
+                show_whitespace=show_whitespace,
+            )
+        table.add_row(
+            Text(readout_id.value),
+            chosen,
+            detail,
+            Text(f"{scores.accuracy:g}"),
+            Text(str(scores.abstained)),
+        )
+    return table
+
+
+def generate_item(
+    console: Console,
+    args: argparse.Namespace,
+    prompt: PromptSpec,
+    item: Item,
+    items: ItemIndex,
+) -> None:
+    solver = GenerationSolver(MultipleChoiceRenderer())
+    spec = GenerationSpec(prompt=prompt, max_new_tokens=args.max_new_tokens)
+    with open_session(args) as session:
+        attempt = solver.solve(item, session, spec, items)
+    show = args.show_whitespace
+    for panel in generation_panels(attempt, show_whitespace=show):
+        console.print(panel)
+    console.print(
+        generation_table(attempt, item, prompt, show_whitespace=show)
+    )
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -296,6 +420,8 @@ def main(argv: list[str] | None = None) -> None:
     )
     if args.score:
         score_item(console, args, prompt, item, items)
+    if args.generate:
+        generate_item(console, args, prompt, item, items)
 
 
 if __name__ == "__main__":

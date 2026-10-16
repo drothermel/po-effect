@@ -28,19 +28,18 @@ declaration can be checked against a backend.
 
 ## Tasks and formulations
 
-- ARC-Challenge in MC form (choices listed, scored over letters) and in the
-  CFPO generation form, as additional item formats and readouts over the same
-  items, prompt references, and attempt records.
 - HotpotQA with a two-step solver, the first trajectory attempt kind.
 - One generation task with a text judge (exact match and F1).
 - Code tasks wait for dr-exec.
 
 ## dr-providers needs
 
-Collected during the above and shipped as one release afterward: response
-template parsing, continuous batching for local generation, possibly a vLLM
-backend behind the local backend protocol, and cross-item batch scoring only
-if a throughput measurement shows it is needed.
+Collected during the above and shipped as one release afterward: stop
+sequences for generation (po-effect's generation readouts truncate at the
+first newline until then), response template parsing, continuous batching for
+local generation, possibly a vLLM backend behind the local backend protocol,
+and cross-item batch scoring only if a throughput measurement shows it is
+needed.
 
 ## Storage
 

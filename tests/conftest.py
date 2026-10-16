@@ -10,10 +10,12 @@ from dr_providers.local.backend import ScoredContinuation
 from dr_providers.surfaces.testing.fake_backend import FakeLocalBackend
 
 from po_effect.measurement import (
+    AttemptRecord,
     DecisionRule,
     MeasurementRuntime,
     MeasurementSpec,
     ReadoutSpec,
+    ScoredCandidatesAttempt,
     ScoredCandidatesSolver,
     SingleCallSpec,
 )
@@ -159,6 +161,12 @@ def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
             method="origin_split", parent=origin.content_hash
         ),
     )
+
+
+def scored_attempt(record: AttemptRecord) -> ScoredCandidatesAttempt:
+    attempt = record.attempt
+    assert isinstance(attempt, ScoredCandidatesAttempt)
+    return attempt
 
 
 def readout_spec(

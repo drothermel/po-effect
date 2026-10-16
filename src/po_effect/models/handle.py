@@ -40,6 +40,7 @@ class ContinuationTokenization(StrEnum):
 @verify(UNIQUE)
 class ModelCapability(StrEnum):
     SCORE = auto()
+    GENERATE = auto()
 
 
 class ModelHandle(FrozenContract):
