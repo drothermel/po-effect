@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
+import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from dr_hf import read_rows
 from prelim_arc import (
+    Completion,
     Harness,
     ItemResult,
     OpenRouter,
@@ -41,7 +45,8 @@ from po_effect.tasks import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Mapping, Sequence
+    from pathlib import Path
 
     from po_effect.measurement import Candidate
 
@@ -50,6 +55,11 @@ DEFAULT_MAX_TOKENS = 64
 DEFAULT_CONCURRENCY = 8
 THINK_BLOCK = re.compile(r"<think>.*?(?:</think>|$)", re.DOTALL)
 EMPTY_ANSWER = "truncated text is empty"
+EMPTY_RESPONSE = "empty_response"
+EMPTY_RETRIES = 3
+EMPTY_BACKOFF_S = 5.0
+EMPTY_BODIES_LOGGED = 5
+EMPTY_BODIES_FILE = "empty_responses.jsonl"
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -98,16 +108,67 @@ def candidate_label(candidate: Candidate, item: Item) -> str:
     return f"abstained: {candidate.reason}"
 
 
+class EmptyTracker:
+    def __init__(self, out: Path, log: Callable[[str], None]) -> None:
+        self.path = out / EMPTY_BODIES_FILE
+        self.log = log
+        self.lock = threading.Lock()
+        self.empty_responses = 0
+        self.retried_empty = 0
+        self.bodies_logged = 0
+
+    def record(self, item_id: str, completion: Completion | None) -> None:
+        if completion is None:
+            return
+        with self.lock:
+            if self.bodies_logged < EMPTY_BODIES_LOGGED:
+                self.bodies_logged += 1
+                with self.path.open("a") as stream:
+                    stream.write(
+                        json.dumps(
+                            {"item_id": item_id, "body": completion.body}
+                        )
+                        + "\n"
+                    )
+
+    def retried(self) -> None:
+        with self.lock:
+            self.retried_empty += 1
+
+    def exhausted(self, item_id: str, completion: Completion | None) -> None:
+        with self.lock:
+            self.empty_responses += 1
+        cause = (
+            "call failed"
+            if completion is None
+            else f"provider {completion.provider}, finish_reason "
+            f"{completion.finish_reason}"
+        )
+        self.log(
+            f"{EMPTY_RESPONSE}: {item_id} empty after {EMPTY_RETRIES} "
+            f"retries ({cause})"
+        )
+
+    def summary(self) -> dict[str, int]:
+        with self.lock:
+            return {
+                "empty_responses": self.empty_responses,
+                "retried_empty": self.retried_empty,
+            }
+
+
 class OpenRouterEvaluator:
-    def __init__(
+    def __init__(  # noqa: PLR0913, PLR0917
         self,
         router: OpenRouter,
         args: argparse.Namespace,
         prompt: PromptSpec,
         items: ItemIndex,
         pool: ThreadPoolExecutor,
+        empties: EmptyTracker,
     ) -> None:
         self.router = router
+        self.empties = empties
         self.model = args.task_model
         self.max_tokens = args.max_tokens
         self.reasoning = router.reasoning(args.task_model, args.reasoning)
@@ -130,22 +191,17 @@ class OpenRouterEvaluator:
     def one(self, spec: PromptSpec, item_id: str) -> ItemResult:
         item = self.items.get(item_id)
         context = self.renderer.render(spec, item.problem, self.shots).context
-        response = self.router.chat(
-            "task",
-            {
-                "model": self.model,
-                "messages": [{"role": "user", "content": context}],
-                "max_tokens": self.max_tokens,
-                "temperature": 0,
-                **self.reasoning,
-            },
-        )
+        completion, attempts = self.complete(item_id, context)
+        response = completion.content if completion else ""
+        empty = not response.strip()
         text = answer_text(response)
-        candidate: Candidate = (
-            Abstention(reason=EMPTY_ANSWER)
-            if not text
-            else self.readout.choose(text, item.problem)
-        )
+        candidate: Candidate
+        if empty:
+            candidate = Abstention(reason=EMPTY_RESPONSE)
+        elif not text:
+            candidate = Abstention(reason=EMPTY_ANSWER)
+        else:
+            candidate = self.readout.choose(text, item.problem)
         score = self.judge.judge(candidate, item.reference).accuracy
         gold = choice_labels(item.problem)[item.reference.gold_index]
         return ItemResult(
@@ -162,7 +218,39 @@ class OpenRouterEvaluator:
                 if score
                 else f"incorrect; the right answer is {gold}"
             ),
+            details={
+                "provider": completion.provider if completion else None,
+                "finish_reason": (
+                    completion.finish_reason if completion else None
+                ),
+                "attempts": attempts,
+                "call_failed": completion is None,
+                EMPTY_RESPONSE: empty,
+            },
         )
+
+    def complete(
+        self, item_id: str, context: str
+    ) -> tuple[Completion | None, int]:
+        body: Mapping[str, Any] = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": context}],
+            "max_tokens": self.max_tokens,
+            "temperature": 0,
+            **self.reasoning,
+        }
+        attempt = 0
+        while True:
+            attempt += 1
+            completion = self.router.complete("task", body)
+            if completion is not None and completion.content.strip():
+                return completion, attempt
+            self.empties.record(item_id, completion)
+            if attempt > EMPTY_RETRIES:
+                self.empties.exhausted(item_id, completion)
+                return completion, attempt
+            self.empties.retried()
+            time.sleep(EMPTY_BACKOFF_S * 2 ** (attempt - 1))
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -187,9 +275,12 @@ def main(argv: list[str] | None = None) -> None:
         f"{splits.sizes()}"
     )
     router = OpenRouter(recorder.log)
+    empties = EmptyTracker(args.out, recorder.log)
     try:
         with ThreadPoolExecutor(args.concurrency) as pool:
-            evaluator = OpenRouterEvaluator(router, args, prompt, items, pool)
+            evaluator = OpenRouterEvaluator(
+                router, args, prompt, items, pool, empties
+            )
             harness = Harness(evaluator, recorder, splits)
             run_arm(
                 args,
@@ -207,8 +298,13 @@ def main(argv: list[str] | None = None) -> None:
                     "prompt": args.prompt,
                     "max_tokens": args.max_tokens,
                 },
-                lambda: {"api": router.summary()},
+                lambda: {"api": router.summary(), **empties.summary()},
             )
+        counts = empties.summary()
+        recorder.log(
+            f"empty_responses {counts['empty_responses']}, retried_empty "
+            f"{counts['retried_empty']}"
+        )
     finally:
         router.close()
 
