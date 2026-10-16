@@ -10,9 +10,7 @@ from po_effect.tasks import AttemptKind
 
 
 class ScoredCandidatesAttempt(FrozenContract):
-    kind: Literal[AttemptKind.SCORED_CANDIDATES] = (
-        AttemptKind.SCORED_CANDIDATES
-    )
+    kind: Literal[AttemptKind.SCORE] = AttemptKind.SCORE
     candidates: tuple[str, ...] = Field(min_length=1)
     scores: tuple[CandidateScore, ...]
     evidence: tuple[EvidenceRef, ...]
@@ -25,7 +23,7 @@ class ScoredCandidatesAttempt(FrozenContract):
 
 
 class GenerationAttempt(FrozenContract):
-    kind: Literal[AttemptKind.GENERATION] = AttemptKind.GENERATION
+    kind: Literal[AttemptKind.GENERATE] = AttemptKind.GENERATE
     output: GenerationOutput
     evidence: tuple[EvidenceRef, ...]
 

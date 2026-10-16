@@ -45,6 +45,7 @@ from po_effect.prompts import (
 )
 from po_effect.records import FileRecordStore, MeasurementDocument
 from po_effect.tasks import (
+    AttemptKind,
     Item,
     ItemSet,
     ItemSetDerivation,
@@ -69,6 +70,9 @@ def test_solver_rejects_shots_in_evaluated_set() -> None:
     shot = make_item(native_id="s")
     target = make_item(native_id="t")
     prompt = PromptSpec(
+        name="example",
+        attempt=AttemptKind.SCORE,
+        admits=(AttemptKind.SCORE,),
         task_id="arc_challenge",
         task_version=1,
         shot_item_ids=(shot.item_id,),
@@ -98,6 +102,40 @@ def test_measurement_rejects_prompt_for_other_task_version(
         update={"task_version": 2}
     )
     with pytest.raises(ValueError, match="different task"):
+        MeasurementSpec.model_validate(
+            {
+                **dict(example.spec),
+                "solver_spec": SingleCallSpec(prompt=prompt),
+            }
+        )
+
+
+@pytest.mark.parametrize("admits", [(AttemptKind.SCORE,), tuple(AttemptKind)])
+def test_measurement_accepts_admitted_attempt_kind(
+    example: ExampleMeasurement, admits: tuple[AttemptKind, ...]
+) -> None:
+    prompt = example.spec.solver_spec.prompt.model_copy(
+        update={"admits": admits}
+    )
+    spec = MeasurementSpec.model_validate(
+        {**dict(example.spec), "solver_spec": SingleCallSpec(prompt=prompt)}
+    )
+    assert spec.attempt_kind is AttemptKind.SCORE
+
+
+def test_measurement_rejects_attempt_kind_the_prompt_does_not_admit(
+    example: ExampleMeasurement,
+) -> None:
+    prompt = example.spec.solver_spec.prompt.model_copy(
+        update={
+            "attempt": AttemptKind.GENERATE,
+            "admits": (AttemptKind.GENERATE,),
+        }
+    )
+    with pytest.raises(
+        ValueError,
+        match="prompt 'example' does not admit attempt kind 'score'",
+    ):
         MeasurementSpec.model_validate(
             {
                 **dict(example.spec),
@@ -403,7 +441,7 @@ def test_format_without_unconditional_context_scores_conditionally(
             )
         }
     )
-    prompt = resolve_prompt(config, task, items)
+    prompt = resolve_prompt("example", config, task, items)
     handle = load_model_handle()
     backend = fake_backend(handle, CPU_CONDITIONS)
     solver = ScoredCandidatesSolver(MultipleChoiceRenderer())

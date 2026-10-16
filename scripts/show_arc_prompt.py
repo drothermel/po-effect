@@ -69,7 +69,7 @@ def prompt_names(config_dir: Path) -> list[str]:
 
 def model_help(models: ModelsConfig) -> str:
     return (
-        f"model entry from models.toml for --score or --generate: "
+        f"model entry from models.toml for --run: "
         f"{', '.join(sorted(models.models))} (default {models.default})"
     )
 
@@ -98,45 +98,42 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help=f"prompt entry from prompts.toml: {', '.join(names)}",
     )
     parser.add_argument("--show-whitespace", action="store_true")
-    action = parser.add_mutually_exclusive_group()
-    action.add_argument(
-        "--score",
+    parser.add_argument(
+        "--run",
         action="store_true",
         help=(
-            "score the item through ScoredCandidatesSolver and print the "
-            "candidate scores and per-decision-rule readouts; requires "
-            "--device"
+            "run the model on the item in the prompt entry's declared "
+            "attempt kind: score prints the candidate scores and "
+            "per-decision-rule readouts, generate prints the raw and "
+            "truncated text, the applicable readout, and the judge's "
+            "scores; requires --device"
         ),
     )
-    action.add_argument(
-        "--generate",
-        action="store_true",
+    parser.add_argument(
+        "--attempt",
+        choices=[kind.value for kind in AttemptKind],
         help=(
-            "generate greedily through GenerationSolver and print the raw "
-            "and truncated text, the applicable readout, and the judge's "
-            "scores; requires --device"
+            "override the prompt entry's declared attempt kind; requires "
+            "--run and must be admitted by the entry"
         ),
     )
     parser.add_argument(
         "--device",
         choices=[device.value for device in Device],
-        help="device for --score or --generate",
+        help="device for --run",
     )
     parser.add_argument(
         "--batch-size",
         type=int,
         default=DEFAULT_BATCH_SIZE,
-        help=(
-            "batch size for --score or --generate "
-            f"(default {DEFAULT_BATCH_SIZE})"
-        ),
+        help=(f"batch size for --run (default {DEFAULT_BATCH_SIZE})"),
     )
     parser.add_argument(
         "--max-new-tokens",
         type=int,
-        default=DEFAULT_MAX_NEW_TOKENS,
         help=(
-            f"token limit for --generate (default {DEFAULT_MAX_NEW_TOKENS})"
+            "token limit when --run generates "
+            f"(default {DEFAULT_MAX_NEW_TOKENS}); ignored when it scores"
         ),
     )
     parser.add_argument(
@@ -145,8 +142,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help=model_help(models),
     )
     args = parser.parse_args(argv)
-    if (args.score or args.generate) and args.device is None:
-        parser.error("--score and --generate require --device")
+    if args.run and args.device is None:
+        parser.error("--run requires --device")
+    if args.attempt is not None and not args.run:
+        parser.error("--attempt requires --run")
     if args.model is None:
         args.model = models.default
     return args
@@ -322,6 +321,10 @@ def score_item(
     show = args.show_whitespace
     step_rule(console, 2, "Model output")
     console.print(model_line(args))
+    if args.max_new_tokens is not None:
+        console.print(
+            Text("--max-new-tokens ignored: score attempts do not generate")
+        )
     console.print(raw_score_table(attempt))
     outcomes = rule_outcomes(attempt, item, prompt)
     step_rule(console, 3, "Readout")
@@ -373,7 +376,7 @@ def generation_outcomes(
 ) -> list[GenerationOutcome]:
     outcomes: list[GenerationOutcome] = []
     candidates = prompt.item_format.candidates
-    for readout_id in readout_ids_for(AttemptKind.GENERATION):
+    for readout_id in readout_ids_for(AttemptKind.GENERATE):
         readout = readout_for(readout_id)
         reason = readout.inapplicable_reason(
             attempt.kind, candidates, (attempt,)
@@ -431,12 +434,17 @@ def generate_item(
     items: ItemIndex,
 ) -> None:
     solver = GenerationSolver(MultipleChoiceRenderer())
-    spec = GenerationSpec(prompt=prompt, max_new_tokens=args.max_new_tokens)
+    max_new_tokens = (
+        DEFAULT_MAX_NEW_TOKENS
+        if args.max_new_tokens is None
+        else args.max_new_tokens
+    )
+    spec = GenerationSpec(prompt=prompt, max_new_tokens=max_new_tokens)
     with open_session(args) as session:
         attempt = solver.solve(item, session, spec, items)
     show = args.show_whitespace
     step_rule(console, 2, "Model output")
-    console.print(model_line(args, f"max new tokens {args.max_new_tokens}"))
+    console.print(model_line(args, f"max new tokens {max_new_tokens}"))
     console.print(raw_generation_panel(attempt, show_whitespace=show))
     outcomes = generation_outcomes(attempt, item, prompt)
     step_rule(console, 3, "Readout")
@@ -455,7 +463,15 @@ def main(argv: list[str] | None = None) -> None:
     prompt_config = load_prompt_config(args.config_dir, args.format)
     items = build_item_index(task, tuple(read_rows(task.source)))
     item_set = evaluation_item_set(task, items)
-    prompt = resolve_prompt(prompt_config, task, items)
+    prompt = resolve_prompt(args.format, prompt_config, task, items)
+    kind = (
+        prompt.attempt if args.attempt is None else AttemptKind(args.attempt)
+    )
+    if args.run:
+        try:
+            prompt.require_admitted(kind)
+        except ValueError as error:
+            raise SystemExit(str(error)) from error
     item = select_item(args, item_set, items)
     rendered = MultipleChoiceRenderer().render(
         prompt,
@@ -464,7 +480,11 @@ def main(argv: list[str] | None = None) -> None:
     )
     show = args.show_whitespace
     console = Console(highlight=False)
-    step_rule(console, 1, f"Prompt: {item.native_id} ({args.format})")
+    step_rule(
+        console,
+        1,
+        f"Prompt: {item.native_id} ({args.format}, {kind.value} attempt)",
+    )
     console.print(
         Panel(
             exact(rendered.context, show_whitespace=show),
@@ -493,9 +513,9 @@ def main(argv: list[str] | None = None) -> None:
             title_align="left",
         )
     )
-    if args.score:
+    if args.run and kind is AttemptKind.SCORE:
         score_item(console, args, prompt, item, items)
-    if args.generate:
+    if args.run and kind is AttemptKind.GENERATE:
         generate_item(console, args, prompt, item, items)
 
 

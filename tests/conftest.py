@@ -39,6 +39,7 @@ from po_effect.prompts import (
 from po_effect.records import FileRecordStore
 from po_effect.tasks import (
     ArcChallengeTask,
+    AttemptKind,
     IndexReference,
     Item,
     ItemIndex,
@@ -197,6 +198,8 @@ def rows() -> tuple[SourceRow, ...]:
 @pytest.fixture
 def prompt_config() -> PromptConfig:
     return PromptConfig(
+        attempt=AttemptKind.SCORE,
+        admits=(AttemptKind.SCORE, AttemptKind.GENERATE),
         shots=(
             ShotRef(split="train", native_id="t2"),
             ShotRef(split="train", native_id="t1"),
@@ -226,7 +229,7 @@ def item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
 def prompt(
     task: ArcChallengeTask, items: ItemIndex, prompt_config: PromptConfig
 ) -> PromptSpec:
-    return resolve_prompt(prompt_config, task, items)
+    return resolve_prompt("example", prompt_config, task, items)
 
 
 @pytest.fixture

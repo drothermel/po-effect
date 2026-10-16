@@ -1,4 +1,6 @@
 [prompts.olmes_rc]
+attempt = "score"
+admits = ["score"]
 shot_separator = "\n\n"
 
 [prompts.olmes_rc.item_format]
@@ -38,6 +40,8 @@ split = "train"
 native_id = "MCAS_1998_4_3"
 
 [prompts.olmes_mc]
+attempt = "score"
+admits = ["score", "generate"]
 shot_separator = "\n\n"
 
 [prompts.olmes_mc.item_format]
@@ -103,6 +107,8 @@ split = "train"
 native_id = "MCAS_1998_4_3"
 
 [prompts.cfpo]
+attempt = "generate"
+admits = ["score", "generate"]
 preamble = "You are a commonsense helper. I will provide several examples and a presented question. Your goal is to pick the most reasonable answer among the given options for the current question. Please respond with the corresponding label (A/B/C/D) for the correct answer."
 shots_header = "Here are some examples:\n"
 shots_header_break = "\n"

@@ -56,9 +56,7 @@ class ArcRow(BaseModel):
 
 
 class ArcChallengeTask:
-    admissible_kinds = frozenset(
-        {AttemptKind.SCORED_CANDIDATES, AttemptKind.GENERATION}
-    )
+    admissible_kinds = frozenset({AttemptKind.SCORE, AttemptKind.GENERATE})
 
     def __init__(self, config: ArcChallengeConfig) -> None:
         self.config = config

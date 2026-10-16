@@ -18,7 +18,11 @@ from po_effect.prompts import (
     load_prompt_config,
     resolve_prompt,
 )
-from po_effect.tasks import MultipleChoiceProblem, build_item_index
+from po_effect.tasks import (
+    AttemptKind,
+    MultipleChoiceProblem,
+    build_item_index,
+)
 
 if TYPE_CHECKING:
     from dr_hf import SourceRow
@@ -55,7 +59,7 @@ def test_unknown_shot_reference_is_named(
 ) -> None:
     config = prompt_config.model_copy(update={"shots": (ref,)})
     with pytest.raises(ValueError, match=message):
-        resolve_prompt(config, task, items)
+        resolve_prompt("example", config, task, items)
 
 
 def test_prompt_hash_tracks_shot_content(
@@ -69,10 +73,12 @@ def test_prompt_hash_tracks_shot_content(
         *rows[1:],
     )
     changed = resolve_prompt(
-        prompt_config, task, build_item_index(task, edited)
+        "example", prompt_config, task, build_item_index(task, edited)
     )
     assert changed.identity_hash != prompt.identity_hash
-    again = resolve_prompt(prompt_config, task, build_item_index(task, rows))
+    again = resolve_prompt(
+        "example", prompt_config, task, build_item_index(task, rows)
+    )
     assert again.identity_hash == prompt.identity_hash
 
 
@@ -99,6 +105,9 @@ def test_renderer_formats_shots_and_target_alike(
 def test_unconditional_context_comes_from_the_format() -> None:
     shot = make_item(question="Hot or cold?", choices=("hot", "cold"))
     prompt = PromptSpec(
+        name="example",
+        attempt=AttemptKind.SCORE,
+        admits=(AttemptKind.SCORE,),
         task_id="arc_challenge",
         task_version=1,
         preamble="Quiz",
@@ -153,6 +162,9 @@ def render_one(
 ) -> tuple[str, tuple[str, ...], str | None]:
     shot = make_item(question="Hot or cold?", choices=("hot", "cold"), gold=1)
     prompt = PromptSpec(
+        name="example",
+        attempt=AttemptKind.SCORE,
+        admits=(AttemptKind.SCORE,),
         task_id="arc_challenge",
         task_version=1,
         preamble=preamble,
@@ -266,6 +278,9 @@ def test_format_rejects_incomplete_listings(fields: dict) -> None:
 def test_prompt_rejects_misplaced_headers(fields: dict, message: str) -> None:
     with pytest.raises(ValidationError, match=message):
         PromptSpec(
+            name="example",
+            attempt=AttemptKind.SCORE,
+            admits=(AttemptKind.SCORE,),
             task_id="arc_challenge",
             task_version=1,
             item_format=listing_format(CandidateKind.CHOICE_TEXT),
@@ -289,6 +304,41 @@ def test_prompt_config_lists_named_entries() -> None:
     )
     assert isinstance(config.prompts["cfpo"].preamble, str)
     assert isinstance(config.prompts["cfpo"].shots_header, str)
+
+
+def test_prompt_config_declares_attempt_kinds() -> None:
+    prompts = load_config(
+        DEFAULT_CONFIG_DIR / "prompts.toml", PromptsConfig
+    ).prompts
+    declared = {
+        name: (entry.attempt, set(entry.admits))
+        for name, entry in prompts.items()
+    }
+    assert declared == {
+        "olmes_rc": (AttemptKind.SCORE, {AttemptKind.SCORE}),
+        "olmes_mc": (AttemptKind.SCORE, set(AttemptKind)),
+        "cfpo": (AttemptKind.GENERATE, set(AttemptKind)),
+    }
+
+
+@pytest.mark.parametrize(
+    ("fields", "message"),
+    [
+        ({"admits": ("score",)}, "include the declared attempt"),
+        ({"admits": ("generate", "generate")}, "twice"),
+        ({"admits": ()}, "at least 1"),
+    ],
+)
+def test_prompt_entry_admits_its_attempt(fields: dict, message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        PromptSpec(
+            name="example",
+            attempt=AttemptKind.GENERATE,
+            task_id="arc_challenge",
+            task_version=1,
+            item_format=listing_format(CandidateKind.CHOICE_TEXT),
+            **fields,
+        )
 
 
 def test_unknown_prompt_name_is_named() -> None:

@@ -110,7 +110,7 @@ def generate(  # noqa: PLR0913, PLR0917
         model=handle,
         solver_id=solver.solver_id,
         solver_spec=GenerationSpec(
-            prompt=resolve_prompt(prompt_config, task, items),
+            prompt=resolve_prompt("example", prompt_config, task, items),
             max_new_tokens=MAX_NEW_TOKENS,
         ),
         attempt_kind=solver.kind,
@@ -271,7 +271,7 @@ def test_readouts_apply_by_attempt_kind_and_format(
     for rule in DecisionRule:
         spec = readout(run.spec, rule)
         assert inapplicable_reason(spec, run.store) == (
-            "applies to scored_candidates attempts, not generation attempts"
+            "applies to score attempts, not generate attempts"
         )
         with pytest.raises(ValueError, match="does not apply"):
             apply_readout(spec, run.store, items)
@@ -296,7 +296,7 @@ def test_generation_readouts_refuse_scored_attempts(
     for rule in GenerationRule:
         spec = readout(example.spec, rule)
         assert inapplicable_reason(spec, example.runtime.store) == (
-            "applies to generation attempts, not scored_candidates attempts"
+            "applies to generate attempts, not score attempts"
         )
         with pytest.raises(ValueError, match="does not apply"):
             apply_readout(spec, example.runtime.store, items)

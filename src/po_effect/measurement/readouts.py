@@ -81,7 +81,7 @@ def _kind_reason(accepts: AttemptKind, kind: AttemptKind) -> str | None:
 
 
 class LikelihoodArgmaxReadout:
-    accepts = AttemptKind.SCORED_CANDIDATES
+    accepts = AttemptKind.SCORE
 
     def __init__(self, rule: DecisionRule) -> None:
         self.rule = rule
@@ -122,7 +122,7 @@ class LikelihoodArgmaxReadout:
 
 
 class GenerationReadout:
-    accepts = AttemptKind.GENERATION
+    accepts = AttemptKind.GENERATE
     readout_id: GenerationRule
     candidates: CandidateKind
 
@@ -215,7 +215,7 @@ def readout_for(readout_id: ReadoutId) -> Readout:
 
 def readout_ids_for(kind: AttemptKind) -> tuple[ReadoutId, ...]:
     match kind:
-        case AttemptKind.SCORED_CANDIDATES:
+        case AttemptKind.SCORE:
             return tuple(DecisionRule)
-        case AttemptKind.GENERATION:
+        case AttemptKind.GENERATE:
             return tuple(GenerationRule)

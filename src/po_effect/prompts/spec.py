@@ -7,6 +7,7 @@ from pydantic import Field, model_validator
 
 from po_effect.config import load_config
 from po_effect.identity import FrozenContract, Identified
+from po_effect.tasks.items import AttemptKind
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 PROMPT_SPEC_SCHEMA = "po_effect.prompt_spec"
-PROMPT_SPEC_SCHEMA_VERSION = 3
+PROMPT_SPEC_SCHEMA_VERSION = 4
 
 
 @verify(UNIQUE)
@@ -69,12 +70,37 @@ class PromptLayout(FrozenContract):
         return self
 
 
-class PromptSpec(Identified, PromptLayout):
+class PromptAttempts(FrozenContract):
+    attempt: AttemptKind
+    admits: tuple[AttemptKind, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_admits(self) -> PromptAttempts:
+        if len(set(self.admits)) != len(self.admits):
+            raise ValueError("admits lists an attempt kind twice")
+        if self.attempt not in self.admits:
+            raise ValueError(
+                "admits must include the declared attempt "
+                f"{self.attempt.value!r}"
+            )
+        return self
+
+
+class PromptSpec(Identified, PromptLayout, PromptAttempts):
     identity_schema: ClassVar[str] = PROMPT_SPEC_SCHEMA
     identity_schema_version: ClassVar[int] = PROMPT_SPEC_SCHEMA_VERSION
+    name: str
     task_id: str
     task_version: int = Field(ge=1)
     shot_item_ids: tuple[str, ...] = ()
+
+    def require_admitted(self, kind: AttemptKind) -> None:
+        if kind not in self.admits:
+            raise ValueError(
+                f"prompt {self.name!r} does not admit attempt kind "
+                f"{kind.value!r}; admits "
+                f"{[admitted.value for admitted in self.admits]!r}"
+            )
 
     @model_validator(mode="after")
     def validate_header_has_shots(self) -> PromptSpec:
@@ -97,7 +123,7 @@ class ShotRef(FrozenContract):
     native_id: str
 
 
-class PromptConfig(PromptLayout):
+class PromptConfig(PromptLayout, PromptAttempts):
     shots: tuple[ShotRef, ...] = ()
 
 
@@ -110,7 +136,7 @@ class PromptsConfig(FrozenContract):
 
 
 def resolve_prompt(
-    config: PromptConfig, task: ArcChallengeTask, items: ItemIndex
+    name: str, config: PromptConfig, task: ArcChallengeTask, items: ItemIndex
 ) -> PromptSpec:
     shots = tuple(
         items.lookup(ref.split, ref.native_id) for ref in config.shots
@@ -121,6 +147,7 @@ def resolve_prompt(
                 f"shot {shot.native_id!r} belongs to a different task"
             )
     return PromptSpec(
+        name=name,
         task_id=task.task_id,
         task_version=task.version,
         preamble=config.preamble,
@@ -129,6 +156,8 @@ def resolve_prompt(
         shot_item_ids=tuple(shot.item_id for shot in shots),
         shot_separator=config.shot_separator,
         item_format=config.item_format,
+        attempt=config.attempt,
+        admits=config.admits,
     )
 
 

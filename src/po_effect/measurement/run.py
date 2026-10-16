@@ -29,9 +29,9 @@ if TYPE_CHECKING:
     from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 MEASUREMENT_SPEC_SCHEMA = "po_effect.measurement_spec"
-MEASUREMENT_SPEC_SCHEMA_VERSION = 6
+MEASUREMENT_SPEC_SCHEMA_VERSION = 7
 ATTEMPT_RECORD_SCHEMA = "po_effect.attempt_record"
-ATTEMPT_RECORD_SCHEMA_VERSION = 2
+ATTEMPT_RECORD_SCHEMA_VERSION = 3
 READOUT_SPEC_SCHEMA = "po_effect.readout_spec"
 READOUT_SPEC_SCHEMA_VERSION = 1
 READOUT_RECORD_SCHEMA = "po_effect.readout_record"
@@ -57,9 +57,10 @@ class MeasurementSpec(Identified):
             self.task_version,
         ):
             raise ValueError("prompt was resolved against a different task")
+        prompt.require_admitted(self.attempt_kind)
         expected = (
             GenerationSpec
-            if self.attempt_kind is AttemptKind.GENERATION
+            if self.attempt_kind is AttemptKind.GENERATE
             else SingleCallSpec
         )
         if not isinstance(self.solver_spec, expected):

@@ -23,8 +23,8 @@ ITEM_SCHEMA_VERSION = 2
 
 @verify(UNIQUE)
 class AttemptKind(StrEnum):
-    SCORED_CANDIDATES = auto()
-    GENERATION = auto()
+    SCORE = auto()
+    GENERATE = auto()
 
 
 @verify(UNIQUE)

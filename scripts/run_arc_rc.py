@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-from enum import UNIQUE, StrEnum, auto, verify
 from pathlib import Path
 from time import perf_counter
 from typing import TYPE_CHECKING
@@ -45,6 +44,7 @@ from po_effect.prompts import (
 from po_effect.records import FileRecordStore, export_wide
 from po_effect.tasks import (
     ArcChallengeTask,
+    AttemptKind,
     ItemIndex,
     ItemSet,
     ItemSetDerivation,
@@ -56,12 +56,6 @@ from po_effect.tasks import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-
-@verify(UNIQUE)
-class AttemptChoice(StrEnum):
-    SCORE = auto()
-    GENERATE = auto()
 
 
 DEFAULT_BATCH_SIZE = 8
@@ -109,9 +103,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--attempt",
-        choices=[choice.value for choice in AttemptChoice],
-        default=AttemptChoice.SCORE.value,
-        help="score candidates or generate (default score)",
+        choices=[kind.value for kind in AttemptKind],
+        help=(
+            "score candidates or generate (default the prompt entry's "
+            "declared attempt)"
+        ),
     )
     parser.add_argument(
         "--max-new-tokens",
@@ -173,7 +169,14 @@ def main(argv: list[str] | None = None) -> None:
     prompt_config = load_prompt_config(args.config_dir, args.prompt)
     items = build_item_index(task, tuple(read_rows(task.source)))
     full_set = evaluation_item_set(task, items)
-    prompt = resolve_prompt(prompt_config, task, items)
+    prompt = resolve_prompt(args.prompt, prompt_config, task, items)
+    kind = (
+        prompt.attempt if args.attempt is None else AttemptKind(args.attempt)
+    )
+    try:
+        prompt.require_admitted(kind)
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
     item_set = (
         full_set
         if args.limit is None
@@ -186,7 +189,7 @@ def main(argv: list[str] | None = None) -> None:
     renderer = MultipleChoiceRenderer()
     solver: Solver
     solver_spec: SolverSpec
-    if AttemptChoice(args.attempt) is AttemptChoice.GENERATE:
+    if kind is AttemptKind.GENERATE:
         solver = GenerationSolver(renderer)
         solver_spec = GenerationSpec(
             prompt=prompt, max_new_tokens=args.max_new_tokens
@@ -222,6 +225,7 @@ def main(argv: list[str] | None = None) -> None:
     export_wide(store, measurement_hash, items, export)
     rate = result.measured / elapsed if elapsed > 0 else 0.0
     print(f"measurement {measurement_hash}")
+    print(f"attempt {spec.attempt_kind.value}")
     print(f"items {len(result.attempts)} ({result.measured} measured)")
     print(f"items per second {rate:.2f}")
     print(f"export {export}")

@@ -63,7 +63,7 @@ def _render(
 
 class ScoredCandidatesSolver:
     solver_id = "scored_candidates"
-    kind = AttemptKind.SCORED_CANDIDATES
+    kind = AttemptKind.SCORE
     spec_type = SingleCallSpec
 
     def __init__(self, renderer: MultipleChoiceRenderer) -> None:
@@ -96,7 +96,7 @@ class ScoredCandidatesSolver:
 
 class GenerationSolver:
     solver_id = "generation"
-    kind = AttemptKind.GENERATION
+    kind = AttemptKind.GENERATE
     spec_type = GenerationSpec
 
     def __init__(self, renderer: MultipleChoiceRenderer) -> None:
