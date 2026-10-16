@@ -84,6 +84,7 @@ ignore = ["PLR1711", "S101", "TRY003"]
 
 [tool.ty.environment]
 python-version = "3.13"
+extra-paths = ["scripts/prelim"]
 
 [tool.ty.src]
 include = ["scripts", "src", "tests"]
