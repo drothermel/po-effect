@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Danielle Rothermel", email = "danielle.rothermel@gmail.com" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "dr-hf>=0.1.2,<0.2",
     "dr-providers[local]>=0.3.5,<0.4",
@@ -31,6 +31,7 @@ dev = [
 [tool.ruff]
 include = ["scripts/**/*.py", "src/**/*.py", "tests/**/*.py"]
 line-length = 79
+target-version = "py313"
 
 [tool.ruff.lint]
 select = [
@@ -78,6 +79,9 @@ ignore = ["PLR1711", "S101", "TRY003"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["PLR2004", "PLC0415"]
+
+[tool.ty.environment]
+python-version = "3.13"
 
 [tool.ty.src]
 include = ["scripts", "src", "tests"]
