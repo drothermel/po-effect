@@ -5,7 +5,12 @@ from typing import Annotated, Literal
 from pydantic import Field, model_validator
 
 from po_effect.identity import FrozenContract
-from po_effect.models import CandidateScore, EvidenceRef, GenerationOutput
+from po_effect.models import (
+    AppliedTemplate,
+    CandidateScore,
+    EvidenceRef,
+    GenerationOutput,
+)
 from po_effect.tasks import AttemptKind
 
 
@@ -14,6 +19,7 @@ class ScoredCandidatesAttempt(FrozenContract):
     candidates: tuple[str, ...] = Field(min_length=1)
     scores: tuple[CandidateScore, ...]
     evidence: tuple[EvidenceRef, ...]
+    chat_template: AppliedTemplate | None
 
     @model_validator(mode="after")
     def validate_score_count(self) -> ScoredCandidatesAttempt:
@@ -26,6 +32,7 @@ class GenerationAttempt(FrozenContract):
     kind: Literal[AttemptKind.GENERATE] = AttemptKind.GENERATE
     output: GenerationOutput
     evidence: tuple[EvidenceRef, ...]
+    chat_template: AppliedTemplate | None
 
 
 Attempt = Annotated[

@@ -72,12 +72,18 @@ def export_wide(
             )
     else:
         raise ValueError("measurement mixes attempt kinds")
+    visibility: list[str] | None = None
     for readout in store.readouts(measurement_hash):
         records = store.readout_records(readout)
         prefix = f"{readout.readout_id}_{readout.judge_id}"
         if f"{prefix}_predicted_index" in columns:
             raise ValueError(f"duplicate readout columns {prefix!r}")
         selected = [records[i] for i in item_ids]
+        current = [r.reasoning_visibility.value for r in selected]
+        if visibility is None:
+            visibility = current
+        elif visibility != current:
+            raise ValueError("readouts disagree on reasoning visibility")
         columns[f"{prefix}_predicted_index"] = pa.array(
             [
                 r.candidate.index
@@ -93,5 +99,7 @@ def export_wide(
         columns[f"{prefix}_abstained"] = pa.array(
             [r.scores.abstained == 1 for r in selected], pa.bool_()
         )
+    if visibility is not None:
+        columns["reasoning_visibility"] = pa.array(visibility, pa.string())
     path.parent.mkdir(parents=True, exist_ok=True)
     pq.write_table(pa.table(columns), path)

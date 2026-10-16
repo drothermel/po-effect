@@ -22,6 +22,7 @@ from dr_providers import (
 from pydantic import Field
 
 from po_effect.identity import FrozenContract
+from po_effect.models.chat import AppliedTemplate, chat_template_for
 from po_effect.models.handle import (
     ContinuationTokenization,
     ModelCapability,
@@ -38,6 +39,9 @@ if TYPE_CHECKING:
         ProviderInvocationEvidence,
     )
     from dr_providers.local.backend import LocalBackend
+    from transformers import PreTrainedTokenizerBase
+
+    from po_effect.prompts import ChatSettings
 
 
 class EvidenceRef(FrozenContract):
@@ -56,6 +60,7 @@ class CandidateScore(FrozenContract):
 class ScoringResult(FrozenContract):
     scores: tuple[CandidateScore, ...]
     evidence: tuple[EvidenceRef, ...]
+    chat_template: AppliedTemplate | None
 
 
 class GenerationOutput(FrozenContract):
@@ -68,6 +73,7 @@ class GenerationOutput(FrozenContract):
 class GenerationResult(FrozenContract):
     output: GenerationOutput
     evidence: tuple[EvidenceRef, ...]
+    chat_template: AppliedTemplate | None
 
 
 def provider_tokenization(
@@ -103,10 +109,14 @@ class ModelSession:
         self,
         handle: ModelHandle,
         conditions: RunConditions,
+        chat: ChatSettings | None,
         backend: LocalBackend | None = None,
+        tokenizer: PreTrainedTokenizerBase | None = None,
     ) -> None:
         self.handle = handle
         self.conditions = conditions
+        self.chat = chat
+        self.template = chat_template_for(handle, chat, tokenizer)
         self.config = provider_config(handle, conditions)
         self.provider = LocalModelProvider(config=self.config, backend=backend)
         self.execution: LocalExecutionEvidence | None = None
@@ -130,6 +140,15 @@ class ModelSession:
         documents = tuple(self.evidence)
         self.evidence.clear()
         return documents
+
+    @property
+    def applied_template(self) -> AppliedTemplate | None:
+        return None if self.template is None else self.template.applied
+
+    def templated(self, context: str) -> str:
+        return (
+            context if self.template is None else self.template.apply(context)
+        )
 
     def _require(self, capability: ModelCapability) -> None:
         if capability not in self.handle.capabilities:
@@ -194,14 +213,14 @@ class ModelSession:
         self._require(ModelCapability.SCORE)
         continuations = tuple(continuations)
         conditional, token_counts, conditional_ref = self._score(
-            context, continuations
+            self.templated(context), continuations
         )
         if unconditional_context is None:
             baselines: tuple[float | None, ...] = (None,) * len(continuations)
             evidence = (conditional_ref,)
         else:
             unconditional, _, unconditional_ref = self._score(
-                unconditional_context, continuations
+                self.templated(unconditional_context), continuations
             )
             baselines = unconditional
             evidence = (conditional_ref, unconditional_ref)
@@ -221,7 +240,11 @@ class ModelSession:
                 strict=True,
             )
         )
-        return ScoringResult(scores=scores, evidence=evidence)
+        return ScoringResult(
+            scores=scores,
+            evidence=evidence,
+            chat_template=self.applied_template,
+        )
 
     def generate(self, context: str, max_new_tokens: int) -> GenerationResult:
         self._require(ModelCapability.GENERATE)
@@ -234,7 +257,10 @@ class ModelSession:
                 config=config,
                 transcript=Transcript(
                     messages=(
-                        PromptMessage(role=MessageRole.USER, content=context),
+                        PromptMessage(
+                            role=MessageRole.USER,
+                            content=self.templated(context),
+                        ),
                     )
                 ),
             )
@@ -260,4 +286,5 @@ class ModelSession:
                 completion_tokens=usage.completion_tokens,
             ),
             evidence=(ref,),
+            chat_template=self.applied_template,
         )

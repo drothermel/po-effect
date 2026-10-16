@@ -4,6 +4,7 @@ import argparse
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from dr_hf import read_rows
 from rich.console import Console
@@ -28,17 +29,26 @@ from po_effect.measurement import (
     SingleCallSpec,
     readout_for,
     readout_ids_for,
+    split_response,
     truncated_text,
 )
 from po_effect.models import (
+    ChatTemplate,
     Device,
+    ModelHandle,
     ModelsConfig,
     ModelSession,
+    ResponseTemplate,
     RunConditions,
+    chat_template_for,
+    has_chat_template,
     load_model_handle,
     load_models_config,
+    load_response_template,
+    load_tokenizer,
 )
 from po_effect.prompts import (
+    ChatSettings,
     MultipleChoiceRenderer,
     PromptsConfig,
     PromptSpec,
@@ -56,6 +66,9 @@ from po_effect.tasks import (
     build_item_index,
     load_arc_challenge,
 )
+
+if TYPE_CHECKING:
+    from transformers import PreTrainedTokenizerBase
 
 DEFAULT_PROMPT = "olmes_rc"
 DEFAULT_BATCH_SIZE = 8
@@ -183,6 +196,14 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         metavar="NAME",
         help=model_help(models),
     )
+    parser.add_argument(
+        "--enable-thinking",
+        action="store_true",
+        help=(
+            "override the prompt entry's chat block with enable_thinking "
+            "true; requires a model with the chat_template capability"
+        ),
+    )
     args = parser.parse_args(argv)
     if args.run and args.device is None:
         parser.error("--run requires --device")
@@ -190,7 +211,42 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         parser.error("--attempt requires --run")
     if args.model is None:
         args.model = models.default
+    if args.enable_thinking and not has_chat_template(
+        models.models[args.model]
+    ):
+        parser.error(
+            f"--enable-thinking requires the chat_template capability, "
+            f"which {args.model} lacks"
+        )
     return args
+
+
+@dataclass(frozen=True, slots=True)
+class RunModel:
+    handle: ModelHandle
+    tokenizer: PreTrainedTokenizerBase | None
+    response_template: ResponseTemplate | None
+
+
+def thinking_prompt(prompt: PromptSpec) -> PromptSpec:
+    chat = (
+        ChatSettings(
+            enable_thinking=True,
+            shots_as_turns=False,
+            preamble_as_system=False,
+        )
+        if prompt.chat is None
+        else prompt.chat.model_copy(update={"enable_thinking": True})
+    )
+    return prompt.model_copy(update={"chat": chat})
+
+
+def template_label(template: ChatTemplate) -> Text:
+    applied = template.applied
+    return Text(
+        f"chat template sha256 {applied.template_sha256[:12]}, "
+        f"kwargs {applied.template_kwargs!r}"
+    )
 
 
 def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
@@ -349,16 +405,17 @@ def score_evaluation_table(outcomes: list[RuleOutcome], item: Item) -> Table:
     return table
 
 
-def score_item(
+def score_item(  # noqa: PLR0913, PLR0917
     console: Console,
     args: argparse.Namespace,
+    model: RunModel,
     prompt: PromptSpec,
     item: Item,
     items: ItemIndex,
 ) -> None:
     solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
     spec = SingleCallSpec(prompt=prompt)
-    with open_session(args) as session:
+    with open_session(args, model, prompt) as session:
         attempt = solver.solve(item, session, spec, items)
     show = args.show_whitespace
     step_rule(console, 2, "Model output")
@@ -376,10 +433,14 @@ def score_item(
     console.print(score_evaluation_table(outcomes, item))
 
 
-def open_session(args: argparse.Namespace) -> ModelSession:
+def open_session(
+    args: argparse.Namespace, model: RunModel, prompt: PromptSpec
+) -> ModelSession:
     return ModelSession(
-        load_model_handle(args.config_dir, args.model),
+        model.handle,
         RunConditions(device=Device(args.device), batch_size=args.batch_size),
+        prompt.chat,
+        tokenizer=model.tokenizer,
     )
 
 
@@ -400,26 +461,55 @@ def raw_generation_panel(
     )
 
 
-def truncated_panel(
-    attempt: GenerationAttempt, *, show_whitespace: bool
-) -> Panel:
-    return Panel(
-        exact(truncated_text(attempt.output), show_whitespace=show_whitespace),
-        title=Text("truncated at the first newline"),
+def split_panels(
+    attempt: GenerationAttempt,
+    template: ResponseTemplate | None,
+    *,
+    show_whitespace: bool,
+) -> tuple[Panel, Panel, Panel]:
+    split = split_response(attempt.output.text, template)
+    reasoning = Panel(
+        Text("none")
+        if split.reasoning is None
+        else exact(split.reasoning, show_whitespace=show_whitespace),
+        title=Text("reasoning"),
+        title_align="left",
+        subtitle=Text(
+            f"reasoning visibility {split.reasoning_visibility.value}, "
+            + (
+                "no response template"
+                if template is None
+                else "split by the response template"
+            )
+        ),
+        subtitle_align="left",
+    )
+    answer = Panel(
+        exact(split.answer, show_whitespace=show_whitespace),
+        title=Text("answer"),
         title_align="left",
     )
+    truncated = Panel(
+        exact(truncated_text(split.answer), show_whitespace=show_whitespace),
+        title=Text("answer truncated at the first newline"),
+        title_align="left",
+    )
+    return reasoning, answer, truncated
 
 
 GenerationOutcome = tuple[ReadoutId, Candidate | Abstention]
 
 
 def generation_outcomes(
-    attempt: GenerationAttempt, item: Item, prompt: PromptSpec
+    attempt: GenerationAttempt,
+    item: Item,
+    prompt: PromptSpec,
+    template: ResponseTemplate | None,
 ) -> list[GenerationOutcome]:
     outcomes: list[GenerationOutcome] = []
     candidates = prompt.item_format.candidates
     for readout_id in readout_ids_for(AttemptKind.GENERATE):
-        readout = readout_for(readout_id)
+        readout = readout_for(readout_id, template)
         reason = readout.inapplicable_reason(
             attempt.kind, candidates, (attempt,)
         )
@@ -468,9 +558,10 @@ def generation_evaluation_table(
     return table
 
 
-def generate_item(
+def generate_item(  # noqa: PLR0913, PLR0917
     console: Console,
     args: argparse.Namespace,
+    model: RunModel,
     prompt: PromptSpec,
     item: Item,
     items: ItemIndex,
@@ -482,15 +573,17 @@ def generate_item(
         else args.max_new_tokens
     )
     spec = GenerationSpec(prompt=prompt, max_new_tokens=max_new_tokens)
-    with open_session(args) as session:
+    with open_session(args, model, prompt) as session:
         attempt = solver.solve(item, session, spec, items)
     show = args.show_whitespace
     step_rule(console, 2, "Model output")
     console.print(model_line(args, f"max new tokens {max_new_tokens}"))
     console.print(raw_generation_panel(attempt, show_whitespace=show))
-    outcomes = generation_outcomes(attempt, item, prompt)
+    template = model.response_template
+    outcomes = generation_outcomes(attempt, item, prompt, template)
     step_rule(console, 3, "Readout")
-    console.print(truncated_panel(attempt, show_whitespace=show))
+    for panel in split_panels(attempt, template, show_whitespace=show):
+        console.print(panel)
     console.print(
         generation_readout_table(outcomes, item, show_whitespace=show)
     )
@@ -506,6 +599,18 @@ def main(argv: list[str] | None = None) -> None:
     items = build_item_index(task, tuple(read_rows(task.source)))
     item_set = evaluation_item_set(task, items)
     prompt = resolve_prompt(args.format, prompt_config, task, items)
+    if args.enable_thinking:
+        prompt = thinking_prompt(prompt)
+    handle = load_model_handle(args.config_dir, args.model)
+    named = load_response_template(args.config_dir, handle.response_template)
+    model = RunModel(
+        handle=handle,
+        tokenizer=load_tokenizer(handle)
+        if has_chat_template(handle)
+        else None,
+        response_template=None if named is None else named.template,
+    )
+    chat_template = chat_template_for(handle, prompt.chat, model.tokenizer)
     kind = (
         prompt.attempt if args.attempt is None else AttemptKind(args.attempt)
     )
@@ -534,6 +639,19 @@ def main(argv: list[str] | None = None) -> None:
             title_align="left",
         )
     )
+    if chat_template is not None:
+        console.print(
+            Panel(
+                exact(
+                    chat_template.apply(rendered.context),
+                    show_whitespace=show,
+                ),
+                title=Text(f"templated context sent to {args.model}"),
+                title_align="left",
+                subtitle=template_label(chat_template),
+                subtitle_align="left",
+            )
+        )
     table = Table(title=Text("candidates"), highlight=False)
     table.add_column("index", justify="right")
     table.add_column("continuation", overflow="fold")
@@ -555,10 +673,25 @@ def main(argv: list[str] | None = None) -> None:
             title_align="left",
         )
     )
+    if chat_template is not None and unconditional is not None:
+        console.print(
+            Panel(
+                exact(
+                    chat_template.apply(unconditional),
+                    show_whitespace=show,
+                ),
+                title=Text(
+                    f"templated unconditional context sent to {args.model}"
+                ),
+                title_align="left",
+                subtitle=template_label(chat_template),
+                subtitle_align="left",
+            )
+        )
     if args.run and kind is AttemptKind.SCORE:
-        score_item(console, args, prompt, item, items)
+        score_item(console, args, model, prompt, item, items)
     if args.run and kind is AttemptKind.GENERATE:
-        generate_item(console, args, prompt, item, items)
+        generate_item(console, args, model, prompt, item, items)
 
 
 if __name__ == "__main__":

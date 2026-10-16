@@ -5,6 +5,7 @@ from po_effect.prompts.rendering import (
 )
 from po_effect.prompts.spec import (
     CandidateKind,
+    ChatSettings,
     ItemFormat,
     PromptConfig,
     PromptEntry,
@@ -19,6 +20,7 @@ from po_effect.prompts.spec import (
 
 __all__ = [
     "CandidateKind",
+    "ChatSettings",
     "ItemFormat",
     "MultipleChoiceRenderer",
     "PromptConfig",

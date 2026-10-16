@@ -3,6 +3,11 @@ attempt = "score"
 admits = ["score"]
 shot_separator = "\n\n"
 
+[prompts.olmes_rc.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
 [prompts.olmes_rc.item_format]
 question_prefix = "Question: "
 answer_prefix = "Answer:"
@@ -43,6 +48,11 @@ native_id = "MCAS_1998_4_3"
 attempt = "score"
 admits = ["score", "generate"]
 shot_separator = "\n\n"
+
+[prompts.olmes_mc.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
 
 [prompts.olmes_mc.item_format]
 question_prefix = "Question: "
@@ -113,6 +123,11 @@ preamble = "You are a commonsense helper. I will provide several examples and a 
 shots_header = "Here are some examples:\n"
 shots_header_break = "\n"
 shot_separator = "\n\n"
+
+[prompts.cfpo.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
 
 [prompts.cfpo.item_format]
 question_prefix = "Question: "

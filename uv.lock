@@ -1296,6 +1296,7 @@ dependencies = [
     { name = "dr-serialize" },
     { name = "pyarrow" },
     { name = "pydantic" },
+    { name = "transformers" },
 ]
 
 [package.dev-dependencies]
@@ -1313,6 +1314,7 @@ requires-dist = [
     { name = "dr-serialize", specifier = ">=0.1.2,<0.2" },
     { name = "pyarrow", specifier = ">=26.0.0,<27" },
     { name = "pydantic", specifier = ">=2.14.0,<3" },
+    { name = "transformers", specifier = ">=5.20,<6" },
 ]
 
 [package.metadata.requires-dev]

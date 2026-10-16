@@ -1,3 +1,10 @@
+from po_effect.models.chat import (
+    AppliedTemplate,
+    ChatTemplate,
+    chat_template_for,
+    has_chat_template,
+    load_tokenizer,
+)
 from po_effect.models.handle import (
     ContinuationTokenization,
     Device,
@@ -5,9 +12,14 @@ from po_effect.models.handle import (
     ModelCapability,
     ModelHandle,
     ModelsConfig,
+    NamedResponseTemplate,
+    ResponseTemplate,
+    ResponseTemplatesConfig,
     RunConditions,
     load_model_handle,
     load_models_config,
+    load_response_template,
+    load_response_templates,
 )
 from po_effect.models.session import (
     CandidateScore,
@@ -21,7 +33,9 @@ from po_effect.models.session import (
 )
 
 __all__ = [
+    "AppliedTemplate",
     "CandidateScore",
+    "ChatTemplate",
     "ContinuationTokenization",
     "Device",
     "Dtype",
@@ -32,10 +46,18 @@ __all__ = [
     "ModelHandle",
     "ModelSession",
     "ModelsConfig",
+    "NamedResponseTemplate",
+    "ResponseTemplate",
+    "ResponseTemplatesConfig",
     "RunConditions",
     "ScoringResult",
+    "chat_template_for",
+    "has_chat_template",
     "load_model_handle",
     "load_models_config",
+    "load_response_template",
+    "load_response_templates",
+    "load_tokenizer",
     "provider_config",
     "provider_tokenization",
 ]

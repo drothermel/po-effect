@@ -67,10 +67,11 @@ dependency hell except what the ecosystem itself introduces.
   raw text or a message list.
 - Output: transformers response templates (`tokenizer.response_template`,
   `parse_response(text, prefix=...)`) are the declaration format for
-  splitting reasoning, content, and tool calls. po-effect stores the
-  template dict as data, authors one when a model ships none, and uses the
-  transformers parser locally. API models expose a single provider-dependent
-  `reasoning` string, so attempts record reasoning visibility.
+  splitting reasoning, content, and tool calls. po-effect stores its
+  response templates as data in `configs/response_templates.toml`, authors
+  one when a model ships none, and parses with the transformers parser
+  locally. API models expose a single provider-dependent `reasoning` string,
+  so readout records carry reasoning visibility.
 - Likelihood scoring has no HF abstraction; dr-providers' score call kind is
   the primitive. Transformers continuous batching (`generate_batch`,
   `ContinuousBatchingManager`) is the local generation throughput path and

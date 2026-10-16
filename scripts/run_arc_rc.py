@@ -4,7 +4,6 @@ import argparse
 import re
 from pathlib import Path
 from time import perf_counter
-from typing import TYPE_CHECKING
 
 from dr_hf import read_rows
 
@@ -29,12 +28,12 @@ from po_effect.measurement import (
 )
 from po_effect.models import (
     Device,
-    ModelHandle,
     ModelsConfig,
     ModelSession,
     RunConditions,
     load_model_handle,
     load_models_config,
+    load_response_template,
 )
 from po_effect.prompts import (
     MultipleChoiceRenderer,
@@ -54,10 +53,6 @@ from po_effect.tasks import (
     load_arc_challenge,
     prefix_item_set,
 )
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
 
 DEFAULT_BATCH_SIZE = 8
 DEFAULT_PROMPT = "olmes_rc"
@@ -195,12 +190,11 @@ def measure(  # noqa: PLR0913, PLR0917
     items: ItemIndex,
     solver: Solver,
     store: RecordStore,
-    open_session: Callable[
-        [ModelHandle, RunConditions], ModelSession
-    ] = ModelSession,
 ) -> tuple[MeasurementResult, float]:
     store.put_measurement(spec, conditions)
-    with open_session(spec.model, conditions) as session:
+    with ModelSession(
+        spec.model, conditions, spec.solver_spec.prompt.chat
+    ) as session:
         runtime = MeasurementRuntime(task, items, session, solver, store)
         start = perf_counter()
         result = run_measurement(spec, runtime)
@@ -253,12 +247,16 @@ def main(argv: list[str] | None = None) -> None:
     store = FileRecordStore(args.output_dir / "records")
     result, elapsed = measure(spec, conditions, task, items, solver, store)
     measurement_hash = spec.identity_hash
+    response_template = load_response_template(
+        args.config_dir, handle.response_template
+    )
     skipped = []
     for rule in readout_ids_for(spec.attempt_kind):
         readout_spec = ReadoutSpec(
             measurement_hash=measurement_hash,
             readout_id=rule,
             judge_id=IndexMatchJudge.judge_id,
+            response_template=response_template,
         )
         reason = inapplicable_reason(readout_spec, store)
         if reason is None:

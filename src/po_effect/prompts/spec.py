@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import UNIQUE, StrEnum, auto, verify
 from typing import TYPE_CHECKING, ClassVar
 
-from pydantic import Field, model_validator
+from pydantic import Field, StrictBool, model_validator
 
 from po_effect.config import load_config
 from po_effect.identity import FrozenContract, Identified
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 PROMPT_SPEC_SCHEMA = "po_effect.prompt_spec"
-PROMPT_SPEC_SCHEMA_VERSION = 4
+PROMPT_SPEC_SCHEMA_VERSION = 5
 
 
 @verify(UNIQUE)
@@ -54,12 +54,29 @@ class ItemFormat(FrozenContract):
         return self
 
 
+class ChatSettings(FrozenContract):
+    enable_thinking: StrictBool
+    shots_as_turns: StrictBool
+    preamble_as_system: StrictBool
+
+    @model_validator(mode="after")
+    def validate_layout(self) -> ChatSettings:
+        for name in ("shots_as_turns", "preamble_as_system"):
+            if getattr(self, name):
+                raise ValueError(f"{name} must be false; it is not built")
+        return self
+
+    def template_kwargs(self) -> dict[str, bool]:
+        return {"enable_thinking": self.enable_thinking}
+
+
 class PromptLayout(FrozenContract):
     preamble: str | None = None
     shots_header: str | None = None
     shots_header_break: str | None = None
     shot_separator: str = "\n\n"
     item_format: ItemFormat
+    chat: ChatSettings | None = None
 
     @model_validator(mode="after")
     def validate_header(self) -> PromptLayout:
@@ -156,6 +173,7 @@ def resolve_prompt(
         shot_item_ids=tuple(shot.item_id for shot in shots),
         shot_separator=config.shot_separator,
         item_format=config.item_format,
+        chat=config.chat,
         attempt=config.attempt,
         admits=config.admits,
     )

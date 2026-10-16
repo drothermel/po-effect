@@ -177,6 +177,7 @@ def readout_spec(
         measurement_hash=example.spec.identity_hash,
         readout_id=rule,
         judge_id="index_match",
+        response_template=None,
     )
 
 
@@ -252,7 +253,7 @@ def example(
         solver_spec=SingleCallSpec(prompt=prompt),
         attempt_kind=solver.kind,
     )
-    with ModelSession(handle, CPU_CONDITIONS, backend) as session:
+    with ModelSession(handle, CPU_CONDITIONS, None, backend) as session:
         runtime = MeasurementRuntime(
             task,
             items,

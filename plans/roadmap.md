@@ -13,15 +13,14 @@ changing, then the optimizers and the study layer on top of them.
 
 ## Model types
 
-The converted DataDecide base model is in place. Two more model types follow,
-each arriving with the smallest task that needs it:
+Converted DataDecide base models and post-trained models with chat templates
+are in place. What remains:
 
-- A small instruct model with a chat template and a response template, so a
-  rendered prompt can be a message list and a generation attempt can be split
-  into reasoning and answer. The readout owns that split and declares it as
-  a transformers response template stored as data.
+- Chat layout variants declared on the prompt's chat block but not built:
+  shots as alternating user and assistant turns, and the preamble as a system
+  message.
 - An API model through OpenRouter, generation only, with the provider's
-  reasoning channel recorded as reasoning visibility on the attempt.
+  reasoning channel recorded as hidden reasoning visibility.
 
 Capabilities stay declared in config until a second model type exists and the
 declaration can be checked against a backend.
@@ -36,7 +35,11 @@ declaration can be checked against a backend.
 
 Collected during the above and shipped as one release afterward: stop
 sequences for generation (po-effect's generation readouts truncate at the
-first newline until then), response template parsing, continuous batching for
+first newline until then), templated scoring and chat template kwargs (po-effect
+applies the chat template itself and sends flat text for both scoring and
+generation, because the local backend applies a template only on generate,
+without kwargs, and its execution evidence names no template), response
+template parsing, continuous batching for
 local generation, possibly a vLLM backend behind the local backend protocol,
 and cross-item batch scoring only if a throughput measurement shows it is
 needed.
