@@ -105,7 +105,7 @@ records, optimizers, studies, and all task, prompt, and model configs.
 
 ## Existing repos: use, update, replace
 
-Use as-is: dr-serialize, dr-store (integrated; pinned to 0.2.6 through
+Use as-is: dr-serialize, dr-store (integrated; pinned to 0.2.7 through
 whetstone-ai), dr-graph, dr-code (code readout and judge via dr-exec).
 Use with updates: dr-exec (not a sandbox), dr-platform.
 Replace or avoid: dr-llm (no logprobs, superseded), dr-queues (retired),
