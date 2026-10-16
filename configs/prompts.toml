@@ -1,0 +1,36 @@
+[olmes_rc]
+shot_separator = "\n\n"
+
+[olmes_rc.item_format]
+question_prefix = "Question: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+unconditional_context = "Answer:"
+
+[olmes_rc.provenance]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:ARC-Challenge"]'
+license = "Apache-2.0"
+
+[[olmes_rc.shots]]
+split = "train"
+native_id = "Mercury_SC_415702"
+
+[[olmes_rc.shots]]
+split = "train"
+native_id = "MCAS_2009_5_6516"
+
+[[olmes_rc.shots]]
+split = "train"
+native_id = "Mercury_7233695"
+
+[[olmes_rc.shots]]
+split = "train"
+native_id = "Mercury_7041615"
+
+[[olmes_rc.shots]]
+split = "train"
+native_id = "MCAS_1998_4_3"

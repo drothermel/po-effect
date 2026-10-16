@@ -1,2 +1,1 @@
-def hello() -> str:
-    return "Hello from po-effect!"
+__all__: list[str] = []

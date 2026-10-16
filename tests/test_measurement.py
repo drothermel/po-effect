@@ -1,0 +1,375 @@
+from __future__ import annotations
+
+import json
+from typing import TYPE_CHECKING
+
+import pytest
+from conftest import (
+    CPU_CONDITIONS,
+    example_format,
+    fake_backend,
+    make_item,
+    readout_spec,
+)
+from dr_providers import ProviderScoreRequest
+from dr_providers.surfaces.testing.fake_backend import ScoreCall
+
+from po_effect.measurement import (
+    AttemptRecord,
+    DecisionRule,
+    LikelihoodArgmaxReadout,
+    MeasurementRuntime,
+    MeasurementSpec,
+    ScoredCandidatesAttempt,
+    ScoredCandidatesSolver,
+    SingleCallSpec,
+    apply_readout,
+    run_measurement,
+)
+from po_effect.models import (
+    CandidateScore,
+    Device,
+    ModelSession,
+    RunConditions,
+)
+from po_effect.prompts import MultipleChoiceRenderer, PromptSpec
+from po_effect.records import FileRecordStore, MeasurementDocument
+from po_effect.tasks import (
+    Item,
+    ItemSet,
+    ItemSetDerivation,
+    ItemSetRole,
+    MultipleChoiceProblem,
+)
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from conftest import ExampleMeasurement
+    from dr_providers import (
+        LocalExecutionEvidence,
+        ProviderCallRequest,
+        ProviderInvocationEvidence,
+    )
+
+
+def test_solver_rejects_shots_in_evaluated_set() -> None:
+    shot = make_item(native_id="s")
+    target = make_item(native_id="t")
+    prompt = PromptSpec(
+        task_id="arc_challenge",
+        task_version=1,
+        shot_item_ids=(shot.item_id,),
+        item_format=example_format(),
+    )
+    solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
+
+    def item_set(*items: Item) -> ItemSet:
+        return ItemSet(
+            name="example",
+            task_id="arc_challenge",
+            task_version=1,
+            role=ItemSetRole.REPORT,
+            item_ids=tuple(item.item_id for item in items),
+            derivation=ItemSetDerivation(method="explicit"),
+        )
+
+    solver.validate(SingleCallSpec(prompt=prompt), item_set(target))
+    with pytest.raises(ValueError, match=shot.item_id):
+        solver.validate(SingleCallSpec(prompt=prompt), item_set(target, shot))
+
+
+def test_measurement_rejects_prompt_for_other_task_version(
+    example: ExampleMeasurement,
+) -> None:
+    prompt = example.spec.solver_spec.prompt.model_copy(
+        update={"task_version": 2}
+    )
+    with pytest.raises(ValueError, match="different task"):
+        MeasurementSpec.model_validate(
+            {
+                **dict(example.spec),
+                "solver_spec": SingleCallSpec(prompt=prompt),
+            }
+        )
+
+
+def score(
+    log_likelihood: float,
+    unconditional: float,
+    *,
+    tokens: int = 1,
+    chars: int = 2,
+    size: int = 2,
+) -> CandidateScore:
+    return CandidateScore(
+        log_likelihood=log_likelihood,
+        token_count=tokens,
+        char_count=chars,
+        byte_count=size,
+        unconditional_log_likelihood=unconditional,
+    )
+
+
+@pytest.mark.parametrize(
+    ("rule", "index"),
+    [
+        (DecisionRule.RAW, 1),
+        (DecisionRule.PER_TOKEN, 1),
+        (DecisionRule.PER_CHAR, 0),
+        (DecisionRule.PER_BYTE, 1),
+        (DecisionRule.PMI, 1),
+    ],
+)
+def test_five_decision_rules(rule: DecisionRule, index: int) -> None:
+    problem = MultipleChoiceProblem(question="q", choices=("abcd", "éé"))
+    attempt = ScoredCandidatesAttempt(
+        candidates=problem.choices,
+        scores=(
+            score(-3, -4, tokens=1, chars=4, size=4),
+            score(-2, -8, tokens=3, chars=2, size=4),
+        ),
+        evidence=(),
+    )
+    assert LikelihoodArgmaxReadout(rule).read(attempt, problem).index == index
+
+
+def test_ties_select_first() -> None:
+    attempt = ScoredCandidatesAttempt(
+        candidates=(" a", " b"),
+        scores=(score(-2, -1), score(-2, -1)),
+        evidence=(),
+    )
+    problem = MultipleChoiceProblem(question="q", choices=("a", "b"))
+    assert (
+        LikelihoodArgmaxReadout(DecisionRule.RAW).read(attempt, problem).index
+        == 0
+    )
+
+
+def test_attempts_convert_scores_and_log_evidence(
+    example: ExampleMeasurement,
+) -> None:
+    result = run_measurement(example.spec, example.runtime)
+    assert result.measured == 2
+    first = result.attempts[0].attempt
+    assert [s.log_likelihood for s in first.scores] == [-2, -3]
+    assert [s.unconditional_log_likelihood for s in first.scores] == [-3, -8]
+    assert first.scores[1].char_count == 3
+    assert first.scores[1].byte_count == 5
+    session = example.runtime.session
+    assert session.execution == example.backend.execution()
+    assert session.score_requests == 4
+    items = example.runtime.items
+    prompt = example.spec.solver_spec.prompt
+    rendered = example.runtime.solver.renderer.render(
+        prompt,
+        items.get(example.spec.item_set.item_ids[0]).problem,
+        tuple(items.get(i) for i in prompt.shot_item_ids),
+    )
+    for ref, context in zip(
+        first.evidence,
+        (rendered.context, rendered.unconditional_context),
+        strict=True,
+    ):
+        expected = ProviderScoreRequest(
+            config=session.config,
+            context=context,
+            continuations=rendered.candidates,
+        )
+        assert ref.request_hash == expected.identity_hash
+    root = example.root
+    lines = (root / "evidence.jsonl").read_text().splitlines()
+    assert [json.loads(line)["request_hash"] for line in lines] == [
+        ref.request_hash
+        for record in result.attempts
+        for ref in record.attempt.evidence
+    ]
+
+
+def test_resume_skips_stored_attempts(example: ExampleMeasurement) -> None:
+    first_id, second_id = example.spec.item_set.item_ids
+    stored = AttemptRecord(
+        measurement_hash=example.spec.identity_hash,
+        item_id=first_id,
+        attempt=ScoredCandidatesAttempt(
+            candidates=(" a", " éé"),
+            scores=(score(-1, -1), score(-5, -1)),
+            evidence=(),
+        ),
+        wall_time_seconds=0.5,
+    )
+    example.runtime.store.put_attempt(stored)
+    result = run_measurement(example.spec, example.runtime)
+    assert result.measured == 1
+    assert result.attempts[0] == stored
+    assert result.attempts[1].item_id == second_id
+    assert len(example.backend.calls) == 2
+    second = example.runtime.items.get(second_id)
+    assert all(
+        isinstance(call, ScoreCall) and call.continuations == (" c", " d")
+        for call in example.backend.calls
+    )
+    assert second.problem.choices == ("c", "d")
+    run_measurement(example.spec, example.runtime)
+    assert len(example.backend.calls) == 2
+
+
+def test_readouts_derive_from_attempts_without_model_calls(
+    example: ExampleMeasurement,
+) -> None:
+    run_measurement(example.spec, example.runtime)
+    calls = len(example.backend.calls)
+    store = example.runtime.store
+    expected = {
+        DecisionRule.RAW: ((0, 0.0), (0, 1.0)),
+        DecisionRule.PER_TOKEN: ((0, 0.0), (0, 1.0)),
+        DecisionRule.PER_CHAR: ((0, 0.0), (0, 1.0)),
+        DecisionRule.PER_BYTE: ((1, 1.0), (0, 1.0)),
+        DecisionRule.PMI: ((1, 1.0), (0, 1.0)),
+    }
+    for rule, values in expected.items():
+        records = apply_readout(
+            readout_spec(example, rule), store, example.runtime.items
+        )
+        assert [
+            (r.candidate.index, r.scores.accuracy) for r in records
+        ] == list(values)
+        assert store.readout_records(readout_spec(example, rule)) == {
+            r.item_id: r for r in records
+        }
+    assert len(example.backend.calls) == calls
+    assert {
+        s.readout_id for s in store.readouts(example.spec.identity_hash)
+    } == (set(DecisionRule))
+    unknown = readout_spec(example, DecisionRule.RAW).model_copy(
+        update={"judge_id": "other"}
+    )
+    with pytest.raises(ValueError, match="unknown judge"):
+        apply_readout(unknown, store, example.runtime.items)
+
+
+@pytest.mark.parametrize("after_calls", [1, 2])
+def test_execution_drift_aborts_run(
+    example: ExampleMeasurement,
+    after_calls: int,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    backend = example.backend
+    original = backend.execution()
+
+    def execution() -> LocalExecutionEvidence:
+        if len(backend.calls) > after_calls:
+            return original.model_copy(update={"torch_version": "changed"})
+        return original
+
+    monkeypatch.setattr(backend, "execution", execution)
+    with pytest.raises(RuntimeError, match="execution conditions changed"):
+        run_measurement(example.spec, example.runtime)
+
+
+@pytest.mark.parametrize("failure", ["request", "outcome"])
+def test_scoring_failure_leaves_no_attempt(
+    example: ExampleMeasurement,
+    monkeypatch: pytest.MonkeyPatch,
+    failure: str,
+) -> None:
+    from dr_providers import ProviderTransportFailure, RecoverabilityClass
+
+    provider = example.runtime.session.provider
+    invoke_original = provider.invoke
+
+    def invoke(request: ProviderCallRequest) -> ProviderInvocationEvidence:
+        evidence = invoke_original(request)
+        if len(example.backend.calls) < 3:
+            return evidence
+        if failure == "request":
+            return evidence.model_copy(update={"request_hash": "f" * 64})
+        return evidence.model_copy(
+            update={
+                "score_response": None,
+                "failure": ProviderTransportFailure(
+                    code="local_execution_error",
+                    message="fixture failure",
+                    recoverability=RecoverabilityClass.PERMANENT,
+                ),
+            }
+        )
+
+    monkeypatch.setattr(provider, "invoke", invoke)
+    with pytest.raises(RuntimeError, match=r"another request|scoring failed"):
+        run_measurement(example.spec, example.runtime)
+    store = example.runtime.store
+    first, second = example.spec.item_set.item_ids
+    assert store.has_attempt(example.spec.identity_hash, first)
+    assert not store.has_attempt(example.spec.identity_hash, second)
+    root = example.root
+    assert len((root / "evidence.jsonl").read_text().splitlines()) == 3
+
+
+def run_with(
+    example: ExampleMeasurement, conditions: RunConditions, root: Path
+) -> tuple[int, int]:
+    handle = example.spec.model
+    backend = fake_backend(handle, conditions)
+    runtime = example.runtime
+    with ModelSession(handle, conditions, backend) as session:
+        result = run_measurement(
+            example.spec,
+            MeasurementRuntime(
+                runtime.task,
+                runtime.items,
+                session,
+                runtime.solver,
+                FileRecordStore(root),
+            ),
+        )
+    return result.measured, len(backend.calls)
+
+
+def recorded_conditions(root: Path, measurement_hash: str) -> RunConditions:
+    path = root / measurement_hash / "spec.json"
+    return MeasurementDocument.model_validate_json(
+        path.read_bytes()
+    ).run_conditions
+
+
+def test_identity_ignores_run_conditions(
+    example: ExampleMeasurement, tmp_path: Path
+) -> None:
+    measurement_hash = example.spec.identity_hash
+    other = RunConditions(device=Device.CUDA, batch_size=2)
+    for name, conditions in (("a", CPU_CONDITIONS), ("b", other)):
+        assert run_with(example, conditions, tmp_path / name) == (2, 4)
+        assert recorded_conditions(tmp_path / name, measurement_hash) == (
+            conditions
+        )
+    assert not {"device", "batch_size"} & set(example.spec.model.model_dump())
+
+
+@pytest.mark.parametrize(
+    ("conditions", "field"),
+    [
+        (RunConditions(device=Device.MPS, batch_size=8), "device"),
+        (RunConditions(device=Device.CPU, batch_size=4), "batch_size"),
+    ],
+)
+def test_resume_refuses_different_run_conditions(
+    example: ExampleMeasurement,
+    tmp_path: Path,
+    conditions: RunConditions,
+    field: str,
+) -> None:
+    run_with(example, CPU_CONDITIONS, tmp_path)
+    with pytest.raises(ValueError, match=f"run condition {field!r}"):
+        run_with(example, conditions, tmp_path)
+    assert recorded_conditions(tmp_path, example.spec.identity_hash) == (
+        CPU_CONDITIONS
+    )
+
+
+def test_resume_proceeds_with_identical_run_conditions(
+    example: ExampleMeasurement, tmp_path: Path
+) -> None:
+    run_with(example, CPU_CONDITIONS, tmp_path)
+    assert run_with(example, CPU_CONDITIONS, tmp_path) == (0, 0)
