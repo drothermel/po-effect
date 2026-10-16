@@ -86,12 +86,10 @@ dependency hell except what the ecosystem itself introduces.
 External repos are integrated one at a time so each boundary is designed
 deliberately. Integrated: dr-providers (all model calls, local and API),
 dr-hf (dataset and model pins, all-split reader, named subsets), dr-serialize
-(identity documents and hashing). Remaining, in order of need: dr-store
-(records, cache, leases), dr-exec (process execution for code judges),
-dr-graph (multi-step solvers), dr-platform (cluster execution).
-
-Until a repo is integrated, po-effect carries the simplest stand-in behind a
-single seam. The one remaining stand-in is the file-backed `RecordStore`.
+(identity documents and hashing), dr-store (records in one SQLite store per
+records root), whetstone-ai (GEPA). Remaining, in order of need: dr-exec
+(process execution for code judges), dr-graph (multi-step solvers),
+dr-platform (cluster execution).
 
 ## Boundary with dr-hf
 
@@ -107,17 +105,16 @@ records, optimizers, studies, and all task, prompt, and model configs.
 
 ## Existing repos: use, update, replace
 
-Use as-is: dr-serialize, dr-store, dr-graph, dr-code (code readout and judge
-via dr-exec).
-Use with updates: dr-exec (not a sandbox; pins dr-store 0.2.6), dr-platform
-(pins dr-store 0.2.6).
+Use as-is: dr-serialize, dr-store (integrated; pinned to 0.2.6 through
+whetstone-ai), dr-graph, dr-code (code readout and judge via dr-exec).
+Use with updates: dr-exec (not a sandbox), dr-platform.
 Replace or avoid: dr-llm (no logprobs, superseded), dr-queues (retired),
 dr-dspy (DSPy fork; algorithms are reimplemented in po-effect), dr-exp
 (training only; reference for platform plus exec wiring).
-whetstone-ai and whetstone-envs: port optimizer proposal logic and the study
-design ideas (select on one split, report on another; null optimizers;
-minimum-detectable-effect gate); replace their candidate, instance, and
-observation types.
+whetstone-ai: a dependency for GEPA, which runs through its wrapper around
+upstream gepa. whetstone-ai and whetstone-envs remain the source of the
+study design ideas (select on one split, report on another; null
+optimizers; minimum-detectable-effect gate).
 
 ## Version policy
 

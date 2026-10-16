@@ -53,8 +53,11 @@ separate timing record beside each attempt.
 
 ## Optimizers and studies
 
-One implementation per algorithm (APE, OPRO, MIPROv2 with Optuna, GEPA,
-CFPO), each treating a solver spec's prompt slots as the search space and
-shots as references into the optimize split. The study layer selects on one
+GEPA runs through whetstone-ai's wrapper around upstream gepa; po-effect
+implements whetstone's broker and data-instance protocols over its
+measurements and shares one dr-store with it. APE, OPRO, MIPROv2 with Optuna,
+and CFPO remain one implementation each in po-effect. Every optimizer treats
+a solver spec's prompt slots as the search space and shots as references
+into the optimize split. The study layer selects on one
 split and reports on another, includes null optimizers, and gates on a
 minimum detectable effect.
