@@ -39,6 +39,7 @@ if TYPE_CHECKING:
         ProviderInvocationEvidence,
     )
     from dr_providers.local.backend import LocalBackend
+    from dr_serialize import IdentityDocument
     from transformers import PreTrainedTokenizerBase
 
     from po_effect.prompts import ChatSettings
@@ -120,7 +121,7 @@ class ModelSession:
         self.config = provider_config(handle, conditions)
         self.provider = LocalModelProvider(config=self.config, backend=backend)
         self.execution: LocalExecutionEvidence | None = None
-        self.evidence: list[str] = []
+        self.evidence: list[IdentityDocument] = []
         self.input_tokens = 0
         self.score_requests = 0
         self.generate_requests = 0
@@ -136,7 +137,7 @@ class ModelSession:
     def close(self) -> None:
         self.provider.close()
 
-    def drain_evidence(self) -> tuple[str, ...]:
+    def drain_evidence(self) -> tuple[IdentityDocument, ...]:
         documents = tuple(self.evidence)
         self.evidence.clear()
         return documents
@@ -160,7 +161,7 @@ class ModelSession:
         self, request: ProviderCallRequest
     ) -> tuple[ProviderInvocationEvidence, EvidenceRef]:
         evidence = self.provider.invoke(request)
-        self.evidence.append(evidence.model_dump_json())
+        self.evidence.append(evidence.identity_document())
         execution = evidence.local_execution
         if execution is None or evidence.failure is not None:
             raise RuntimeError(

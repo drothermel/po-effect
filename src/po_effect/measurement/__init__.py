@@ -26,6 +26,7 @@ from po_effect.measurement.readouts import (
 )
 from po_effect.measurement.run import (
     AttemptRecord,
+    AttemptTiming,
     MeasurementResult,
     MeasurementRuntime,
     MeasurementSpec,
@@ -50,6 +51,7 @@ __all__ = [
     "AnswerLetterReadout",
     "Attempt",
     "AttemptRecord",
+    "AttemptTiming",
     "Candidate",
     "ChoiceTextPrefixReadout",
     "DecisionRule",

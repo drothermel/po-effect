@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING
 
 import pytest
@@ -17,6 +16,7 @@ from dr_providers.surfaces.testing.fake_backend import ScoreCall
 
 from po_effect.measurement import (
     AttemptRecord,
+    AttemptTiming,
     DecisionRule,
     IndexCandidate,
     LikelihoodArgmaxReadout,
@@ -43,7 +43,13 @@ from po_effect.prompts import (
     PromptSpec,
     resolve_prompt,
 )
-from po_effect.records import FileRecordStore, MeasurementDocument
+from po_effect.records import open_record_store
+from po_effect.records.store import (
+    attempt_key,
+    evidence_key,
+    readout_spec_key,
+    timing_key,
+)
 from po_effect.tasks import (
     AttemptKind,
     Item,
@@ -63,6 +69,8 @@ if TYPE_CHECKING:
         ProviderInvocationEvidence,
     )
 
+    from po_effect.measurement import MeasurementResult
+    from po_effect.records import DrStoreRecordStore
     from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 
@@ -231,13 +239,16 @@ def test_attempts_convert_scores_and_log_evidence(
             continuations=rendered.candidates,
         )
         assert ref.request_hash == expected.identity_hash
-    root = example.root
-    lines = (root / "evidence.jsonl").read_text().splitlines()
-    assert [json.loads(line)["request_hash"] for line in lines] == [
-        ref.request_hash
-        for record in result.attempts
-        for ref in record.attempt.evidence
-    ]
+    objects = example.store.objects
+    for record in result.attempts:
+        for ref in record.attempt.evidence:
+            reference = objects.resolve(evidence_key(ref.evidence_hash))
+            assert reference is not None
+            assert reference.content_hash == ref.evidence_hash
+            stored = objects.get(reference)
+            assert isinstance(stored, dict)
+            assert isinstance(stored["payload"], dict)
+            assert stored["payload"]["request_hash"] == ref.request_hash
 
 
 def test_resume_skips_stored_attempts(example: ExampleMeasurement) -> None:
@@ -251,9 +262,15 @@ def test_resume_skips_stored_attempts(example: ExampleMeasurement) -> None:
             evidence=(),
             chat_template=None,
         ),
-        wall_time_seconds=0.5,
     )
-    example.runtime.store.put_attempt(stored)
+    example.runtime.store.put_attempt(
+        stored,
+        AttemptTiming(
+            measurement_hash=example.spec.identity_hash,
+            item_id=first_id,
+            wall_time_seconds=0.5,
+        ),
+    )
     result = run_measurement(example.spec, example.runtime)
     assert result.measured == 1
     assert result.attempts[0] == stored
@@ -295,8 +312,12 @@ def test_readouts_derive_from_attempts_without_model_calls(
         }
     assert len(example.backend.calls) == calls
     assert {
-        s.readout_id for s in store.readouts(example.spec.identity_hash)
-    } == (set(DecisionRule))
+        store.readout(
+            example.spec.identity_hash,
+            readout_spec(example, rule).identity_hash,
+        ).readout_id
+        for rule in DecisionRule
+    } == set(DecisionRule)
     unknown = readout_spec(example, DecisionRule.RAW).model_copy(
         update={"judge_id": "other"}
     )
@@ -333,8 +354,9 @@ def test_scoring_failure_leaves_no_attempt(
 
     provider = example.runtime.session.provider
     invoke_original = provider.invoke
+    returned: list[str] = []
 
-    def invoke(request: ProviderCallRequest) -> ProviderInvocationEvidence:
+    def altered(request: ProviderCallRequest) -> ProviderInvocationEvidence:
         evidence = invoke_original(request)
         if len(example.backend.calls) < 3:
             return evidence
@@ -351,15 +373,26 @@ def test_scoring_failure_leaves_no_attempt(
             }
         )
 
+    def invoke(request: ProviderCallRequest) -> ProviderInvocationEvidence:
+        evidence = altered(request)
+        returned.append(evidence.identity_hash)
+        return evidence
+
     monkeypatch.setattr(provider, "invoke", invoke)
     with pytest.raises(RuntimeError, match=r"another request|score failed"):
         run_measurement(example.spec, example.runtime)
-    store = example.runtime.store
+    store = example.store
     first, second = example.spec.item_set.item_ids
     assert store.has_attempt(example.spec.identity_hash, first)
     assert not store.has_attempt(example.spec.identity_hash, second)
-    root = example.root
-    assert len((root / "evidence.jsonl").read_text().splitlines()) == 3
+    measurement_hash = example.spec.identity_hash
+    assert store.objects.resolve(attempt_key(measurement_hash, second)) is None
+    assert store.objects.resolve(timing_key(measurement_hash, second)) is None
+    assert len(set(returned)) == 3
+    assert all(
+        store.objects.resolve(evidence_key(evidence_hash)) is not None
+        for evidence_hash in returned
+    )
 
 
 def run_with(
@@ -368,7 +401,10 @@ def run_with(
     handle = example.spec.model
     backend = fake_backend(handle, conditions)
     runtime = example.runtime
-    with ModelSession(handle, conditions, None, backend) as session:
+    with (
+        open_record_store(root) as store,
+        ModelSession(handle, conditions, None, backend) as session,
+    ):
         result = run_measurement(
             example.spec,
             MeasurementRuntime(
@@ -376,17 +412,17 @@ def run_with(
                 runtime.items,
                 session,
                 runtime.solver,
-                FileRecordStore(root),
+                store,
             ),
         )
     return result.measured, len(backend.calls)
 
 
-def recorded_conditions(root: Path, measurement_hash: str) -> RunConditions:
-    path = root / measurement_hash / "spec.json"
-    return MeasurementDocument.model_validate_json(
-        path.read_bytes()
-    ).run_conditions
+def recorded_conditions(
+    root: Path, measurement_hash: str
+) -> RunConditions | None:
+    with open_record_store(root) as store:
+        return store.run_conditions(measurement_hash)
 
 
 def test_identity_ignores_run_conditions(
@@ -457,13 +493,25 @@ def test_format_without_unconditional_context_scores_conditionally(
         solver_spec=SingleCallSpec(prompt=prompt),
         attempt_kind=solver.kind,
     )
-    store = FileRecordStore(tmp_path / "records")
-    with ModelSession(handle, CPU_CONDITIONS, None, backend) as session:
+    with (
+        open_record_store(tmp_path / "records") as store,
+        ModelSession(handle, CPU_CONDITIONS, None, backend) as session,
+    ):
         result = run_measurement(
             spec, MeasurementRuntime(task, items, session, solver, store)
         )
         assert session.score_requests == len(item_set.item_ids)
+        check_conditional_readouts(spec, store, items, result)
     assert len(backend.calls) == len(item_set.item_ids)
+
+
+def check_conditional_readouts(
+    spec: MeasurementSpec,
+    store: DrStoreRecordStore,
+    items: ItemIndex,
+    result: MeasurementResult,
+) -> None:
+    item_set = spec.item_set
     for record in result.attempts:
         assert len(record.attempt.evidence) == 1
         assert all(
@@ -489,7 +537,12 @@ def test_format_without_unconditional_context_scores_conditionally(
     assert inapplicable_reason(pmi, store) is not None
     with pytest.raises(ValueError, match="'pmi' does not apply"):
         apply_readout(pmi, store, items)
-    assert store.readouts(spec.identity_hash) == ()
+    assert (
+        store.objects.resolve(
+            readout_spec_key(spec.identity_hash, pmi.identity_hash)
+        )
+        is None
+    )
     applicable = [
         rule for rule in DecisionRule if rule is not DecisionRule.PMI
     ]
@@ -497,11 +550,13 @@ def test_format_without_unconditional_context_scores_conditionally(
         assert inapplicable_reason(rule_spec(rule), store) is None
         records = apply_readout(rule_spec(rule), store, items)
         assert len(records) == len(item_set.item_ids)
-    assert {s.readout_id for s in store.readouts(spec.identity_hash)} == set(
-        applicable
-    )
+    assert {
+        store.readout(
+            spec.identity_hash, rule_spec(rule).identity_hash
+        ).readout_id
+        for rule in applicable
+    } == set(applicable)
     assert len(store.attempts(spec.identity_hash)) == len(item_set.item_ids)
-    assert len(backend.calls) == len(item_set.item_ids)
 
 
 def test_readouts_apply_to_attempts_with_unconditional_scores(

@@ -41,7 +41,7 @@ from po_effect.prompts import (
     load_prompt_config,
     resolve_prompt,
 )
-from po_effect.records import FileRecordStore, export_wide
+from po_effect.records import export_wide, open_record_store
 from po_effect.tasks import (
     ArcChallengeTask,
     AttemptKind,
@@ -244,33 +244,37 @@ def main(argv: list[str] | None = None) -> None:
         solver_spec=solver_spec,
         attempt_kind=solver.kind,
     )
-    store = FileRecordStore(args.output_dir / "records")
-    result, elapsed = measure(spec, conditions, task, items, solver, store)
-    measurement_hash = spec.identity_hash
-    response_template = load_response_template(
-        args.config_dir, handle.response_template
-    )
-    skipped = []
-    for rule in readout_ids_for(spec.attempt_kind):
-        readout_spec = ReadoutSpec(
-            measurement_hash=measurement_hash,
-            readout_id=rule,
-            judge_id=IndexMatchJudge.judge_id,
-            response_template=response_template,
+    with open_record_store(args.output_dir / "records") as store:
+        result, elapsed = measure(spec, conditions, task, items, solver, store)
+        measurement_hash = spec.identity_hash
+        response_template = load_response_template(
+            args.config_dir, handle.response_template
         )
-        reason = inapplicable_reason(readout_spec, store)
-        if reason is None:
-            apply_readout(readout_spec, store, items)
-        else:
-            skipped.append((rule, reason))
-    export = args.output_dir / f"{measurement_hash}.parquet"
-    export_wide(store, measurement_hash, items, export)
+        applied = []
+        skipped = []
+        for rule in readout_ids_for(spec.attempt_kind):
+            readout_spec = ReadoutSpec(
+                measurement_hash=measurement_hash,
+                readout_id=rule,
+                judge_id=IndexMatchJudge.judge_id,
+                response_template=response_template,
+            )
+            reason = inapplicable_reason(readout_spec, store)
+            if reason is None:
+                apply_readout(readout_spec, store, items)
+                applied.append(readout_spec.identity_hash)
+            else:
+                skipped.append((rule, reason))
+        export = args.output_dir / f"{measurement_hash}.parquet"
+        export_wide(store, measurement_hash, applied, items, export)
+        store_path = store.path
     rate = result.measured / elapsed if elapsed > 0 else 0.0
     print(f"measurement {measurement_hash}")
     print(f"attempt {spec.attempt_kind.value}")
     print(f"items {len(result.attempts)} ({result.measured} measured)")
     print(f"items per second {rate:.2f}")
     print(f"export {export}")
+    print(f"store {store_path}")
     for rule, reason in skipped:
         print(f"readout {rule} not applicable: {reason}")
 

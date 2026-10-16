@@ -4,8 +4,8 @@ po-effect compares prompt-optimization methods across tasks and model types
 on one fixed evaluation, with one implementation per algorithm. It is designed
 from published sources (the OLMES, DataDecide, and CFPO papers and their
 upstream repositories) and built on Danielle's `dr-*` infrastructure: dr-hf
-for pinned Hub datasets and models, dr-providers for every model call, and
-dr-serialize for content-addressed identity.
+for pinned Hub datasets and models, dr-providers for every model call,
+dr-serialize for content-addressed identity, and dr-store for records.
 
 ## How the pieces fit
 
@@ -32,8 +32,12 @@ attempt per item: the raw model output and nothing derived from it.
 as separate records that can be added or replaced without new model calls.
 A generation readout first splits the text into reasoning and answer with the
 model's response template, which is kept as data.
-Every record is a content-addressed document with a named schema and version,
-written one file per record by a store behind a single protocol.
+Every record is a content-addressed document with a named schema and version.
+A store behind a single protocol keeps them in one dr-store SQLite database
+per records root, under keys that make a measurement's specs, run conditions,
+attempts, timings, and readouts addressable; an interrupted run resumes by
+skipping items that already have an attempt. Wall time and provider evidence
+are stored beside the attempts, outside their identity.
 
 Declarative facts (dataset pins, prompt formats, shot references, model
 conditions, response templates) live in TOML under `configs/`, parsed through frozen contracts.

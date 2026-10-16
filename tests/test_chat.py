@@ -52,7 +52,6 @@ from po_effect.prompts import (
     PromptsConfig,
     resolve_prompt,
 )
-from po_effect.records import FileRecordStore
 from po_effect.tasks import MultipleChoiceProblem
 
 if TYPE_CHECKING:
@@ -60,6 +59,7 @@ if TYPE_CHECKING:
 
     from dr_providers.surfaces.testing.fake_backend import FakeLocalBackend
 
+    from po_effect.records import DrStoreRecordStore
     from po_effect.tasks import ArcChallengeTask, ItemIndex, ItemSet
 
 TEMPLATE = (
@@ -429,9 +429,9 @@ def chat_measurement(  # noqa: PLR0913, PLR0917
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
-    tmp_path: Path,
+    store: DrStoreRecordStore,
     texts: tuple[str, ...],
-) -> tuple[MeasurementSpec, FileRecordStore]:
+) -> tuple[MeasurementSpec, DrStoreRecordStore]:
     config = prompt_config.model_copy(
         update={"item_format": label_format(), "chat": chat()}
     )
@@ -449,7 +449,6 @@ def chat_measurement(  # noqa: PLR0913, PLR0917
         ),
         attempt_kind=solver.kind,
     )
-    store = FileRecordStore(tmp_path / "records")
     with session:
         run_measurement(
             spec, MeasurementRuntime(task, items, session, solver, store)
@@ -462,14 +461,14 @@ def test_chat_measurement_records_template_and_reasoning_visibility(
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
-    tmp_path: Path,
+    record_store: DrStoreRecordStore,
 ) -> None:
     spec, store = chat_measurement(
         task,
         items,
         item_set,
         prompt_config,
-        tmp_path,
+        record_store,
         ("<think>\nhm\n</think>\n\nAnswer: B", "A"),
     )
     attempts = store.attempts(spec.identity_hash)
@@ -512,7 +511,7 @@ def test_measurement_refuses_session_with_other_chat_settings(
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
-    tmp_path: Path,
+    record_store: DrStoreRecordStore,
 ) -> None:
     solver = GenerationSolver(MultipleChoiceRenderer())
     session, _ = chat_session(chat(enable_thinking=True))
@@ -533,8 +532,8 @@ def test_measurement_refuses_session_with_other_chat_settings(
         ),
         attempt_kind=solver.kind,
     )
-    store = FileRecordStore(tmp_path / "records")
     with session, pytest.raises(ValueError, match="chat settings differ"):
         run_measurement(
-            spec, MeasurementRuntime(task, items, session, solver, store)
+            spec,
+            MeasurementRuntime(task, items, session, solver, record_store),
         )

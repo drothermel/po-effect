@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -50,12 +49,11 @@ from po_effect.prompts import (
     PromptConfig,
     resolve_prompt,
 )
-from po_effect.records import FileRecordStore, export_wide
+from po_effect.records import DrStoreRecordStore, export_wide
+from po_effect.records.store import evidence_key
 from po_effect.tasks import IndexReference, MultipleChoiceProblem
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from conftest import ExampleMeasurement
     from dr_providers.surfaces.testing.fake_backend import FakeLocalBackend
 
@@ -67,9 +65,8 @@ MAX_NEW_TOKENS = 7
 @dataclass(frozen=True, slots=True)
 class GenerationRun:
     spec: MeasurementSpec
-    store: FileRecordStore
+    store: DrStoreRecordStore
     backend: FakeLocalBackend
-    root: Path
 
 
 def label_format() -> ItemFormat:
@@ -90,7 +87,7 @@ def generate(  # noqa: PLR0913, PLR0917
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
-    tmp_path: Path,
+    store: DrStoreRecordStore,
     texts: tuple[str, ...],
 ) -> GenerationRun:
     handle = load_model_handle()
@@ -115,14 +112,11 @@ def generate(  # noqa: PLR0913, PLR0917
         ),
         attempt_kind=solver.kind,
     )
-    store = FileRecordStore(tmp_path / "records")
     with ModelSession(handle, CPU_CONDITIONS, None, backend) as session:
         run_measurement(
             spec, MeasurementRuntime(task, items, session, solver, store)
         )
-    return GenerationRun(
-        spec, store, backend, tmp_path / "records" / spec.identity_hash
-    )
+    return GenerationRun(spec, store, backend)
 
 
 def test_generation_attempt_records_output_and_evidence(
@@ -130,10 +124,10 @@ def test_generation_attempt_records_output_and_evidence(
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
-    tmp_path: Path,
+    record_store: DrStoreRecordStore,
 ) -> None:
     run = generate(
-        task, items, item_set, prompt_config, tmp_path, (" a\nb", " d")
+        task, items, item_set, prompt_config, record_store, (" a\nb", " d")
     )
     attempts = run.store.attempts(run.spec.identity_hash)
     first = attempts[item_set.item_ids[0]].attempt
@@ -170,12 +164,21 @@ def test_generation_attempt_records_output_and_evidence(
     )
     (ref,) = first.evidence
     assert ref.request_hash == request.identity_hash
-    lines = (run.root / "evidence.jsonl").read_text().splitlines()
-    documents = [json.loads(line) for line in lines]
-    assert [d["request_hash"] for d in documents] == [
-        attempts[i].attempt.evidence[0].request_hash for i in item_set.item_ids
-    ]
-    assert documents[0]["response"]["text"] == " a\nb"
+    documents = []
+    for item_id in item_set.item_ids:
+        (stored,) = attempts[item_id].attempt.evidence
+        reference = run.store.objects.resolve(
+            evidence_key(stored.evidence_hash)
+        )
+        assert reference is not None
+        document = run.store.objects.get(reference)
+        assert isinstance(document, dict)
+        assert isinstance(document["payload"], dict)
+        assert document["payload"]["request_hash"] == stored.request_hash
+        documents.append(document["payload"])
+    response = documents[0]["response"]
+    assert isinstance(response, dict)
+    assert response["text"] == " a\nb"
 
 
 def problem(*choices: str) -> MultipleChoiceProblem:
@@ -267,9 +270,9 @@ def test_readouts_apply_by_attempt_kind_and_format(
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
-    tmp_path: Path,
+    record_store: DrStoreRecordStore,
 ) -> None:
-    run = generate(task, items, item_set, prompt_config, tmp_path, ("a",))
+    run = generate(task, items, item_set, prompt_config, record_store, ("a",))
     for rule in DecisionRule:
         spec = readout(run.spec, rule)
         assert inapplicable_reason(spec, run.store) == (
@@ -334,18 +337,25 @@ def test_export_generation_measurement(
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
-    tmp_path: Path,
+    record_store: DrStoreRecordStore,
 ) -> None:
     config = prompt_config.model_copy(update={"item_format": label_format()})
     run = generate(
-        task, items, item_set, config, tmp_path, (" B. éé\nQuestion", "Q")
+        task,
+        items,
+        item_set,
+        config,
+        record_store,
+        (" B. éé\nQuestion", "Q"),
     )
+    applied = []
     for rule in GenerationRule:
         spec = readout(run.spec, rule)
         if inapplicable_reason(spec, run.store) is None:
             apply_readout(spec, run.store, items)
-    path = tmp_path / "export.parquet"
-    export_wide(run.store, run.spec.identity_hash, items, path)
+            applied.append(spec.identity_hash)
+    path = record_store.path.parent / "export.parquet"
+    export_wide(run.store, run.spec.identity_hash, applied, items, path)
     table = pq.read_table(path).to_pydict()
     assert table == {
         "item_id": list(item_set.item_ids),

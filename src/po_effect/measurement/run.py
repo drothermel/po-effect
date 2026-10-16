@@ -24,6 +24,8 @@ from po_effect.models import ModelHandle, NamedResponseTemplate
 from po_effect.tasks import AttemptKind, ItemSet
 
 if TYPE_CHECKING:
+    from dr_serialize import IdentityDocument
+
     from po_effect.measurement.readouts import Readout
     from po_effect.measurement.solvers import Solver
     from po_effect.models import ModelSession, RunConditions
@@ -32,7 +34,9 @@ if TYPE_CHECKING:
 MEASUREMENT_SPEC_SCHEMA = "po_effect.measurement_spec"
 MEASUREMENT_SPEC_SCHEMA_VERSION = 8
 ATTEMPT_RECORD_SCHEMA = "po_effect.attempt_record"
-ATTEMPT_RECORD_SCHEMA_VERSION = 4
+ATTEMPT_RECORD_SCHEMA_VERSION = 5
+ATTEMPT_TIMING_SCHEMA = "po_effect.attempt_timing"
+ATTEMPT_TIMING_SCHEMA_VERSION = 1
 READOUT_SPEC_SCHEMA = "po_effect.readout_spec"
 READOUT_SPEC_SCHEMA_VERSION = 2
 READOUT_RECORD_SCHEMA = "po_effect.readout_record"
@@ -78,6 +82,13 @@ class AttemptRecord(Identified):
     measurement_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     item_id: str = Field(pattern=r"^[0-9a-f]{64}$")
     attempt: Attempt
+
+
+class AttemptTiming(Identified):
+    identity_schema: ClassVar[str] = ATTEMPT_TIMING_SCHEMA
+    identity_schema_version: ClassVar[int] = ATTEMPT_TIMING_SCHEMA_VERSION
+    measurement_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
+    item_id: str = Field(pattern=r"^[0-9a-f]{64}$")
     wall_time_seconds: float = Field(ge=0)
 
 
@@ -110,17 +121,21 @@ class RecordStore(Protocol):
 
     def has_attempt(self, measurement_hash: str, item_id: str) -> bool: ...
 
-    def put_attempt(self, record: AttemptRecord) -> str: ...
+    def put_attempt(
+        self, record: AttemptRecord, timing: AttemptTiming
+    ) -> str: ...
 
     def attempts(self, measurement_hash: str) -> dict[str, AttemptRecord]: ...
 
-    def append_evidence(
-        self, measurement_hash: str, document: str
-    ) -> None: ...
+    def timings(self, measurement_hash: str) -> dict[str, AttemptTiming]: ...
+
+    def put_evidence(self, document: IdentityDocument) -> str: ...
 
     def put_readout(self, spec: ReadoutSpec) -> str: ...
 
-    def readouts(self, measurement_hash: str) -> tuple[ReadoutSpec, ...]: ...
+    def readout(
+        self, measurement_hash: str, readout_hash: str
+    ) -> ReadoutSpec: ...
 
     def put_readout_record(self, record: ReadoutRecord) -> str: ...
 
@@ -186,14 +201,18 @@ def run_measurement(
             )
         finally:
             for document in runtime.session.drain_evidence():
-                store.append_evidence(measurement_hash, document)
+                store.put_evidence(document)
         store.put_attempt(
             AttemptRecord(
                 measurement_hash=measurement_hash,
                 item_id=item_id,
                 attempt=attempt,
+            ),
+            AttemptTiming(
+                measurement_hash=measurement_hash,
+                item_id=item_id,
                 wall_time_seconds=perf_counter() - start,
-            )
+            ),
         )
         measured += 1
     attempts = store.attempts(measurement_hash)
