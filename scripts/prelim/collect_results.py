@@ -6,7 +6,7 @@ import csv
 import json
 import re
 import sys
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, fields, replace
 from enum import UNIQUE, StrEnum, auto, verify
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -15,12 +15,21 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator, Mapping, Sequence
+    from collections.abc import (
+        Callable,
+        Iterable,
+        Iterator,
+        Mapping,
+        Sequence,
+    )
 
 RESULTS_FILE = "results.json"
 PROGRESS_FILE = "progress.log"
 ARGS_FILE = "args.json"
 ARC_RESPONSES_FILE = "responses.jsonl"
+FAMILY_ITEMS_FILE = "items.jsonl"
+FAMILY_SEED_PHASE = "naive_heldout"
+FAMILY_BEST_PHASE = "best_heldout"
 ARC_TASK = "arc"
 HELDOUT = "heldout"
 MISSING = "-"
@@ -43,6 +52,10 @@ ARC_SCREEN = re.compile(r"screen: seed val (?P<val>[\d.]+), in band (\w+)")
 ARC_ACCEPTED = re.compile(r"gepa accepted candidate|null candidate \d+")
 METRIC_CALLS = re.compile(r"metric calls (\d+)")
 LEGACY_RULE = "rule "
+MARKDOWN_EMPHASIS = re.compile(r"[*_`]")
+VERDICT = re.compile(r"\b(true|false)\b", re.IGNORECASE)
+CODE_FENCE = re.compile(r"```[A-Za-z]*")
+JSON_START = re.compile(r"[\[{]")
 
 
 @verify(UNIQUE)
@@ -50,6 +63,15 @@ class Source(StrEnum):
     ARC_OPENROUTER = auto()
     ARC_LOCAL = auto()
     FAMILY = auto()
+
+
+@verify(UNIQUE)
+class Family(StrEnum):
+    C11 = auto()
+    C18 = auto()
+    C19 = auto()
+    C22 = auto()
+    C23 = auto()
 
 
 @verify(UNIQUE)
@@ -100,6 +122,8 @@ class RunRow:
     status: str
     run: str
     run_dir: str
+    lenient_naive: float | None = None
+    lenient_best: float | None = None
 
 
 SCHEMA = pa.schema(
@@ -127,6 +151,8 @@ SCHEMA = pa.schema(
         ("status", pa.string()),
         ("run", pa.string()),
         ("run_dir", pa.string()),
+        ("lenient_naive", pa.float64()),
+        ("lenient_best", pa.float64()),
     ]
 )
 COLUMNS = tuple(field.name for field in fields(RunRow))
@@ -410,40 +436,115 @@ def response_text(response: object) -> str | None:
     return None
 
 
-def heldout_scores(
-    rows: Sequence[Mapping[str, Any]], identifier: str
+type Lenient = Callable[[str, str], bool]
+
+
+def arc_lenient(text: str, gold: str) -> bool:
+    return lenient_letter(text) == gold
+
+
+def c18_lenient(text: str, gold: str) -> bool:
+    plain = MARKDOWN_EMPHASIS.sub("", THINK_BLOCK.sub("", text))
+    verdicts = VERDICT.findall(plain)
+    return bool(verdicts) and verdicts[-1].capitalize() == gold
+
+
+def first_json(text: str) -> object:
+    plain = CODE_FENCE.sub("", THINK_BLOCK.sub("", text))
+    decoder = json.JSONDecoder(parse_int=float)
+    for match in JSON_START.finditer(plain):
+        try:
+            value, _ = decoder.raw_decode(plain, match.start())
+        except json.JSONDecodeError:
+            continue
+        return value
+    return None
+
+
+def canonical_json(value: object) -> str:
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+
+
+def c11_lenient(text: str, gold: str) -> bool:
+    value = first_json(text)
+    if value is None:
+        return False
+    expected = json.loads(gold, parse_int=float)
+    return canonical_json(value) == canonical_json(expected)
+
+
+@dataclass(frozen=True, slots=True)
+class AnswerForm:
+    gold: re.Pattern[str]
+    found: re.Pattern[str]
+    answer: Callable[[re.Match[str]], str]
+
+
+C19_FORMS = (
+    AnswerForm(
+        re.compile(r"\d+,\d+"),
+        re.compile(r"(\d+)\s*,\s*(\d+)"),
+        lambda match: f"{match[1]},{match[2]}",
+    ),
+    AnswerForm(
+        re.compile(r"[NESW]"),
+        re.compile(r"\b(?:[NESW]|(?i:north|east|south|west))\b"),
+        lambda match: match[0][0].upper(),
+    ),
+    AnswerForm(
+        re.compile(r"empty|wall|key|ball|door"),
+        re.compile(r"\b(empty|wall|key|ball|door)\b", re.IGNORECASE),
+        lambda match: match[1].lower(),
+    ),
+    AnswerForm(
+        re.compile(r"yes|no"),
+        re.compile(r"\b(yes|no)\b", re.IGNORECASE),
+        lambda match: match[1].lower(),
+    ),
+)
+
+
+def c19_lenient(text: str, gold: str) -> bool:
+    plain = THINK_BLOCK.sub("", text)
+    for form in C19_FORMS:
+        if form.gold.fullmatch(gold.strip()):
+            matches = list(form.found.finditer(plain))
+            return bool(matches) and form.answer(matches[-1]) == gold.strip()
+    return False
+
+
+FAMILY_LENIENT: dict[str, Lenient] = {
+    Family.C11: c11_lenient,
+    Family.C18: c18_lenient,
+    Family.C19: c19_lenient,
+}
+
+
+def scored(
+    rows: Iterable[Mapping[str, Any]], lenient: Lenient
 ) -> tuple[list[float], list[float]] | None:
-    chosen = {
-        row["item_id"]: row
-        for row in rows
-        if row.get("instruction_id") == identifier
-        and row.get("split") == HELDOUT
-    }
     strict: list[float] = []
-    lenient: list[float] = []
-    for row in chosen.values():
+    loose: list[float] = []
+    for row in rows:
         text = response_text(row.get("response"))
         if text is None:
             return None
         strict.append(float(row["score"]))
-        lenient.append(float(lenient_letter(text) == row["gold"]))
-    return (strict, lenient) if strict else None
+        loose.append(float(lenient(text, row["gold"])))
+    return (strict, loose) if strict else None
 
 
 def mean(values: Sequence[float]) -> float:
     return sum(values) / len(values)
 
 
-def format_share(run: RunRow) -> FormatShare | None:
-    run_dir = Path(run.run_dir)
-    results = read_json(run_dir / RESULTS_FILE) or {}
-    seed_id = results.get("seed_instruction_id")
-    best_id = results.get("best_instruction_id")
-    if not isinstance(seed_id, str) or not isinstance(best_id, str):
-        return None
-    rows = list(jsonl(run_dir / ARC_RESPONSES_FILE))
-    seed = heldout_scores(rows, seed_id)
-    best = heldout_scores(rows, best_id)
+def share_of(
+    run: RunRow,
+    seed: tuple[list[float], list[float]] | None,
+    best: tuple[list[float], list[float]] | None,
+) -> FormatShare | None:
     if seed is None or best is None:
         return None
     return FormatShare(
@@ -454,6 +555,62 @@ def format_share(run: RunRow) -> FormatShare | None:
         best_strict=mean(best[0]),
         best_lenient=mean(best[1]),
     )
+
+
+def arc_heldout(
+    rows: Sequence[Mapping[str, Any]], identifier: str
+) -> tuple[list[float], list[float]] | None:
+    chosen = {
+        row["item_id"]: row
+        for row in rows
+        if row.get("instruction_id") == identifier
+        and row.get("split") == HELDOUT
+    }
+    return scored(chosen.values(), arc_lenient)
+
+
+def arc_share(run: RunRow) -> FormatShare | None:
+    run_dir = Path(run.run_dir)
+    results = read_json(run_dir / RESULTS_FILE) or {}
+    seed_id = results.get("seed_instruction_id")
+    best_id = results.get("best_instruction_id")
+    if not isinstance(seed_id, str) or not isinstance(best_id, str):
+        return None
+    rows = list(jsonl(run_dir / ARC_RESPONSES_FILE))
+    return share_of(
+        run, arc_heldout(rows, seed_id), arc_heldout(rows, best_id)
+    )
+
+
+def family_phase(
+    rows: Sequence[Mapping[str, Any]], phase: str, lenient: Lenient
+) -> tuple[list[float], list[float]] | None:
+    chosen = {
+        row["instance_id"]: row for row in rows if row.get("phase") == phase
+    }
+    return scored(chosen.values(), lenient)
+
+
+def family_share(run: RunRow) -> FormatShare | None:
+    lenient = FAMILY_LENIENT.get(run.task)
+    if lenient is None:
+        return None
+    run_dir = Path(run.run_dir)
+    results = read_json(run_dir / RESULTS_FILE) or {}
+    rows = list(jsonl(run_dir / FAMILY_ITEMS_FILE))
+    seed = family_phase(rows, FAMILY_SEED_PHASE, lenient)
+    best_phase = (
+        FAMILY_SEED_PHASE
+        if results.get("best_instruction") is None
+        else FAMILY_BEST_PHASE
+    )
+    return share_of(run, seed, family_phase(rows, best_phase, lenient))
+
+
+def format_share(run: RunRow) -> FormatShare | None:
+    if run.source == Source.FAMILY.value:
+        return family_share(run)
+    return arc_share(run)
 
 
 def sort_key(run: RunRow) -> tuple[str, str, int, int, str]:
@@ -594,9 +751,15 @@ def format_share_lines(
         "# Format share of held-out deltas",
         "",
         (
-            "Strict is the runner's own score. Lenient reads the first "
-            "letter A-E in the first line after removing think blocks and "
-            "answer prefixes. Format part is delta strict minus delta "
+            "Strict is the runner's own score. Lenient removes think blocks, "
+            "then applies a per-task rule. ARC reads the first letter A-E in "
+            "the first line after answer prefixes. c18 takes the last "
+            "True or False token anywhere, ignoring markdown emphasis. c11 "
+            "takes the first JSON object or array anywhere after stripping "
+            "code fences and compares its sorted-key compact form to the "
+            "gold's. c19 takes the last coordinate, heading, front object, "
+            "or yes/no token matching the gold's answer form. c22 and c23 "
+            "have no lenient rule. Format part is delta strict minus delta "
             "lenient."
         ),
         "",
@@ -617,8 +780,8 @@ def format_share_lines(
         lines.extend(["## Finished runs without a lenient rescore", ""])
         for (source, task), members in grouped(skipped).items():
             reason = (
-                "no lenient rule saved by the runner"
-                if source == Source.FAMILY.value
+                "not applicable: no lenient rule"
+                if source == Source.FAMILY.value and task not in FAMILY_LENIENT
                 else "no per-item seed and best text responses"
             )
             lines.append(f"- {source} / {task}: {len(members)} ({reason})")
@@ -628,9 +791,7 @@ def format_share_lines(
 
 def rescorable(run: RunRow) -> bool:
     return (
-        run.source != Source.FAMILY.value
-        and run.attempt == Attempt.GENERATE.value
-        and run.best_heldout is not None
+        run.attempt == Attempt.GENERATE.value and run.best_heldout is not None
     )
 
 
@@ -658,10 +819,15 @@ def main(argv: Sequence[str] | None = None) -> None:
     runs.sort(key=lambda run: (run.source, run.task, *sort_key(run)))
     shares: list[FormatShare] = []
     skipped: list[RunRow] = []
-    for run in runs:
+    for index, run in enumerate(runs):
         share = format_share(run) if rescorable(run) else None
         if share is not None:
-            shares.append(share)
+            runs[index] = replace(
+                run,
+                lenient_naive=share.seed_lenient,
+                lenient_best=share.best_lenient,
+            )
+            shares.append(replace(share, run=runs[index]))
         elif run.best_heldout is not None:
             skipped.append(run)
     write_tables(runs, args.out)
