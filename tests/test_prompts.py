@@ -4,14 +4,18 @@ from typing import TYPE_CHECKING
 
 import pytest
 from conftest import make_item, make_row
+from pydantic import ValidationError
 
 from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.prompts import (
+    CandidateKind,
     ItemFormat,
     MultipleChoiceRenderer,
+    PromptEntry,
     PromptsConfig,
     PromptSpec,
     ShotRef,
+    load_prompt_config,
     resolve_prompt,
 )
 from po_effect.tasks import MultipleChoiceProblem, build_item_index
@@ -105,6 +109,7 @@ def test_unconditional_context_comes_from_the_format() -> None:
             answer_prefix="A>",
             answer_break=" | ",
             continuation_prefix="  ",
+            candidates=CandidateKind.CHOICE_TEXT,
             unconditional_context="Reply:",
         ),
     )
@@ -120,10 +125,172 @@ def test_unconditional_context_comes_from_the_format() -> None:
     assert rendered.unconditional_context == "Reply:"
 
 
-def test_prompt_config_lists_shots_by_reference() -> None:
-    config = load_config(
-        DEFAULT_CONFIG_DIR / "prompts.toml", PromptsConfig
-    ).olmes_rc
-    assert {shot.split for shot in config.shots} == {"train"}
-    assert len(config.shots) == 5
-    assert config.item_format.unconditional_context
+def listing_format(
+    candidates: CandidateKind,
+    *,
+    choices_prefix: str = "Options:\n",
+    label_prefix: str = "(",
+    label_suffix: str = ") ",
+) -> ItemFormat:
+    return ItemFormat(
+        question_prefix="Q> ",
+        answer_prefix="A>",
+        answer_break="\n",
+        continuation_prefix=" ",
+        candidates=candidates,
+        choices_prefix=choices_prefix,
+        label_prefix=label_prefix,
+        label_suffix=label_suffix,
+    )
+
+
+def render_one(
+    fmt: ItemFormat,
+    *,
+    preamble: str | None = None,
+    shots_header: str | None = None,
+    shots_header_break: str | None = None,
+) -> tuple[str, tuple[str, ...], str | None]:
+    shot = make_item(question="Hot or cold?", choices=("hot", "cold"), gold=1)
+    prompt = PromptSpec(
+        task_id="arc_challenge",
+        task_version=1,
+        preamble=preamble,
+        shots_header=shots_header,
+        shots_header_break=shots_header_break,
+        shot_item_ids=(shot.item_id,),
+        shot_separator="\n--\n",
+        item_format=fmt,
+    )
+    rendered = MultipleChoiceRenderer().render(
+        prompt,
+        MultipleChoiceProblem(question="Up or down?", choices=("up", "down")),
+        (shot,),
+    )
+    return (
+        rendered.context,
+        rendered.candidates,
+        rendered.unconditional_context,
+    )
+
+
+@pytest.mark.parametrize(
+    ("choices_prefix", "label_prefix", "label_suffix", "lines"),
+    [
+        ("Options:\n", "(", ") ", ("(A) up", "(B) down")),
+        ("", " ", ". ", (" A. up", " B. down")),
+        ("Pick:\n", "", ": ", ("A: up", "B: down")),
+    ],
+)
+def test_listing_renders_each_label_style(
+    choices_prefix: str, label_prefix: str, label_suffix: str, lines: tuple
+) -> None:
+    fmt = listing_format(
+        CandidateKind.CHOICE_TEXT,
+        choices_prefix=choices_prefix,
+        label_prefix=label_prefix,
+        label_suffix=label_suffix,
+    )
+    context, _, _ = render_one(fmt)
+    assert context.endswith(
+        "Q> Up or down?\n" + choices_prefix + "\n".join(lines) + "\nA>"
+    )
+
+
+def test_label_candidates_score_letters() -> None:
+    context, candidates, unconditional = render_one(
+        listing_format(CandidateKind.CHOICE_LABEL)
+    )
+    assert context == (
+        "Q> Hot or cold?\nOptions:\n(A) hot\n(B) cold\nA> B\n--\n"
+        "Q> Up or down?\nOptions:\n(A) up\n(B) down\nA>"
+    )
+    assert candidates == (" A", " B")
+    assert unconditional is None
+
+
+def test_text_candidates_score_choices_after_a_listing() -> None:
+    context, candidates, _ = render_one(
+        listing_format(CandidateKind.CHOICE_TEXT)
+    )
+    assert "A> cold\n--\n" in context
+    assert candidates == (" up", " down")
+
+
+def test_preamble_and_header_precede_the_shots() -> None:
+    fmt = listing_format(CandidateKind.CHOICE_LABEL)
+    context, _, _ = render_one(
+        fmt,
+        preamble="Quiz",
+        shots_header="Examples:\n",
+        shots_header_break="+",
+    )
+    assert context.startswith("Quiz\n--\nExamples:\n+Q> Hot or cold?\n")
+    assert context.count("Examples:") == 1
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {"candidates": CandidateKind.CHOICE_LABEL},
+        {"candidates": CandidateKind.CHOICE_TEXT, "label_suffix": ". "},
+        {
+            "candidates": CandidateKind.CHOICE_TEXT,
+            "choices_prefix": "",
+            "label_prefix": "",
+        },
+    ],
+)
+def test_format_rejects_incomplete_listings(fields: dict) -> None:
+    with pytest.raises(ValidationError, match=r"listing|set together"):
+        ItemFormat(
+            question_prefix="Q> ",
+            answer_prefix="A>",
+            answer_break="\n",
+            continuation_prefix=" ",
+            **fields,
+        )
+
+
+@pytest.mark.parametrize(
+    ("fields", "message"),
+    [
+        ({"shots_header": "Examples:"}, "set together"),
+        ({"shots_header_break": "\n"}, "set together"),
+        (
+            {"shots_header": "Examples:", "shots_header_break": "\n"},
+            "requires shots",
+        ),
+    ],
+)
+def test_prompt_rejects_misplaced_headers(fields: dict, message: str) -> None:
+    with pytest.raises(ValidationError, match=message):
+        PromptSpec(
+            task_id="arc_challenge",
+            task_version=1,
+            item_format=listing_format(CandidateKind.CHOICE_TEXT),
+            **fields,
+        )
+
+
+def test_prompt_config_lists_named_entries() -> None:
+    config = load_config(DEFAULT_CONFIG_DIR / "prompts.toml", PromptsConfig)
+    assert {"olmes_rc", "olmes_mc", "cfpo"} <= set(config.prompts)
+    for entry in config.prompts.values():
+        assert isinstance(entry, PromptEntry)
+        assert isinstance(entry.item_format, ItemFormat)
+        assert {shot.split for shot in entry.shots} == {"train"}
+        assert len(entry.shots) == 5
+        assert entry.provenance
+    assert config.prompts["olmes_rc"].item_format.unconditional_context
+    assert (
+        config.prompts["olmes_mc"].item_format.candidates
+        is CandidateKind.CHOICE_LABEL
+    )
+    assert isinstance(config.prompts["cfpo"].preamble, str)
+    assert isinstance(config.prompts["cfpo"].shots_header, str)
+
+
+def test_unknown_prompt_name_is_named() -> None:
+    with pytest.raises(ValueError, match="'missing'"):
+        load_prompt_config(DEFAULT_CONFIG_DIR, "missing")

@@ -167,6 +167,7 @@ def test_attempts_convert_scores_and_log_evidence(
         items.get(example.spec.item_set.item_ids[0]).problem,
         tuple(items.get(i) for i in prompt.shot_item_ids),
     )
+    assert rendered.unconditional_context is not None
     for ref, context in zip(
         first.evidence,
         (rendered.context, rendered.unconditional_context),

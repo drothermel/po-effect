@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 MEASUREMENT_SPEC_SCHEMA = "po_effect.measurement_spec"
-MEASUREMENT_SPEC_SCHEMA_VERSION = 4
+MEASUREMENT_SPEC_SCHEMA_VERSION = 5
 ATTEMPT_RECORD_SCHEMA = "po_effect.attempt_record"
 ATTEMPT_RECORD_SCHEMA_VERSION = 1
 READOUT_SPEC_SCHEMA = "po_effect.readout_spec"

@@ -26,6 +26,7 @@ from po_effect.models import (
     provider_config,
 )
 from po_effect.prompts import (
+    CandidateKind,
     ItemFormat,
     MultipleChoiceRenderer,
     PromptConfig,
@@ -141,6 +142,7 @@ def example_format() -> ItemFormat:
         answer_prefix="A:",
         answer_break="\n",
         continuation_prefix=" ",
+        candidates=CandidateKind.CHOICE_TEXT,
         unconditional_context="A:",
     )
 
@@ -196,6 +198,7 @@ def prompt_config() -> PromptConfig:
             answer_prefix="Answer:",
             answer_break="\n",
             continuation_prefix=" ",
+            candidates=CandidateKind.CHOICE_TEXT,
             unconditional_context="Answer:",
         ),
     )

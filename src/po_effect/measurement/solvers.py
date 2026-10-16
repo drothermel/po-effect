@@ -44,6 +44,8 @@ class ScoredCandidatesSolver:
             item.problem,
             tuple(items.get(i) for i in spec.prompt.shot_item_ids),
         )
+        if rendered.unconditional_context is None:
+            raise ValueError("prompt format has no unconditional context")
         result = session.score(
             rendered.context,
             rendered.candidates,

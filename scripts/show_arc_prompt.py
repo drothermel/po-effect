@@ -26,18 +26,21 @@ from po_effect.tasks import (
     load_arc_challenge,
 )
 
+DEFAULT_PROMPT = "olmes_rc"
+
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Print the exact context, candidate continuations, and "
             "unconditional context sent to the model for one "
-            "ARC-Challenge item under the default prompt configuration."
+            "ARC-Challenge item under the selected prompt configuration."
         )
     )
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--native-id")
     selection.add_argument("--index", type=int)
+    parser.add_argument("--format", default=DEFAULT_PROMPT)
     parser.add_argument("--show-whitespace", action="store_true")
     parser.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
     return parser.parse_args(argv)
@@ -86,7 +89,7 @@ def exact(value: str, *, show_whitespace: bool) -> Text:
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     task = load_arc_challenge(args.config_dir)
-    prompt_config = load_prompt_config(args.config_dir)
+    prompt_config = load_prompt_config(args.config_dir, args.format)
     items = build_item_index(task, tuple(read_rows(task.source)))
     item_set = evaluation_item_set(task, items)
     prompt = resolve_prompt(prompt_config, task, items)
@@ -116,9 +119,12 @@ def main(argv: list[str] | None = None) -> None:
             Text("*" if position == item.reference.gold_index else ""),
         )
     console.print(table)
+    unconditional = rendered.unconditional_context
     console.print(
         Panel(
-            exact(rendered.unconditional_context, show_whitespace=show),
+            Text("none")
+            if unconditional is None
+            else exact(unconditional, show_whitespace=show),
             title=Text("unconditional context"),
             title_align="left",
         )

@@ -1,8 +1,10 @@
 from po_effect.prompts.rendering import MultipleChoiceRenderer, RenderedPrompt
 from po_effect.prompts.spec import (
+    CandidateKind,
     ItemFormat,
-    OlmesRcConfig,
     PromptConfig,
+    PromptEntry,
+    PromptLayout,
     PromptsConfig,
     PromptSpec,
     ShotRef,
@@ -12,10 +14,12 @@ from po_effect.prompts.spec import (
 )
 
 __all__ = [
+    "CandidateKind",
     "ItemFormat",
     "MultipleChoiceRenderer",
-    "OlmesRcConfig",
     "PromptConfig",
+    "PromptEntry",
+    "PromptLayout",
     "PromptSpec",
     "PromptsConfig",
     "RenderedPrompt",

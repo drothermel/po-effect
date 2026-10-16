@@ -49,6 +49,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 DEFAULT_BATCH_SIZE = 8
+RC_PROMPT = "olmes_rc"
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -107,7 +108,7 @@ def measure(  # noqa: PLR0913, PLR0917
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     task = load_arc_challenge(args.config_dir)
-    prompt_config = load_prompt_config(args.config_dir)
+    prompt_config = load_prompt_config(args.config_dir, RC_PROMPT)
     items = build_item_index(task, tuple(read_rows(task.source)))
     full_set = evaluation_item_set(task, items)
     prompt = resolve_prompt(prompt_config, task, items)
