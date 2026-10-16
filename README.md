@@ -57,6 +57,10 @@ Hub access uses the Hugging Face client's configured authentication and cache.
 `--help`.
 `scripts/prelim/` holds untested preliminary-sweep tooling driven by jobs
 files.
+`scripts/prelim/cluster/` holds the Slurm pool tooling that drains a job
+queue on the NYU torch cluster; pools read `OPENROUTER_API_KEY` from
+`$SCRATCH/.config/secrets/openrouter.env`, which must contain
+`export OPENROUTER_API_KEY=...`.
 
 Tests exercise po-effect's own behavior with hand-written rows and a fake
 model backend. No test reproduces an upstream artifact, reaches the network,
