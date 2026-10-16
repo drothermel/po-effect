@@ -10,9 +10,25 @@ from rich.table import Table
 from rich.text import Text
 
 from po_effect.config import DEFAULT_CONFIG_DIR, load_config
+from po_effect.measurement import (
+    DecisionRule,
+    IndexMatchJudge,
+    LikelihoodArgmaxReadout,
+    ScoredCandidatesAttempt,
+    ScoredCandidatesSolver,
+    SingleCallSpec,
+)
+from po_effect.models import (
+    Device,
+    ModelHandle,
+    ModelsConfig,
+    ModelSession,
+    RunConditions,
+)
 from po_effect.prompts import (
     MultipleChoiceRenderer,
     PromptsConfig,
+    PromptSpec,
     load_prompt_config,
     resolve_prompt,
 )
@@ -28,6 +44,8 @@ from po_effect.tasks import (
 )
 
 DEFAULT_PROMPT = "olmes_rc"
+DEFAULT_MODEL = "datadec_150m"
+DEFAULT_BATCH_SIZE = 8
 
 
 def prompt_names(config_dir: Path) -> list[str]:
@@ -36,10 +54,20 @@ def prompt_names(config_dir: Path) -> list[str]:
     )
 
 
+def load_models(config_dir: Path) -> ModelsConfig:
+    return load_config(config_dir / "models.toml", ModelsConfig)
+
+
+def model_names(models: ModelsConfig) -> list[str]:
+    return sorted(type(models).model_fields)
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     config = argparse.ArgumentParser(add_help=False)
     config.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
-    names = prompt_names(config.parse_known_args(argv)[0].config_dir)
+    config_dir = config.parse_known_args(argv)[0].config_dir
+    names = prompt_names(config_dir)
+    models = model_names(load_models(config_dir))
     parser = argparse.ArgumentParser(
         parents=[config],
         description=(
@@ -58,7 +86,36 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help=f"prompt entry from prompts.toml: {', '.join(names)}",
     )
     parser.add_argument("--show-whitespace", action="store_true")
-    return parser.parse_args(argv)
+    parser.add_argument(
+        "--score",
+        action="store_true",
+        help=(
+            "score the item through ScoredCandidatesSolver and print the "
+            "candidate scores and per-decision-rule readouts; requires "
+            "--device"
+        ),
+    )
+    parser.add_argument(
+        "--device",
+        choices=[device.value for device in Device],
+        help="device for --score",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=DEFAULT_BATCH_SIZE,
+        help=f"batch size for --score (default {DEFAULT_BATCH_SIZE})",
+    )
+    parser.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+        choices=models,
+        help=f"model entry from models.toml for --score: {', '.join(models)}",
+    )
+    args = parser.parse_args(argv)
+    if args.score and args.device is None:
+        parser.error("--score requires --device")
+    return args
 
 
 def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
@@ -99,6 +156,106 @@ def select_item(
 def exact(value: str, *, show_whitespace: bool) -> Text:
     shown = repr(value) if show_whitespace else value
     return Text(shown, overflow="fold", end="")
+
+
+def optional_float(value: float | None) -> Text:
+    return Text("" if value is None else f"{value:.4f}")
+
+
+def score_table(
+    attempt: ScoredCandidatesAttempt, item: Item, *, show_whitespace: bool
+) -> Table:
+    table = Table(title=Text("candidate scores"), highlight=False)
+    table.add_column("index", justify="right")
+    table.add_column("continuation", overflow="fold")
+    table.add_column("gold")
+    table.add_column("loglik", justify="right", no_wrap=True)
+    table.add_column("tokens", justify="right")
+    table.add_column("chars", justify="right")
+    table.add_column("bytes", justify="right")
+    table.add_column("uncond loglik", justify="right", no_wrap=True)
+    for position, (candidate, score) in enumerate(
+        zip(attempt.candidates, attempt.scores, strict=True)
+    ):
+        table.add_row(
+            Text(str(position)),
+            exact(candidate, show_whitespace=show_whitespace),
+            Text("*" if position == item.reference.gold_index else ""),
+            optional_float(score.log_likelihood),
+            Text(str(score.token_count)),
+            Text(str(score.char_count)),
+            Text(str(score.byte_count)),
+            optional_float(score.unconditional_log_likelihood),
+        )
+    return table
+
+
+def readout_table(
+    attempt: ScoredCandidatesAttempt, item: Item, *, show_whitespace: bool
+) -> Table:
+    table = Table(title=Text("decision rules"), highlight=False)
+    table.add_column("rule")
+    table.add_column("chosen", justify="right")
+    table.add_column("continuation", overflow="fold")
+    table.add_column("matches gold")
+    judge = IndexMatchJudge()
+    for rule in DecisionRule:
+        try:
+            candidate = LikelihoodArgmaxReadout(rule).read(
+                attempt, item.problem
+            )
+        except (ValueError, ZeroDivisionError) as error:
+            table.add_row(
+                Text(rule.value),
+                Text(""),
+                Text(f"readout cannot apply: {error}"),
+                Text(""),
+            )
+            continue
+        verdict = judge.judge(candidate, item.reference)
+        table.add_row(
+            Text(rule.value),
+            Text(str(candidate.index)),
+            exact(
+                attempt.candidates[candidate.index],
+                show_whitespace=show_whitespace,
+            ),
+            Text("yes" if verdict.accuracy == 1 else "no"),
+        )
+    return table
+
+
+def score_item(
+    console: Console,
+    args: argparse.Namespace,
+    prompt: PromptSpec,
+    item: Item,
+    items: ItemIndex,
+) -> None:
+    handle: ModelHandle = getattr(load_models(args.config_dir), args.model)
+    conditions = RunConditions(
+        device=Device(args.device), batch_size=args.batch_size
+    )
+    solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
+    spec = SingleCallSpec(prompt=prompt)
+    with ModelSession(handle, conditions) as session:
+        try:
+            attempt = solver.solve(item, session, spec, items)
+        except ValueError as error:
+            if str(error) != "prompt format has no unconditional context":
+                raise
+            console.print(
+                Panel(
+                    Text(str(error)),
+                    title=Text("scoring error"),
+                    title_align="left",
+                    border_style="red",
+                )
+            )
+            raise SystemExit(1) from error
+    show = args.show_whitespace
+    console.print(score_table(attempt, item, show_whitespace=show))
+    console.print(readout_table(attempt, item, show_whitespace=show))
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -144,6 +301,8 @@ def main(argv: list[str] | None = None) -> None:
             title_align="left",
         )
     )
+    if args.score:
+        score_item(console, args, prompt, item, items)
 
 
 if __name__ == "__main__":
