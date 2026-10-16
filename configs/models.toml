@@ -1,0 +1,10 @@
+[datadec_150m]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[datadec_150m.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-150M"
+revision = "311fb6f863e5d6e348dd62d4af917d7684d2b3b9"

@@ -1,13 +1,19 @@
 [project]
 name = "po-effect"
 version = "0.1.0"
-description = "Add your description here"
+description = "Prompt-optimization evaluation primitives."
 readme = "README.md"
 authors = [
     { name = "Danielle Rothermel", email = "danielle.rothermel@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "dr-hf>=0.1.2,<0.2",
+    "dr-providers[local]>=0.3.5,<0.4",
+    "dr-serialize>=0.1.2,<0.2",
+    "pyarrow>=26.0.0,<27",
+    "pydantic>=2.14.0,<3",
+]
 
 [build-system]
 requires = ["uv_build>=0.12.3,<0.13.0"]
@@ -73,3 +79,17 @@ ignore = ["PLR1711", "S101", "TRY003"]
 
 [tool.ty.src]
 include = ["scripts", "src", "tests"]
+exclude = ["scripts/compare_published.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff.lint.flake8-type-checking]
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel",
+    "po_effect.identity.FrozenContract",
+    "po_effect.identity.Identified",
+]
+
+[tool.uv.build-backend]
+source-include = ["configs/**"]

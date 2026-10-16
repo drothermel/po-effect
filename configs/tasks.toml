@@ -1,0 +1,18 @@
+[arc_challenge]
+task_id = "arc_challenge"
+version = 1
+split = "test"
+answer_letters = "ABCDE"
+
+[arc_challenge.source]
+repo_id = "allenai/ai2_arc"
+config = "ARC-Challenge"
+revision = "210d026faf9955653af8916fad021475a3f00453"
+native_id_field = "id"
+
+[arc_challenge.numeric_answer_keys]
+"1" = "A"
+"2" = "B"
+"3" = "C"
+"4" = "D"
+"5" = "E"
