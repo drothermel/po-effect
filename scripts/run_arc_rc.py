@@ -24,9 +24,11 @@ from po_effect.measurement import (
 from po_effect.models import (
     Device,
     ModelHandle,
+    ModelsConfig,
     ModelSession,
     RunConditions,
     load_model_handle,
+    load_models_config,
 )
 from po_effect.prompts import (
     MultipleChoiceRenderer,
@@ -53,12 +55,16 @@ RC_PROMPT = "olmes_rc"
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    config = argparse.ArgumentParser(add_help=False)
+    config.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
+    models = load_models_config(config.parse_known_args(argv)[0].config_dir)
     parser = argparse.ArgumentParser(
+        parents=[config],
         description=(
             "Measure ARC-Challenge ranked classification with the pinned "
             "model, apply the five decision-rule readouts, and export a "
             "wide parquet table."
-        )
+        ),
     )
     parser.add_argument(
         "--device", choices=[device.value for device in Device], required=True
@@ -66,8 +72,17 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=DEFAULT_BATCH_SIZE)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--limit", type=int)
-    parser.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
+    parser.add_argument(
+        "--model", choices=sorted(models.models), help=model_help(models)
+    )
     return parser.parse_args(argv)
+
+
+def model_help(models: ModelsConfig) -> str:
+    return (
+        f"model entry from models.toml: {', '.join(sorted(models.models))} "
+        f"(default {models.default})"
+    )
 
 
 def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
@@ -117,7 +132,7 @@ def main(argv: list[str] | None = None) -> None:
         if args.limit is None
         else prefix_item_set(full_set, args.limit)
     )
-    handle = load_model_handle(args.config_dir)
+    handle = load_model_handle(args.config_dir, args.model)
     conditions = RunConditions(
         device=Device(args.device), batch_size=args.batch_size
     )

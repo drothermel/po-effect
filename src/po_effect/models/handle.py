@@ -4,7 +4,13 @@ from enum import UNIQUE, StrEnum, auto, verify
 from typing import TYPE_CHECKING
 
 from dr_hf import ModelPin
-from pydantic import Field, StrictBool, field_serializer
+from pydantic import (
+    Field,
+    StrictBool,
+    ValidationInfo,
+    field_serializer,
+    field_validator,
+)
 
 from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.identity import FrozenContract
@@ -57,8 +63,33 @@ class RunConditions(FrozenContract):
 
 
 class ModelsConfig(FrozenContract):
-    datadec_150m: ModelHandle
+    models: dict[str, ModelHandle] = Field(min_length=1)
+    default: str
+
+    @field_validator("default")
+    @classmethod
+    def default_names_entry(cls, default: str, info: ValidationInfo) -> str:
+        models = info.data.get("models")
+        if models is not None and default not in models:
+            raise ValueError(
+                f"default {default!r} is not a models entry; "
+                f"available: {sorted(models)!r}"
+            )
+        return default
 
 
-def load_model_handle(config_dir: Path = DEFAULT_CONFIG_DIR) -> ModelHandle:
-    return load_config(config_dir / "models.toml", ModelsConfig).datadec_150m
+def load_models_config(config_dir: Path = DEFAULT_CONFIG_DIR) -> ModelsConfig:
+    return load_config(config_dir / "models.toml", ModelsConfig)
+
+
+def load_model_handle(
+    config_dir: Path = DEFAULT_CONFIG_DIR, name: str | None = None
+) -> ModelHandle:
+    config = load_models_config(config_dir)
+    key = config.default if name is None else name
+    handle = config.models.get(key)
+    if handle is None:
+        raise ValueError(
+            f"unknown model {key!r}; available: {sorted(config.models)!r}"
+        )
+    return handle

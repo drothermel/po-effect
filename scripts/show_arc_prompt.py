@@ -20,10 +20,11 @@ from po_effect.measurement import (
 )
 from po_effect.models import (
     Device,
-    ModelHandle,
     ModelsConfig,
     ModelSession,
     RunConditions,
+    load_model_handle,
+    load_models_config,
 )
 from po_effect.prompts import (
     MultipleChoiceRenderer,
@@ -44,7 +45,6 @@ from po_effect.tasks import (
 )
 
 DEFAULT_PROMPT = "olmes_rc"
-DEFAULT_MODEL = "datadec_150m"
 DEFAULT_BATCH_SIZE = 8
 
 
@@ -54,12 +54,11 @@ def prompt_names(config_dir: Path) -> list[str]:
     )
 
 
-def load_models(config_dir: Path) -> ModelsConfig:
-    return load_config(config_dir / "models.toml", ModelsConfig)
-
-
-def model_names(models: ModelsConfig) -> list[str]:
-    return sorted(type(models).model_fields)
+def model_help(models: ModelsConfig) -> str:
+    return (
+        f"model entry from models.toml for --score: "
+        f"{', '.join(sorted(models.models))} (default {models.default})"
+    )
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -67,7 +66,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     config.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
     config_dir = config.parse_known_args(argv)[0].config_dir
     names = prompt_names(config_dir)
-    models = model_names(load_models(config_dir))
+    models = load_models_config(config_dir)
     parser = argparse.ArgumentParser(
         parents=[config],
         description=(
@@ -108,9 +107,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        default=DEFAULT_MODEL,
-        choices=models,
-        help=f"model entry from models.toml for --score: {', '.join(models)}",
+        choices=sorted(models.models),
+        help=model_help(models),
     )
     args = parser.parse_args(argv)
     if args.score and args.device is None:
@@ -232,7 +230,7 @@ def score_item(
     item: Item,
     items: ItemIndex,
 ) -> None:
-    handle: ModelHandle = getattr(load_models(args.config_dir), args.model)
+    handle = load_model_handle(args.config_dir, args.model)
     conditions = RunConditions(
         device=Device(args.device), batch_size=args.batch_size
     )

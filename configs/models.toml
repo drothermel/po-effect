@@ -1,10 +1,111 @@
-[datadec_150m]
+default = "dclm_baseline_1b_seed0"
+
+[models.dclm_baseline_150m_seed0]
 dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
 capabilities = ["score"]
 
-[datadec_150m.pin]
+[models.dclm_baseline_150m_seed0.pin]
 repo_id = "drotherm/DataDecide-dclm-baseline-150M"
 revision = "311fb6f863e5d6e348dd62d4af917d7684d2b3b9"
+
+[models.dclm_baseline_300m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dclm_baseline_300m_seed0.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-300M"
+revision = "0850a6041eb5bc505f517b036b494b41e7bdac28"
+
+[models.dclm_baseline_1b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dclm_baseline_1b_seed0.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-1B"
+revision = "aba7be9276bf140803c7b86e8e1661e8cd76473a"
+
+[models.dclm_baseline_1b_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dclm_baseline_1b_seed1.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-1B"
+revision = "7a92760dbfd479f8a2da7adeba1230479378a973"
+
+[models.dclm_baseline_1b_seed2]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dclm_baseline_1b_seed2.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-1B"
+revision = "f21bdfddb01ea8dc22dd3e284ba3ef4d50d5c4d7"
+
+[models.dolma1_7_300m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dolma1_7_300m_seed0.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-300M"
+revision = "09deb7a9647c5ad055e83f676d8c77fdb478ccd8"
+
+[models.dolma1_7_300m_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dolma1_7_300m_seed1.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-300M"
+revision = "36fdf594d80418074509ee24817b73e8b44dfacb"
+
+[models.dolma1_7_1b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dolma1_7_1b_seed0.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-1B"
+revision = "6210894569baef17e9db00735b7ee96b68a6ab1b"
+
+[models.dolma1_7_1b_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dolma1_7_1b_seed1.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-1B"
+revision = "c0343e345bbf015477a63c09e44fde0dbb19f365"
+
+[models.dolma1_7_1b_seed2]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["score"]
+
+[models.dolma1_7_1b_seed2.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-1B"
+revision = "1532952965d87c492fe3e1a0a9668adc9ef7851c"
