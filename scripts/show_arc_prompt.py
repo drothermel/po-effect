@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from pathlib import Path
 
 from dr_hf import read_rows
@@ -12,12 +13,15 @@ from rich.text import Text
 from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.measurement import (
     Abstention,
+    Candidate,
     DecisionRule,
     GenerationAttempt,
     GenerationSolver,
     GenerationSpec,
+    IndexCandidate,
     IndexMatchJudge,
     LikelihoodArgmaxReadout,
+    ReadoutId,
     ScoredCandidatesAttempt,
     ScoredCandidatesSolver,
     SingleCallSpec,
@@ -143,6 +147,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     args = parser.parse_args(argv)
     if (args.score or args.generate) and args.device is None:
         parser.error("--score and --generate require --device")
+    if args.model is None:
+        args.model = models.default
     return args
 
 
@@ -186,42 +192,74 @@ def exact(value: str, *, show_whitespace: bool) -> Text:
     return Text(shown, overflow="fold", end="")
 
 
+def step_rule(console: Console, number: int, title: str) -> None:
+    console.rule(Text(f"{number}. {title}"), align="left")
+
+
 def optional_float(value: float | None) -> Text:
-    return Text("" if value is None else f"{value:.4f}")
+    return Text("" if value is None else repr(value))
 
 
-def score_table(
-    attempt: ScoredCandidatesAttempt, item: Item, *, show_whitespace: bool
-) -> Table:
-    table = Table(title=Text("candidate scores"), highlight=False)
+def gold_line(item: Item) -> Text:
+    return Text(f"gold index {item.reference.gold_index}")
+
+
+def model_line(args: argparse.Namespace, *extra: str) -> Text:
+    return Text(
+        ", ".join((f"model {args.model}", f"device {args.device}", *extra))
+    )
+
+
+def raw_score_table(attempt: ScoredCandidatesAttempt) -> Table:
+    table = Table(title=Text("raw candidate scores"), highlight=False)
     table.add_column("index", justify="right")
-    table.add_column("continuation", overflow="fold")
-    table.add_column("gold")
     table.add_column("loglik", justify="right", no_wrap=True)
     table.add_column("tokens", justify="right")
-    table.add_column("chars", justify="right")
-    table.add_column("bytes", justify="right")
     table.add_column("uncond loglik", justify="right", no_wrap=True)
-    for position, (candidate, score) in enumerate(
-        zip(attempt.candidates, attempt.scores, strict=True)
-    ):
+    for position, score in enumerate(attempt.scores):
         table.add_row(
             Text(str(position)),
-            exact(candidate, show_whitespace=show_whitespace),
-            Text("*" if position == item.reference.gold_index else ""),
             optional_float(score.log_likelihood),
             Text(str(score.token_count)),
-            Text(str(score.char_count)),
-            Text(str(score.byte_count)),
             optional_float(score.unconditional_log_likelihood),
         )
     return table
 
 
+@dataclass(frozen=True, slots=True)
+class RuleOutcome:
+    rule: DecisionRule
+    candidate: IndexCandidate | None = None
+    inapplicable: str | None = None
+    error: str | None = None
+
+
+def rule_outcomes(
+    attempt: ScoredCandidatesAttempt, item: Item, prompt: PromptSpec
+) -> list[RuleOutcome]:
+    outcomes: list[RuleOutcome] = []
+    for rule in DecisionRule:
+        readout = LikelihoodArgmaxReadout(rule)
+        reason = readout.inapplicable_reason(
+            attempt.kind, prompt.item_format.candidates, (attempt,)
+        )
+        if reason is not None:
+            outcomes.append(RuleOutcome(rule, inapplicable=reason))
+            continue
+        try:
+            candidate = readout.read(attempt, item.problem)
+        except (ValueError, ZeroDivisionError) as error:
+            outcomes.append(
+                RuleOutcome(rule, error=f"readout cannot apply: {error}")
+            )
+            continue
+        outcomes.append(RuleOutcome(rule, candidate=candidate))
+    return outcomes
+
+
 def readout_table(
     attempt: ScoredCandidatesAttempt,
-    item: Item,
-    prompt: PromptSpec,
+    outcomes: list[RuleOutcome],
     *,
     show_whitespace: bool,
 ) -> Table:
@@ -229,39 +267,42 @@ def readout_table(
     table.add_column("rule")
     table.add_column("chosen", justify="right")
     table.add_column("continuation", overflow="fold")
+    for outcome in outcomes:
+        rule = Text(outcome.rule.value)
+        if outcome.inapplicable is not None:
+            table.add_row(
+                rule, Text("not applicable"), Text(outcome.inapplicable)
+            )
+        elif outcome.candidate is None:
+            table.add_row(rule, Text(""), Text(outcome.error or ""))
+        else:
+            index = outcome.candidate.index
+            table.add_row(
+                rule,
+                Text(str(index)),
+                exact(
+                    attempt.candidates[index], show_whitespace=show_whitespace
+                ),
+            )
+    return table
+
+
+def score_evaluation_table(outcomes: list[RuleOutcome], item: Item) -> Table:
+    table = Table(title=Text("judge results"), highlight=False)
+    table.add_column("rule")
+    table.add_column("chosen", justify="right")
     table.add_column("matches gold")
     judge = IndexMatchJudge()
-    for rule in DecisionRule:
-        readout = LikelihoodArgmaxReadout(rule)
-        reason = readout.inapplicable_reason(
-            attempt.kind, prompt.item_format.candidates, (attempt,)
-        )
-        if reason is not None:
-            table.add_row(
-                Text(rule.value),
-                Text("not applicable"),
-                Text(reason),
-                Text(""),
-            )
+    for outcome in outcomes:
+        if outcome.inapplicable is not None:
             continue
-        try:
-            candidate = readout.read(attempt, item.problem)
-        except (ValueError, ZeroDivisionError) as error:
-            table.add_row(
-                Text(rule.value),
-                Text(""),
-                Text(f"readout cannot apply: {error}"),
-                Text(""),
-            )
+        if outcome.candidate is None:
+            table.add_row(Text(outcome.rule.value), Text(""), Text(""))
             continue
-        verdict = judge.judge(candidate, item.reference)
+        verdict = judge.judge(outcome.candidate, item.reference)
         table.add_row(
-            Text(rule.value),
-            Text(str(candidate.index)),
-            exact(
-                attempt.candidates[candidate.index],
-                show_whitespace=show_whitespace,
-            ),
+            Text(outcome.rule.value),
+            Text(str(outcome.candidate.index)),
             Text("yes" if verdict.accuracy == 1 else "no"),
         )
     return table
@@ -279,8 +320,15 @@ def score_item(
     with open_session(args) as session:
         attempt = solver.solve(item, session, spec, items)
     show = args.show_whitespace
-    console.print(score_table(attempt, item, show_whitespace=show))
-    console.print(readout_table(attempt, item, prompt, show_whitespace=show))
+    step_rule(console, 2, "Model output")
+    console.print(model_line(args))
+    console.print(raw_score_table(attempt))
+    outcomes = rule_outcomes(attempt, item, prompt)
+    step_rule(console, 3, "Readout")
+    console.print(readout_table(attempt, outcomes, show_whitespace=show))
+    step_rule(console, 4, "Evaluation")
+    console.print(gold_line(item))
+    console.print(score_evaluation_table(outcomes, item))
 
 
 def open_session(args: argparse.Namespace) -> ModelSession:
@@ -290,11 +338,11 @@ def open_session(args: argparse.Namespace) -> ModelSession:
     )
 
 
-def generation_panels(
+def raw_generation_panel(
     attempt: GenerationAttempt, *, show_whitespace: bool
-) -> tuple[Panel, Panel]:
+) -> Panel:
     output = attempt.output
-    raw = Panel(
+    return Panel(
         exact(output.text, show_whitespace=show_whitespace),
         title=Text("generated text"),
         title_align="left",
@@ -305,28 +353,25 @@ def generation_panels(
         ),
         subtitle_align="left",
     )
-    truncated = Panel(
-        exact(truncated_text(output), show_whitespace=show_whitespace),
+
+
+def truncated_panel(
+    attempt: GenerationAttempt, *, show_whitespace: bool
+) -> Panel:
+    return Panel(
+        exact(truncated_text(attempt.output), show_whitespace=show_whitespace),
         title=Text("truncated at the first newline"),
         title_align="left",
     )
-    return raw, truncated
 
 
-def generation_table(
-    attempt: GenerationAttempt,
-    item: Item,
-    prompt: PromptSpec,
-    *,
-    show_whitespace: bool,
-) -> Table:
-    table = Table(title=Text("generation readout"), highlight=False)
-    table.add_column("readout")
-    table.add_column("candidate", justify="right")
-    table.add_column("choice or abstention reason", overflow="fold")
-    table.add_column("accuracy", justify="right")
-    table.add_column("abstained", justify="right")
-    judge = IndexMatchJudge()
+GenerationOutcome = tuple[ReadoutId, Candidate | Abstention]
+
+
+def generation_outcomes(
+    attempt: GenerationAttempt, item: Item, prompt: PromptSpec
+) -> list[GenerationOutcome]:
+    outcomes: list[GenerationOutcome] = []
     candidates = prompt.item_format.candidates
     for readout_id in readout_ids_for(AttemptKind.GENERATION):
         readout = readout_for(readout_id)
@@ -335,8 +380,18 @@ def generation_table(
         )
         if reason is not None:
             continue
-        candidate = readout.read(attempt, item.problem)
-        scores = judge.judge(candidate, item.reference)
+        outcomes.append((readout_id, readout.read(attempt, item.problem)))
+    return outcomes
+
+
+def generation_readout_table(
+    outcomes: list[GenerationOutcome], item: Item, *, show_whitespace: bool
+) -> Table:
+    table = Table(title=Text("generation readout"), highlight=False)
+    table.add_column("readout")
+    table.add_column("candidate", justify="right")
+    table.add_column("choice or abstention reason", overflow="fold")
+    for readout_id, candidate in outcomes:
         if isinstance(candidate, Abstention):
             chosen = Text("abstained")
             detail = Text(candidate.reason)
@@ -346,10 +401,22 @@ def generation_table(
                 item.problem.choices[candidate.index],
                 show_whitespace=show_whitespace,
             )
+        table.add_row(Text(readout_id.value), chosen, detail)
+    return table
+
+
+def generation_evaluation_table(
+    outcomes: list[GenerationOutcome], item: Item
+) -> Table:
+    table = Table(title=Text("judge results"), highlight=False)
+    table.add_column("readout")
+    table.add_column("accuracy", justify="right")
+    table.add_column("abstained", justify="right")
+    judge = IndexMatchJudge()
+    for readout_id, candidate in outcomes:
+        scores = judge.judge(candidate, item.reference)
         table.add_row(
             Text(readout_id.value),
-            chosen,
-            detail,
             Text(f"{scores.accuracy:g}"),
             Text(str(scores.abstained)),
         )
@@ -368,11 +435,18 @@ def generate_item(
     with open_session(args) as session:
         attempt = solver.solve(item, session, spec, items)
     show = args.show_whitespace
-    for panel in generation_panels(attempt, show_whitespace=show):
-        console.print(panel)
+    step_rule(console, 2, "Model output")
+    console.print(model_line(args, f"max new tokens {args.max_new_tokens}"))
+    console.print(raw_generation_panel(attempt, show_whitespace=show))
+    outcomes = generation_outcomes(attempt, item, prompt)
+    step_rule(console, 3, "Readout")
+    console.print(truncated_panel(attempt, show_whitespace=show))
     console.print(
-        generation_table(attempt, item, prompt, show_whitespace=show)
+        generation_readout_table(outcomes, item, show_whitespace=show)
     )
+    step_rule(console, 4, "Evaluation")
+    console.print(gold_line(item))
+    console.print(generation_evaluation_table(outcomes, item))
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -390,6 +464,7 @@ def main(argv: list[str] | None = None) -> None:
     )
     show = args.show_whitespace
     console = Console(highlight=False)
+    step_rule(console, 1, f"Prompt: {item.native_id} ({args.format})")
     console.print(
         Panel(
             exact(rendered.context, show_whitespace=show),
