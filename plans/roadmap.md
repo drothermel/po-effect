@@ -46,9 +46,10 @@ needed.
 
 ## Storage
 
-The file store stays until dr-store is integrated as a second implementation
-of the same protocol. The attempt record identity currently includes wall
-time; that is removed when records become durable results.
+dr-store is integrated: the record store is one SQLite object store per
+records root with keyed bindings, and provider evidence is stored there too.
+Wall time is no longer part of the attempt record's identity; it is a
+separate timing record beside each attempt.
 
 ## Optimizers and studies
 

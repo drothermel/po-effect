@@ -36,7 +36,7 @@ from po_effect.prompts import (
     ShotRef,
     resolve_prompt,
 )
-from po_effect.records import FileRecordStore
+from po_effect.records import DrStoreRecordStore, open_record_store
 from po_effect.tasks import (
     ArcChallengeTask,
     AttemptKind,
@@ -61,7 +61,7 @@ class ExampleMeasurement:
     spec: MeasurementSpec
     runtime: MeasurementRuntime
     backend: FakeLocalBackend
-    root: Path
+    store: DrStoreRecordStore
 
 
 CPU_CONDITIONS = RunConditions(device=Device.CPU, batch_size=8)
@@ -234,12 +234,18 @@ def prompt(
 
 
 @pytest.fixture
+def record_store(tmp_path: Path) -> Iterator[DrStoreRecordStore]:
+    with open_record_store(tmp_path / "records") as store:
+        yield store
+
+
+@pytest.fixture
 def example(
     task: ArcChallengeTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt: PromptSpec,
-    tmp_path: Path,
+    record_store: DrStoreRecordStore,
 ) -> Iterator[ExampleMeasurement]:
     handle = load_model_handle()
     backend = fake_backend(handle, CPU_CONDITIONS)
@@ -255,12 +261,6 @@ def example(
     )
     with ModelSession(handle, CPU_CONDITIONS, None, backend) as session:
         runtime = MeasurementRuntime(
-            task,
-            items,
-            session,
-            solver,
-            FileRecordStore(tmp_path / "records"),
+            task, items, session, solver, record_store
         )
-        yield ExampleMeasurement(
-            spec, runtime, backend, tmp_path / "records" / spec.identity_hash
-        )
+        yield ExampleMeasurement(spec, runtime, backend, record_store)

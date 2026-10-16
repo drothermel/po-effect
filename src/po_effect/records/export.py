@@ -12,6 +12,7 @@ from po_effect.measurement import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from pathlib import Path
 
     from po_effect.measurement import RecordStore
@@ -35,6 +36,7 @@ GENERATION_FIELDS = (
 def export_wide(
     store: RecordStore,
     measurement_hash: str,
+    readout_hashes: Sequence[str],
     items: ItemIndex,
     path: Path,
 ) -> None:
@@ -73,7 +75,8 @@ def export_wide(
     else:
         raise ValueError("measurement mixes attempt kinds")
     visibility: list[str] | None = None
-    for readout in store.readouts(measurement_hash):
+    for readout_hash in readout_hashes:
+        readout = store.readout(measurement_hash, readout_hash)
         records = store.readout_records(readout)
         prefix = f"{readout.readout_id}_{readout.judge_id}"
         if f"{prefix}_predicted_index" in columns:
