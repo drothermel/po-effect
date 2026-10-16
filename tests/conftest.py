@@ -10,10 +10,12 @@ from dr_providers.local.backend import ScoredContinuation
 from dr_providers.surfaces.testing.fake_backend import FakeLocalBackend
 
 from po_effect.measurement import (
+    AttemptRecord,
     DecisionRule,
     MeasurementRuntime,
     MeasurementSpec,
     ReadoutSpec,
+    ScoredCandidatesAttempt,
     ScoredCandidatesSolver,
     SingleCallSpec,
 )
@@ -26,6 +28,7 @@ from po_effect.models import (
     provider_config,
 )
 from po_effect.prompts import (
+    CandidateKind,
     ItemFormat,
     MultipleChoiceRenderer,
     PromptConfig,
@@ -36,6 +39,7 @@ from po_effect.prompts import (
 from po_effect.records import FileRecordStore
 from po_effect.tasks import (
     ArcChallengeTask,
+    AttemptKind,
     IndexReference,
     Item,
     ItemIndex,
@@ -141,6 +145,7 @@ def example_format() -> ItemFormat:
         answer_prefix="A:",
         answer_break="\n",
         continuation_prefix=" ",
+        candidates=CandidateKind.CHOICE_TEXT,
         unconditional_context="A:",
     )
 
@@ -157,6 +162,12 @@ def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
             method="origin_split", parent=origin.content_hash
         ),
     )
+
+
+def scored_attempt(record: AttemptRecord) -> ScoredCandidatesAttempt:
+    attempt = record.attempt
+    assert isinstance(attempt, ScoredCandidatesAttempt)
+    return attempt
 
 
 def readout_spec(
@@ -187,6 +198,8 @@ def rows() -> tuple[SourceRow, ...]:
 @pytest.fixture
 def prompt_config() -> PromptConfig:
     return PromptConfig(
+        attempt=AttemptKind.SCORE,
+        admits=(AttemptKind.SCORE, AttemptKind.GENERATE),
         shots=(
             ShotRef(split="train", native_id="t2"),
             ShotRef(split="train", native_id="t1"),
@@ -196,6 +209,7 @@ def prompt_config() -> PromptConfig:
             answer_prefix="Answer:",
             answer_break="\n",
             continuation_prefix=" ",
+            candidates=CandidateKind.CHOICE_TEXT,
             unconditional_context="Answer:",
         ),
     )
@@ -215,7 +229,7 @@ def item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
 def prompt(
     task: ArcChallengeTask, items: ItemIndex, prompt_config: PromptConfig
 ) -> PromptSpec:
-    return resolve_prompt(prompt_config, task, items)
+    return resolve_prompt("example", prompt_config, task, items)
 
 
 @pytest.fixture

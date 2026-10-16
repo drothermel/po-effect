@@ -5,6 +5,12 @@ from typing import TYPE_CHECKING
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from po_effect.measurement import (
+    GenerationAttempt,
+    IndexCandidate,
+    ScoredCandidatesAttempt,
+)
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -17,6 +23,12 @@ SCORE_FIELDS = (
     ("char_count", pa.int64()),
     ("byte_count", pa.int64()),
     ("unconditional_log_likelihood", pa.float64()),
+)
+GENERATION_FIELDS = (
+    ("text", pa.string()),
+    ("stop_reason", pa.string()),
+    ("prompt_tokens", pa.int64()),
+    ("completion_tokens", pa.int64()),
 )
 
 
@@ -40,14 +52,26 @@ def export_wide(
             [i.reference.gold_index for i in rows], pa.int64()
         ),
     }
-    for name, kind in SCORE_FIELDS:
-        columns[name] = pa.array(
-            [
-                [getattr(score, name) for score in attempts[i].attempt.scores]
-                for i in item_ids
-            ],
-            pa.list_(kind),
-        )
+    selected_attempts = [attempts[i].attempt for i in item_ids]
+    scored = [
+        a for a in selected_attempts if isinstance(a, ScoredCandidatesAttempt)
+    ]
+    generated = [
+        a for a in selected_attempts if isinstance(a, GenerationAttempt)
+    ]
+    if len(scored) == len(item_ids):
+        for name, kind in SCORE_FIELDS:
+            columns[name] = pa.array(
+                [[getattr(score, name) for score in a.scores] for a in scored],
+                pa.list_(kind),
+            )
+    elif len(generated) == len(item_ids):
+        for name, kind in GENERATION_FIELDS:
+            columns[name] = pa.array(
+                [getattr(a.output, name) for a in generated], kind
+            )
+    else:
+        raise ValueError("measurement mixes attempt kinds")
     for readout in store.readouts(measurement_hash):
         records = store.readout_records(readout)
         prefix = f"{readout.readout_id}_{readout.judge_id}"
@@ -55,10 +79,19 @@ def export_wide(
             raise ValueError(f"duplicate readout columns {prefix!r}")
         selected = [records[i] for i in item_ids]
         columns[f"{prefix}_predicted_index"] = pa.array(
-            [r.candidate.index for r in selected], pa.int64()
+            [
+                r.candidate.index
+                if isinstance(r.candidate, IndexCandidate)
+                else None
+                for r in selected
+            ],
+            pa.int64(),
         )
         columns[f"{prefix}_correct"] = pa.array(
             [r.scores.accuracy == 1 for r in selected], pa.bool_()
+        )
+        columns[f"{prefix}_abstained"] = pa.array(
+            [r.scores.abstained == 1 for r in selected], pa.bool_()
         )
     path.parent.mkdir(parents=True, exist_ok=True)
     pq.write_table(pa.table(columns), path)

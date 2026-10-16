@@ -10,6 +10,7 @@ from conftest import (
     fake_backend,
     make_item,
     readout_spec,
+    scored_attempt,
 )
 from dr_providers import ProviderScoreRequest
 from dr_providers.surfaces.testing.fake_backend import ScoreCall
@@ -17,13 +18,16 @@ from dr_providers.surfaces.testing.fake_backend import ScoreCall
 from po_effect.measurement import (
     AttemptRecord,
     DecisionRule,
+    IndexCandidate,
     LikelihoodArgmaxReadout,
     MeasurementRuntime,
     MeasurementSpec,
+    ReadoutSpec,
     ScoredCandidatesAttempt,
     ScoredCandidatesSolver,
     SingleCallSpec,
     apply_readout,
+    inapplicable_reason,
     run_measurement,
 )
 from po_effect.models import (
@@ -31,10 +35,17 @@ from po_effect.models import (
     Device,
     ModelSession,
     RunConditions,
+    load_model_handle,
 )
-from po_effect.prompts import MultipleChoiceRenderer, PromptSpec
+from po_effect.prompts import (
+    MultipleChoiceRenderer,
+    PromptConfig,
+    PromptSpec,
+    resolve_prompt,
+)
 from po_effect.records import FileRecordStore, MeasurementDocument
 from po_effect.tasks import (
+    AttemptKind,
     Item,
     ItemSet,
     ItemSetDerivation,
@@ -52,11 +63,16 @@ if TYPE_CHECKING:
         ProviderInvocationEvidence,
     )
 
+    from po_effect.tasks import ArcChallengeTask, ItemIndex
+
 
 def test_solver_rejects_shots_in_evaluated_set() -> None:
     shot = make_item(native_id="s")
     target = make_item(native_id="t")
     prompt = PromptSpec(
+        name="example",
+        attempt=AttemptKind.SCORE,
+        admits=(AttemptKind.SCORE,),
         task_id="arc_challenge",
         task_version=1,
         shot_item_ids=(shot.item_id,),
@@ -86,6 +102,40 @@ def test_measurement_rejects_prompt_for_other_task_version(
         update={"task_version": 2}
     )
     with pytest.raises(ValueError, match="different task"):
+        MeasurementSpec.model_validate(
+            {
+                **dict(example.spec),
+                "solver_spec": SingleCallSpec(prompt=prompt),
+            }
+        )
+
+
+@pytest.mark.parametrize("admits", [(AttemptKind.SCORE,), tuple(AttemptKind)])
+def test_measurement_accepts_admitted_attempt_kind(
+    example: ExampleMeasurement, admits: tuple[AttemptKind, ...]
+) -> None:
+    prompt = example.spec.solver_spec.prompt.model_copy(
+        update={"admits": admits}
+    )
+    spec = MeasurementSpec.model_validate(
+        {**dict(example.spec), "solver_spec": SingleCallSpec(prompt=prompt)}
+    )
+    assert spec.attempt_kind is AttemptKind.SCORE
+
+
+def test_measurement_rejects_attempt_kind_the_prompt_does_not_admit(
+    example: ExampleMeasurement,
+) -> None:
+    prompt = example.spec.solver_spec.prompt.model_copy(
+        update={
+            "attempt": AttemptKind.GENERATE,
+            "admits": (AttemptKind.GENERATE,),
+        }
+    )
+    with pytest.raises(
+        ValueError,
+        match="prompt 'example' does not admit attempt kind 'score'",
+    ):
         MeasurementSpec.model_validate(
             {
                 **dict(example.spec),
@@ -152,7 +202,7 @@ def test_attempts_convert_scores_and_log_evidence(
 ) -> None:
     result = run_measurement(example.spec, example.runtime)
     assert result.measured == 2
-    first = result.attempts[0].attempt
+    first = scored_attempt(result.attempts[0])
     assert [s.log_likelihood for s in first.scores] == [-2, -3]
     assert [s.unconditional_log_likelihood for s in first.scores] == [-3, -8]
     assert first.scores[1].char_count == 3
@@ -167,6 +217,7 @@ def test_attempts_convert_scores_and_log_evidence(
         items.get(example.spec.item_set.item_ids[0]).problem,
         tuple(items.get(i) for i in prompt.shot_item_ids),
     )
+    assert rendered.unconditional_context is not None
     for ref, context in zip(
         first.evidence,
         (rendered.context, rendered.unconditional_context),
@@ -232,9 +283,10 @@ def test_readouts_derive_from_attempts_without_model_calls(
         records = apply_readout(
             readout_spec(example, rule), store, example.runtime.items
         )
-        assert [
-            (r.candidate.index, r.scores.accuracy) for r in records
-        ] == list(values)
+        assert [(r.candidate, r.scores.accuracy) for r in records] == [
+            (IndexCandidate(index=index), accuracy)
+            for index, accuracy in values
+        ]
         assert store.readout_records(readout_spec(example, rule)) == {
             r.item_id: r for r in records
         }
@@ -297,7 +349,7 @@ def test_scoring_failure_leaves_no_attempt(
         )
 
     monkeypatch.setattr(provider, "invoke", invoke)
-    with pytest.raises(RuntimeError, match=r"another request|scoring failed"):
+    with pytest.raises(RuntimeError, match=r"another request|score failed"):
         run_measurement(example.spec, example.runtime)
     store = example.runtime.store
     first, second = example.spec.item_set.item_ids
@@ -373,3 +425,89 @@ def test_resume_proceeds_with_identical_run_conditions(
 ) -> None:
     run_with(example, CPU_CONDITIONS, tmp_path)
     assert run_with(example, CPU_CONDITIONS, tmp_path) == (0, 0)
+
+
+def test_format_without_unconditional_context_scores_conditionally(
+    task: ArcChallengeTask,
+    items: ItemIndex,
+    item_set: ItemSet,
+    prompt_config: PromptConfig,
+    tmp_path: Path,
+) -> None:
+    config = prompt_config.model_copy(
+        update={
+            "item_format": prompt_config.item_format.model_copy(
+                update={"unconditional_context": None}
+            )
+        }
+    )
+    prompt = resolve_prompt("example", config, task, items)
+    handle = load_model_handle()
+    backend = fake_backend(handle, CPU_CONDITIONS)
+    solver = ScoredCandidatesSolver(MultipleChoiceRenderer())
+    spec = MeasurementSpec(
+        task_id=task.task_id,
+        task_version=task.version,
+        item_set=item_set,
+        model=handle,
+        solver_id=solver.solver_id,
+        solver_spec=SingleCallSpec(prompt=prompt),
+        attempt_kind=solver.kind,
+    )
+    store = FileRecordStore(tmp_path / "records")
+    with ModelSession(handle, CPU_CONDITIONS, backend) as session:
+        result = run_measurement(
+            spec, MeasurementRuntime(task, items, session, solver, store)
+        )
+        assert session.score_requests == len(item_set.item_ids)
+    assert len(backend.calls) == len(item_set.item_ids)
+    for record in result.attempts:
+        assert len(record.attempt.evidence) == 1
+        assert all(
+            score.unconditional_log_likelihood is None
+            for score in scored_attempt(record).scores
+        )
+    assert [
+        s.log_likelihood for s in scored_attempt(result.attempts[1]).scores
+    ] == [
+        -3,
+        -8,
+    ]
+
+    def rule_spec(rule: DecisionRule) -> ReadoutSpec:
+        return ReadoutSpec(
+            measurement_hash=spec.identity_hash,
+            readout_id=rule,
+            judge_id="index_match",
+        )
+
+    pmi = rule_spec(DecisionRule.PMI)
+    assert inapplicable_reason(pmi, store) is not None
+    with pytest.raises(ValueError, match="'pmi' does not apply"):
+        apply_readout(pmi, store, items)
+    assert store.readouts(spec.identity_hash) == ()
+    applicable = [
+        rule for rule in DecisionRule if rule is not DecisionRule.PMI
+    ]
+    for rule in applicable:
+        assert inapplicable_reason(rule_spec(rule), store) is None
+        records = apply_readout(rule_spec(rule), store, items)
+        assert len(records) == len(item_set.item_ids)
+    assert {s.readout_id for s in store.readouts(spec.identity_hash)} == set(
+        applicable
+    )
+    assert len(store.attempts(spec.identity_hash)) == len(item_set.item_ids)
+    assert len(backend.calls) == len(item_set.item_ids)
+
+
+def test_readouts_apply_to_attempts_with_unconditional_scores(
+    example: ExampleMeasurement,
+) -> None:
+    run_measurement(example.spec, example.runtime)
+    for rule in DecisionRule:
+        assert (
+            inapplicable_reason(
+                readout_spec(example, rule), example.runtime.store
+            )
+            is None
+        )

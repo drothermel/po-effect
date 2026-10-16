@@ -7,30 +7,35 @@ from typing import TYPE_CHECKING, ClassVar, Protocol
 from pydantic import Field, model_validator
 
 from po_effect.identity import FrozenContract, Identified
-from po_effect.measurement.attempts import ScoredCandidatesAttempt
+from po_effect.measurement.attempts import Attempt
 from po_effect.measurement.judges import Scores, judge_for
 from po_effect.measurement.readouts import (
-    DecisionRule,
-    IndexCandidate,
-    LikelihoodArgmaxReadout,
+    Candidate,
+    ReadoutId,
+    readout_for,
 )
-from po_effect.measurement.solvers import SingleCallSpec
+from po_effect.measurement.solvers import (
+    GenerationSpec,
+    SingleCallSpec,
+    SolverSpec,
+)
 from po_effect.models import ModelHandle
 from po_effect.tasks import AttemptKind, ItemSet
 
 if TYPE_CHECKING:
-    from po_effect.measurement.solvers import ScoredCandidatesSolver
+    from po_effect.measurement.readouts import Readout
+    from po_effect.measurement.solvers import Solver
     from po_effect.models import ModelSession, RunConditions
     from po_effect.tasks import ArcChallengeTask, ItemIndex
 
 MEASUREMENT_SPEC_SCHEMA = "po_effect.measurement_spec"
-MEASUREMENT_SPEC_SCHEMA_VERSION = 4
+MEASUREMENT_SPEC_SCHEMA_VERSION = 7
 ATTEMPT_RECORD_SCHEMA = "po_effect.attempt_record"
-ATTEMPT_RECORD_SCHEMA_VERSION = 1
+ATTEMPT_RECORD_SCHEMA_VERSION = 3
 READOUT_SPEC_SCHEMA = "po_effect.readout_spec"
 READOUT_SPEC_SCHEMA_VERSION = 1
 READOUT_RECORD_SCHEMA = "po_effect.readout_record"
-READOUT_RECORD_SCHEMA_VERSION = 1
+READOUT_RECORD_SCHEMA_VERSION = 2
 
 
 class MeasurementSpec(Identified):
@@ -41,7 +46,7 @@ class MeasurementSpec(Identified):
     item_set: ItemSet
     model: ModelHandle
     solver_id: str
-    solver_spec: SingleCallSpec
+    solver_spec: SolverSpec
     attempt_kind: AttemptKind
 
     @model_validator(mode="after")
@@ -52,6 +57,17 @@ class MeasurementSpec(Identified):
             self.task_version,
         ):
             raise ValueError("prompt was resolved against a different task")
+        prompt.require_admitted(self.attempt_kind)
+        expected = (
+            GenerationSpec
+            if self.attempt_kind is AttemptKind.GENERATE
+            else SingleCallSpec
+        )
+        if not isinstance(self.solver_spec, expected):
+            raise ValueError(  # noqa: TRY004
+                f"{self.attempt_kind.value} measurements require "
+                f"{expected.__name__}"
+            )
         return self
 
 
@@ -60,7 +76,7 @@ class AttemptRecord(Identified):
     identity_schema_version: ClassVar[int] = ATTEMPT_RECORD_SCHEMA_VERSION
     measurement_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     item_id: str = Field(pattern=r"^[0-9a-f]{64}$")
-    attempt: ScoredCandidatesAttempt
+    attempt: Attempt
     wall_time_seconds: float = Field(ge=0)
 
 
@@ -68,7 +84,7 @@ class ReadoutSpec(Identified):
     identity_schema: ClassVar[str] = READOUT_SPEC_SCHEMA
     identity_schema_version: ClassVar[int] = READOUT_SPEC_SCHEMA_VERSION
     measurement_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
-    readout_id: DecisionRule
+    readout_id: ReadoutId
     judge_id: str
 
 
@@ -78,7 +94,7 @@ class ReadoutRecord(Identified):
     measurement_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     readout_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     item_id: str = Field(pattern=r"^[0-9a-f]{64}$")
-    candidate: IndexCandidate
+    candidate: Candidate
     scores: Scores
 
 
@@ -115,7 +131,7 @@ class MeasurementRuntime:
     task: ArcChallengeTask
     items: ItemIndex
     session: ModelSession
-    solver: ScoredCandidatesSolver
+    solver: Solver
     store: RecordStore
 
 
@@ -183,18 +199,46 @@ def run_measurement(
     )
 
 
+def _inapplicable_reason(
+    readout: Readout,
+    spec: MeasurementSpec,
+    attempts: dict[str, AttemptRecord],
+) -> str | None:
+    return readout.inapplicable_reason(
+        spec.attempt_kind,
+        spec.solver_spec.prompt.item_format.candidates,
+        tuple(record.attempt for record in attempts.values()),
+    )
+
+
+def inapplicable_reason(
+    readout_spec: ReadoutSpec, store: RecordStore
+) -> str | None:
+    return _inapplicable_reason(
+        readout_for(readout_spec.readout_id),
+        store.measurement(readout_spec.measurement_hash),
+        store.attempts(readout_spec.measurement_hash),
+    )
+
+
 def apply_readout(
     readout_spec: ReadoutSpec,
     store: RecordStore,
     items: ItemIndex,
 ) -> tuple[ReadoutRecord, ...]:
     spec = store.measurement(readout_spec.measurement_hash)
-    readout = LikelihoodArgmaxReadout(readout_spec.readout_id)
+    readout = readout_for(readout_spec.readout_id)
     judge = judge_for(readout_spec.judge_id)
     attempts = store.attempts(readout_spec.measurement_hash)
     missing = [i for i in spec.item_set.item_ids if i not in attempts]
     if missing:
         raise ValueError(f"{len(missing)} items have no stored attempt")
+    reason = _inapplicable_reason(readout, spec, attempts)
+    if reason is not None:
+        raise ValueError(
+            f"readout {readout_spec.readout_id.value!r} does not apply: "
+            f"{reason}"
+        )
     readout_hash = store.put_readout(readout_spec)
     records = []
     for item_id in spec.item_set.item_ids:

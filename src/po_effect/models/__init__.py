@@ -7,10 +7,13 @@ from po_effect.models.handle import (
     ModelsConfig,
     RunConditions,
     load_model_handle,
+    load_models_config,
 )
 from po_effect.models.session import (
     CandidateScore,
     EvidenceRef,
+    GenerationOutput,
+    GenerationResult,
     ModelSession,
     ScoringResult,
     provider_config,
@@ -23,6 +26,8 @@ __all__ = [
     "Device",
     "Dtype",
     "EvidenceRef",
+    "GenerationOutput",
+    "GenerationResult",
     "ModelCapability",
     "ModelHandle",
     "ModelSession",
@@ -30,6 +35,7 @@ __all__ = [
     "RunConditions",
     "ScoringResult",
     "load_model_handle",
+    "load_models_config",
     "provider_config",
     "provider_tokenization",
 ]

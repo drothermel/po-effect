@@ -1,10 +1,408 @@
-[datadec_150m]
+default = "dclm_baseline_1b_seed0"
+
+[models.dclm_baseline_150m_seed0]
 dtype = "float32"
 max_sequence_length = 2048
 add_bos_token = false
 continuation_tokenization = "lm_eval_encode_pair"
-capabilities = ["score"]
+capabilities = ["generate", "score"]
 
-[datadec_150m.pin]
+[models.dclm_baseline_150m_seed0.pin]
 repo_id = "drotherm/DataDecide-dclm-baseline-150M"
 revision = "311fb6f863e5d6e348dd62d4af917d7684d2b3b9"
+
+[models.dclm_baseline_300m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dclm_baseline_300m_seed0.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-300M"
+revision = "0850a6041eb5bc505f517b036b494b41e7bdac28"
+
+[models.dclm_baseline_1b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dclm_baseline_1b_seed0.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-1B"
+revision = "aba7be9276bf140803c7b86e8e1661e8cd76473a"
+
+[models.dclm_baseline_1b_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dclm_baseline_1b_seed1.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-1B"
+revision = "7a92760dbfd479f8a2da7adeba1230479378a973"
+
+[models.dclm_baseline_1b_seed2]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dclm_baseline_1b_seed2.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-1B"
+revision = "f21bdfddb01ea8dc22dd3e284ba3ef4d50d5c4d7"
+
+[models.dolma1_7_300m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_300m_seed0.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-300M"
+revision = "09deb7a9647c5ad055e83f676d8c77fdb478ccd8"
+
+[models.dolma1_7_300m_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_300m_seed1.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-300M"
+revision = "36fdf594d80418074509ee24817b73e8b44dfacb"
+
+[models.dolma1_7_1b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_1b_seed0.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-1B"
+revision = "6210894569baef17e9db00735b7ee96b68a6ab1b"
+
+[models.dolma1_7_1b_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_1b_seed1.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-1B"
+revision = "c0343e345bbf015477a63c09e44fde0dbb19f365"
+
+[models.dolma1_7_1b_seed2]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_1b_seed2.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-1B"
+revision = "1532952965d87c492fe3e1a0a9668adc9ef7851c"
+
+[models.qwen3_0_6b_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_0_6b_base.pin]
+repo_id = "Qwen/Qwen3-0.6B-Base"
+revision = "da87bfb608c14b7cf20ba1ce41287e8de496c0cd"
+
+[models.qwen3_0_6b_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_0_6b_instruct.pin]
+repo_id = "Qwen/Qwen3-0.6B"
+revision = "c1899de289a04d12100db370d81485cdf75e47ca"
+
+[models.qwen3_1_7b_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_1_7b_base.pin]
+repo_id = "Qwen/Qwen3-1.7B-Base"
+revision = "ea980cb0a6c2ae4b936e82123acc929f1cec04c1"
+
+[models.qwen3_1_7b_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_1_7b_instruct.pin]
+repo_id = "Qwen/Qwen3-1.7B"
+revision = "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e"
+
+[models.qwen3_4b_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_4b_base.pin]
+repo_id = "Qwen/Qwen3-4B-Base"
+revision = "906bfd4b4dc7f14ee4320094d8b41684abff8539"
+
+[models.qwen3_4b_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_4b_instruct.pin]
+repo_id = "Qwen/Qwen3-4B"
+revision = "1cfa9a7208912126459214e8b04321603b3df60c"
+
+[models.qwen3_8b_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_8b_base.pin]
+repo_id = "Qwen/Qwen3-8B-Base"
+revision = "49e3418fbbbca6ecbdf9608b4d22e5a407081db4"
+
+[models.qwen3_8b_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_8b_instruct.pin]
+repo_id = "Qwen/Qwen3-8B"
+revision = "b968826d9c46dd6066d109eabc6255188de91218"
+
+[models.qwen3_14b_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_14b_base.pin]
+repo_id = "Qwen/Qwen3-14B-Base"
+revision = "0b0bd3732e2c374d483664439ea334928b65f304"
+
+[models.qwen3_14b_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.qwen3_14b_instruct.pin]
+repo_id = "Qwen/Qwen3-14B"
+revision = "40c069824f4251a91eefaf281ebe4c544efd3e18"
+
+[models.pythia_160m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_160m_seed0.pin]
+repo_id = "EleutherAI/pythia-160m"
+revision = "50f5173d932e8e61f858120bcb800b97af589f46"
+
+[models.pythia_160m_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_160m_seed1.pin]
+repo_id = "EleutherAI/pythia-160m-seed1"
+revision = "5ed55222b3092e69edcfa5fa646b7aac0b7e03d9"
+
+[models.pythia_160m_seed2]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_160m_seed2.pin]
+repo_id = "EleutherAI/pythia-160m-seed2"
+revision = "6e9b9f6270d1d624f9d7188c1e8909600c4efae2"
+
+[models.pythia_410m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_410m_seed0.pin]
+repo_id = "EleutherAI/pythia-410m"
+revision = "9879c9b5f8bea9051dcb0e68dff21493d67e9d4f"
+
+[models.pythia_410m_seed1]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_410m_seed1.pin]
+repo_id = "EleutherAI/pythia-410m-seed1"
+revision = "33803c4f5a1e9a4bece59e52f17bb8755add33e1"
+
+[models.pythia_410m_seed2]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_410m_seed2.pin]
+repo_id = "EleutherAI/pythia-410m-seed2"
+revision = "da2549c8d3e03e6e927594b9060073abdb94e6ba"
+
+[models.pythia_1b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_1b_seed0.pin]
+repo_id = "EleutherAI/pythia-1b"
+revision = "f73d7dcc545c8bd326d8559c8ef84ffe92fea6b2"
+
+[models.pythia_1_4b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_1_4b_seed0.pin]
+repo_id = "EleutherAI/pythia-1.4b"
+revision = "fedc38a16eea3bd36a96b906d78d11d2ce18ed79"
+
+[models.pythia_2_8b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_2_8b_seed0.pin]
+repo_id = "EleutherAI/pythia-2.8b"
+revision = "2a259cdd96a4beb1cdf467512e3904197345f6a9"
+
+[models.pythia_6_9b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_6_9b_seed0.pin]
+repo_id = "EleutherAI/pythia-6.9b"
+revision = "c0e3eee36dc47af0c49f361c74cfe459c09f7f23"
+
+[models.pythia_12b_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.pythia_12b_seed0.pin]
+repo_id = "EleutherAI/pythia-12b"
+revision = "bb1e3e710cdf6b524461d543cfb5ba773f0a81b6"
+
+[models.olmo3_7b_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.olmo3_7b_base.pin]
+repo_id = "allenai/Olmo-3-1025-7B"
+revision = "a81bae42db3975be1671e27b9c9a56da1a9f980f"
+
+[models.olmo3_7b_sft]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.olmo3_7b_sft.pin]
+repo_id = "allenai/Olmo-3-7B-Instruct-SFT"
+revision = "e1452fc572d51966ff4aaeb25118b891eb93e549"
+
+[models.olmo3_7b_dpo]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.olmo3_7b_dpo.pin]
+repo_id = "allenai/Olmo-3-7B-Instruct-DPO"
+revision = "b33130b7de49f0c2553b5c2b3bc8409ff3e627d1"
+
+[models.olmo3_7b_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.olmo3_7b_instruct.pin]
+repo_id = "allenai/Olmo-3-7B-Instruct"
+revision = "6e5971d9eba42665f5bd5a0fcf047f299ce1dccc"
+
+[models.olmoe_1b_7b_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.olmoe_1b_7b_base.pin]
+repo_id = "allenai/OLMoE-1B-7B-0125"
+revision = "9b0c1aa87e34a20052389dce1f0cf01da783f654"
+
+[models.olmoe_1b_7b_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.olmoe_1b_7b_instruct.pin]
+repo_id = "allenai/OLMoE-1B-7B-0125-Instruct"
+revision = "b89a7c4bc24fb9e55ce2543c9458ce0ca5c4650e"

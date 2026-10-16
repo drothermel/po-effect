@@ -1,36 +1,193 @@
-[olmes_rc]
+[prompts.olmes_rc]
+attempt = "score"
+admits = ["score"]
 shot_separator = "\n\n"
 
-[olmes_rc.item_format]
+[prompts.olmes_rc.item_format]
 question_prefix = "Question: "
 answer_prefix = "Answer:"
 answer_break = "\n"
 continuation_prefix = " "
+candidates = "choice_text"
 unconditional_context = "Answer:"
 
-[olmes_rc.provenance]
+[[prompts.olmes_rc.provenance]]
 repo = "https://github.com/allenai/olmes"
 commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
 path = "oe_eval/tasks/fewshot_sources.py"
 symbol = 'FEWSHOT_SOURCES["OLMES:ARC-Challenge"]'
 license = "Apache-2.0"
+covers = "shots"
 
-[[olmes_rc.shots]]
+[[prompts.olmes_rc.shots]]
 split = "train"
 native_id = "Mercury_SC_415702"
 
-[[olmes_rc.shots]]
+[[prompts.olmes_rc.shots]]
 split = "train"
 native_id = "MCAS_2009_5_6516"
 
-[[olmes_rc.shots]]
+[[prompts.olmes_rc.shots]]
 split = "train"
 native_id = "Mercury_7233695"
 
-[[olmes_rc.shots]]
+[[prompts.olmes_rc.shots]]
 split = "train"
 native_id = "Mercury_7041615"
 
-[[olmes_rc.shots]]
+[[prompts.olmes_rc.shots]]
+split = "train"
+native_id = "MCAS_1998_4_3"
+
+[prompts.olmes_mc]
+attempt = "score"
+admits = ["score", "generate"]
+shot_separator = "\n\n"
+
+[prompts.olmes_mc.item_format]
+question_prefix = "Question: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+candidates = "choice_label"
+choices_prefix = ""
+label_prefix = " "
+label_suffix = ". "
+
+[[prompts.olmes_mc.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:ARC-Challenge"]'
+license = "Apache-2.0"
+covers = "shots"
+
+[[prompts.olmes_mc.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/utils.py"
+symbol = 'make_mcq_prompt'
+license = "Apache-2.0"
+covers = "query layout and choice listing"
+
+[[prompts.olmes_mc.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/arc.py"
+symbol = 'ARCEasyMC._process_doc; ARCEasyMC.unconditioned_prompt'
+license = "Apache-2.0"
+covers = "label candidates and no unconditional request"
+
+[[prompts.olmes_mc.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/base_task.py"
+symbol = 'MultipleChoiceTask.construct_requests; MultipleChoiceTask.doc_to_target; Task.fewshot_context'
+license = "Apache-2.0"
+covers = "continuation prefix and shot joining"
+
+[[prompts.olmes_mc.shots]]
+split = "train"
+native_id = "Mercury_SC_415702"
+
+[[prompts.olmes_mc.shots]]
+split = "train"
+native_id = "MCAS_2009_5_6516"
+
+[[prompts.olmes_mc.shots]]
+split = "train"
+native_id = "Mercury_7233695"
+
+[[prompts.olmes_mc.shots]]
+split = "train"
+native_id = "Mercury_7041615"
+
+[[prompts.olmes_mc.shots]]
+split = "train"
+native_id = "MCAS_1998_4_3"
+
+[prompts.cfpo]
+attempt = "generate"
+admits = ["score", "generate"]
+preamble = "You are a commonsense helper. I will provide several examples and a presented question. Your goal is to pick the most reasonable answer among the given options for the current question. Please respond with the corresponding label (A/B/C/D) for the correct answer."
+shots_header = "Here are some examples:\n"
+shots_header_break = "\n"
+shot_separator = "\n\n"
+
+[prompts.cfpo.item_format]
+question_prefix = "Question: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+candidates = "choice_label"
+choices_prefix = "Choices:\n"
+label_prefix = ""
+label_suffix = ": "
+
+[[prompts.cfpo.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:ARC-Challenge"]'
+license = "Apache-2.0"
+covers = "shots, from OLMES rather than CFPO; only the instruction, shots header, and layout come from CFPO"
+
+[[prompts.cfpo.provenance]]
+repo = "https://github.com/microsoft/CFPO"
+commit = "24a720b69d46bf5f07cf097ea61484fefadccbc7"
+path = "src/init_prompts/MultipleChoice.py"
+symbol = 'task_instruction; example_hinter'
+license = "MIT"
+covers = "instruction and shots header"
+
+[[prompts.cfpo.provenance]]
+repo = "https://github.com/microsoft/CFPO"
+commit = "24a720b69d46bf5f07cf097ea61484fefadccbc7"
+path = "src/mutators/format_search_pool/query_format/multiple_choice.py"
+symbol = 'QA_renderer_2'
+license = "MIT"
+covers = "query layout and choice listing"
+
+[[prompts.cfpo.provenance]]
+repo = "https://github.com/microsoft/CFPO"
+commit = "24a720b69d46bf5f07cf097ea61484fefadccbc7"
+path = "src/mutators/format_search_pool/prompt_renderer/direct_joint.py"
+symbol = 'direct_joint_renderer'
+license = "MIT"
+covers = "section joining"
+
+[[prompts.cfpo.provenance]]
+repo = "https://github.com/microsoft/CFPO"
+commit = "24a720b69d46bf5f07cf097ea61484fefadccbc7"
+path = "src/prompt.py"
+symbol = 'Prompt.render_examples; Prompt.render_query'
+license = "MIT"
+covers = "shots header break, shot joining, and empty query answer"
+
+[[prompts.cfpo.provenance]]
+repo = "https://github.com/microsoft/CFPO"
+commit = "24a720b69d46bf5f07cf097ea61484fefadccbc7"
+path = "src/tasks/MultipleChoice.py"
+symbol = 'MultipleChoiceTask.run_evaluate'
+license = "MIT"
+covers = "newline collapse, a no-op for the pinned rows"
+
+[[prompts.cfpo.shots]]
+split = "train"
+native_id = "Mercury_SC_415702"
+
+[[prompts.cfpo.shots]]
+split = "train"
+native_id = "MCAS_2009_5_6516"
+
+[[prompts.cfpo.shots]]
+split = "train"
+native_id = "Mercury_7233695"
+
+[[prompts.cfpo.shots]]
+split = "train"
+native_id = "Mercury_7041615"
+
+[[prompts.cfpo.shots]]
 split = "train"
 native_id = "MCAS_1998_4_3"

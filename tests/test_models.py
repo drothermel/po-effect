@@ -10,6 +10,8 @@ from po_effect.models import (
     Device,
     ModelsConfig,
     RunConditions,
+    load_model_handle,
+    load_models_config,
     provider_config,
 )
 
@@ -36,14 +38,37 @@ def write_models(tmp_path: Path, field: str, line: str | None) -> Path:
 def test_model_entry_requires_known_tokenization_fields(
     tmp_path: Path, field: str, line: str | None
 ) -> None:
-    with pytest.raises(ValidationError, match=rf"datadec_150m\.{field}\n"):
+    with pytest.raises(
+        ValidationError, match=rf"models\.dclm_baseline_150m_seed0\.{field}\n"
+    ):
         load_config(write_models(tmp_path, field, line), ModelsConfig)
 
 
+def test_config_declares_every_model_entry() -> None:
+    config = load_models_config()
+    assert len(config.models) == 37
+
+
+def test_default_resolves_to_dclm_baseline_1b_seed0() -> None:
+    handle = load_model_handle()
+    assert load_models_config().default == "dclm_baseline_1b_seed0"
+    assert handle.pin.repo_id == "drotherm/DataDecide-dclm-baseline-1B"
+    assert handle == load_model_handle(name="dclm_baseline_1b_seed0")
+
+
+def test_unknown_default_is_rejected(tmp_path: Path) -> None:
+    path = write_models(tmp_path, "default", 'default = "missing"')
+    with pytest.raises(ValidationError, match=r"default\n.*'missing'"):
+        load_config(path, ModelsConfig)
+
+
+def test_unknown_model_name_is_rejected() -> None:
+    with pytest.raises(ValueError, match="unknown model 'missing'"):
+        load_model_handle(name="missing")
+
+
 def test_model_entry_maps_to_provider_config() -> None:
-    handle = load_config(
-        DEFAULT_CONFIG_DIR / "models.toml", ModelsConfig
-    ).datadec_150m
+    handle = load_model_handle()
     local = provider_config(
         handle, RunConditions(device=Device.CPU, batch_size=3)
     ).definition.local
