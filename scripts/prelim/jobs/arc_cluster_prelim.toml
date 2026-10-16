@@ -1,0 +1,611 @@
+[[jobs]]
+name = "cluster-olmo3-7b-base-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "cluster-olmo3-7b-base-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "cluster-olmo3-7b-base-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "cluster-olmo3-7b-base-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "cluster-olmo3-7b-base-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "cluster-olmo3-7b-base-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-gen-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-gen-format_fixed-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "format_fixed", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-gen-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-sft-gen-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_sft", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-gen-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-gen-format_fixed-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "format_fixed", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-gen-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-dpo-gen-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_dpo", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-gen-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-gen-format_fixed-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "format_fixed", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-gen-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmo3-7b-instruct-gen-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmo3_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-base-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmoe_1b_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-base-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmoe_1b_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-base-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmoe_1b_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-base-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmoe_1b_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-base-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmoe_1b_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-base-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmoe_1b_7b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-gen-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-gen-format_fixed-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "format_fixed", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-gen-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-olmoe-1b-7b-instruct-gen-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "generate", "--prompt", "cfpo", "--model", "olmoe_1b_7b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-base-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_8b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "cluster-qwen3-8b-base-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_8b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "cluster-qwen3-8b-base-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_8b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "cluster-qwen3-8b-base-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_8b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "cluster-qwen3-8b-base-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_8b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "cluster-qwen3-8b-base-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_8b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-gen-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-gen-format_fixed-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "format_fixed", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-gen-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-8b-instruct-gen-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_8b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-base-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_14b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_base"
+
+[[jobs]]
+name = "cluster-qwen3-14b-base-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_14b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_base"
+
+[[jobs]]
+name = "cluster-qwen3-14b-base-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_14b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_base"
+
+[[jobs]]
+name = "cluster-qwen3-14b-base-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_14b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_base"
+
+[[jobs]]
+name = "cluster-qwen3-14b-base-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_14b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_base"
+
+[[jobs]]
+name = "cluster-qwen3-14b-base-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_14b_base", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_base"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-gen-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-gen-format_fixed-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "format_fixed", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-gen-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-qwen3-14b-instruct-gen-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "generate", "--prompt", "cfpo", "--model", "qwen3_14b_instruct", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "qwen3_14b_instruct"
+
+[[jobs]]
+name = "cluster-pythia-6-9b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "pythia_6_9b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_6_9b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-6-9b-seed0-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "pythia_6_9b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_6_9b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-6-9b-seed0-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "pythia_6_9b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_6_9b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-6-9b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "pythia_6_9b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_6_9b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-6-9b-seed0-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "pythia_6_9b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_6_9b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-6-9b-seed0-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "pythia_6_9b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_6_9b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-12b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "pythia_12b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_12b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-12b-seed0-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "pythia_12b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_12b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-12b-seed0-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "pythia_12b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_12b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-12b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "pythia_12b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_12b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-12b-seed0-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "pythia_12b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_12b_seed0"
+
+[[jobs]]
+name = "cluster-pythia-12b-seed0-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "pythia_12b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "pythia_12b_seed0"
+
+[[jobs]]
+name = "cluster-dclm-baseline-1b-seed0-raw-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "dclm_baseline_1b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "cluster-dclm-baseline-1b-seed0-raw-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "dclm_baseline_1b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "cluster-dclm-baseline-1b-seed0-raw-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_mc", "--model", "dclm_baseline_1b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "cluster-dclm-baseline-1b-seed0-pmi-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "dclm_baseline_1b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "cluster-dclm-baseline-1b-seed0-pmi-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "dclm_baseline_1b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "cluster-dclm-baseline-1b-seed0-pmi-null300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "null", "--attempt", "score", "--rule", "pmi", "--prompt", "olmes_rc", "--model", "dclm_baseline_1b_seed0", "--device", "cuda", "--seed", "0", "--max-metric-calls", "300", "--out", "{out_root}/arc_cluster/{name}"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
