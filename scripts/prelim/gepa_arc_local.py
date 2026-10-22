@@ -4,7 +4,6 @@ import argparse
 from time import perf_counter
 from typing import TYPE_CHECKING
 
-from dr_hf import read_rows
 from prelim_arc import (
     OBJECTIVE_READOUTS,
     Harness,
@@ -68,15 +67,17 @@ from po_effect.prompts import (
 )
 from po_effect.records import open_record_store
 from po_effect.tasks import (
-    ArcChallengeTask,
     AttemptKind,
     Item,
     ItemIndex,
     ItemSet,
     ItemSetDerivation,
     ItemSetRole,
+    Task,
+    TaskName,
     build_item_index,
-    load_arc_challenge,
+    load_task,
+    task_rows,
 )
 
 if TYPE_CHECKING:
@@ -88,18 +89,14 @@ DEFAULT_PROMPTS = {AttemptKind.SCORE: "olmes_mc", AttemptKind.GENERATE: "cfpo"}
 DEFAULT_MAX_NEW_TOKENS = 64
 DEFAULT_BATCH_SIZE = 8
 ITEM_SET_METHOD = "prelim_sorted_prefix"
-SPLIT_SOURCES = {
-    Split.TRAIN: "train",
-    Split.VAL: "validation",
-    Split.HELDOUT: "test",
-}
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Optimize the preamble of a po-effect prompt entry for "
-            "ARC-Challenge with a local po-effect model, either scored by "
+            "ARC-Challenge or another tasks.toml task (--task) with a local "
+            "po-effect model, either scored by "
             "likelihood over the answer candidates or generating greedily "
             "and read out by the --objective readout, under one arm "
             "(gepa, naive, format_fixed, null, or eval), with an OpenRouter "
@@ -144,19 +141,19 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--prompt",
         help=(
-            "prompt entry from prompts.toml (default "
+            "prompt entry from prompts.toml (default for arc_challenge "
             + ", ".join(
                 f"{name} for {kind.value}"
                 for kind, name in DEFAULT_PROMPTS.items()
             )
-            + ")"
+            + "; required for other tasks)"
         ),
     )
     return parser.parse_args(argv)
 
 
 def split_item_sets(
-    task: ArcChallengeTask, items: ItemIndex, splits: Splits
+    task: Task, items: ItemIndex, splits: Splits
 ) -> dict[Split, ItemSet]:
     return {
         split: ItemSet(
@@ -170,7 +167,7 @@ def split_item_sets(
                 parent=items.splits[source].content_hash,
             ),
         )
-        for split, source in SPLIT_SOURCES.items()
+        for split, source in splits.sources.items()
     }
 
 
@@ -186,9 +183,13 @@ def label(candidate: Candidate, item: Item) -> str:
 
 class LikelihoodMode:
     def __init__(
-        self, renderer: MultipleChoiceRenderer, rule: DecisionRule
+        self,
+        renderer: MultipleChoiceRenderer,
+        rule: DecisionRule,
+        candidates: CandidateKind,
     ) -> None:
         self.rule = rule
+        self.candidates = candidates
         self.solver = ScoredCandidatesSolver(renderer)
         self.readout = LikelihoodArgmaxReadout(rule)
         self.readout_ids: tuple[ReadoutId, ...] = (rule,)
@@ -207,8 +208,13 @@ class LikelihoodMode:
             )
         candidate = self.readout.read(attempt, item.problem)
         score = judged(candidate, item)
-        chosen = attempt.candidates[candidate.index].strip()
-        gold = attempt.candidates[item.reference.gold_index].strip()
+        shown = (
+            attempt.candidates
+            if self.candidates is CandidateKind.CHOICE_LABEL
+            else item.problem.choices
+        )
+        chosen = shown[candidate.index].strip()
+        gold = shown[item.reference.gold_index].strip()
         return ItemResult(
             item_id=item.item_id,
             native_id=item.native_id,
@@ -509,16 +515,21 @@ def resolve_mode(
             f"rule pmi needs an unconditional context, which prompt "
             f"{args.prompt!r} lacks"
         )
-    return prompt, LikelihoodMode(renderer, rule)
+    return prompt, LikelihoodMode(
+        renderer, rule, prompt.item_format.candidates
+    )
 
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     kind = AttemptKind(args.attempt)
+    name = TaskName(args.task)
     if args.prompt is None:
+        if name is not TaskName.ARC_CHALLENGE:
+            raise SystemExit(f"--prompt is required for task {name.value}")
         args.prompt = DEFAULT_PROMPTS[kind]
-    task = load_arc_challenge(args.config_dir)
-    items = build_item_index(task, tuple(read_rows(task.source)))
+    task = load_task(name, args.config_dir)
+    items = build_item_index(task, task_rows(task))
     prompt = resolve_prompt(
         args.prompt,
         load_prompt_config(args.config_dir, args.prompt),
@@ -534,7 +545,7 @@ def main(argv: list[str] | None = None) -> None:
         args.config_dir, handle.response_template
     )
     prompt, mode = resolve_mode(args, kind, prompt, response_template)
-    splits = build_splits(items, prompt, args)
+    splits = build_splits(task, items, prompt, args)
     recorder = RunRecorder(args.out)
     recorder.log(
         f"start: arm {args.arm}, model {args.model}, {mode.describe}, "
@@ -568,6 +579,7 @@ def main(argv: list[str] | None = None) -> None:
                     router, args.reflection_model, args.reflection_reasoning
                 ),
                 {
+                    "task": task.task_id,
                     "model": args.model,
                     "device": args.device,
                     **mode.describe,

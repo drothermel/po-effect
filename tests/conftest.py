@@ -38,7 +38,7 @@ from po_effect.prompts import (
 )
 from po_effect.records import DrStoreRecordStore, open_record_store
 from po_effect.tasks import (
-    ArcChallengeTask,
+    ArcTask,
     AttemptKind,
     IndexReference,
     Item,
@@ -150,7 +150,7 @@ def example_format() -> ItemFormat:
     )
 
 
-def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
+def evaluation_item_set(task: ArcTask, items: ItemIndex) -> ItemSet:
     origin = items.splits[task.config.split]
     return ItemSet(
         name=origin.key.name,
@@ -182,7 +182,7 @@ def readout_spec(
 
 
 @pytest.fixture
-def task() -> ArcChallengeTask:
+def task() -> ArcTask:
     return load_arc_challenge()
 
 
@@ -217,18 +217,18 @@ def prompt_config() -> PromptConfig:
 
 
 @pytest.fixture
-def items(task: ArcChallengeTask, rows: tuple[SourceRow, ...]) -> ItemIndex:
+def items(task: ArcTask, rows: tuple[SourceRow, ...]) -> ItemIndex:
     return build_item_index(task, rows)
 
 
 @pytest.fixture
-def item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
+def item_set(task: ArcTask, items: ItemIndex) -> ItemSet:
     return evaluation_item_set(task, items)
 
 
 @pytest.fixture
 def prompt(
-    task: ArcChallengeTask, items: ItemIndex, prompt_config: PromptConfig
+    task: ArcTask, items: ItemIndex, prompt_config: PromptConfig
 ) -> PromptSpec:
     return resolve_prompt("example", prompt_config, task, items)
 
@@ -241,7 +241,7 @@ def record_store(tmp_path: Path) -> Iterator[DrStoreRecordStore]:
 
 @pytest.fixture
 def example(
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt: PromptSpec,

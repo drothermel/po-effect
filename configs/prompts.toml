@@ -206,3 +206,435 @@ native_id = "Mercury_7041615"
 [[prompts.cfpo.shots]]
 split = "train"
 native_id = "MCAS_1998_4_3"
+
+[prompts.olmes_rc_arc_easy]
+attempt = "score"
+admits = ["score"]
+shot_separator = "\n\n"
+
+[prompts.olmes_rc_arc_easy.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
+[prompts.olmes_rc_arc_easy.item_format]
+question_prefix = "Question: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+candidates = "choice_text"
+unconditional_context = "Answer:"
+
+[[prompts.olmes_rc_arc_easy.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:ARC-Easy"]'
+license = "Apache-2.0"
+covers = "shots (first five entries, located in the pinned train split)"
+
+[[prompts.olmes_rc_arc_easy.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/arc.py"
+symbol = 'ARCEasy._process_doc; ARCEasy.unconditioned_prompt'
+license = "Apache-2.0"
+covers = "query layout, choice text candidates, and unconditional context"
+
+[[prompts.olmes_rc_arc_easy.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/configs/tasks.py"
+symbol = 'TASK_CONFIGS["arc_easy:rc::olmes"]'
+license = "Apache-2.0"
+covers = "evaluation split and five shots"
+
+[[prompts.olmes_rc_arc_easy.shots]]
+split = "train"
+native_id = "MCAS_2007_8_5189"
+
+[[prompts.olmes_rc_arc_easy.shots]]
+split = "train"
+native_id = "Mercury_SC_401169"
+
+[[prompts.olmes_rc_arc_easy.shots]]
+split = "train"
+native_id = "MCAS_2004_8_27"
+
+[[prompts.olmes_rc_arc_easy.shots]]
+split = "train"
+native_id = "NYSEDREGENTS_2006_8_10"
+
+[[prompts.olmes_rc_arc_easy.shots]]
+split = "train"
+native_id = "Mercury_7013388"
+
+[prompts.olmes_rc_hellaswag]
+attempt = "score"
+admits = ["score"]
+shot_separator = "\n\n"
+
+[prompts.olmes_rc_hellaswag.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
+[prompts.olmes_rc_hellaswag.item_format]
+question_prefix = ""
+answer_prefix = ""
+answer_break = ""
+continuation_prefix = " "
+candidates = "choice_text"
+unconditional_context = "Answer:"
+
+[[prompts.olmes_rc_hellaswag.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:hellaswag"]'
+license = "Apache-2.0"
+covers = "shots (first five entries, located in the pinned train split)"
+
+[[prompts.olmes_rc_hellaswag.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/hellaswag.py"
+symbol = 'HellaSwag._process_doc; HellaSwag.preprocess; HellaSwag.unconditioned_prompt'
+license = "Apache-2.0"
+covers = "query layout, choice text candidates, and unconditional context"
+
+[[prompts.olmes_rc_hellaswag.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/configs/tasks.py"
+symbol = 'TASK_CONFIGS["hellaswag:rc::olmes"]'
+license = "Apache-2.0"
+covers = "evaluation split and five shots"
+
+[[prompts.olmes_rc_hellaswag.shots]]
+split = "train"
+native_id = "train:14745"
+
+[[prompts.olmes_rc_hellaswag.shots]]
+split = "train"
+native_id = "train:14755"
+
+[[prompts.olmes_rc_hellaswag.shots]]
+split = "train"
+native_id = "train:2"
+
+[[prompts.olmes_rc_hellaswag.shots]]
+split = "train"
+native_id = "train:19"
+
+[[prompts.olmes_rc_hellaswag.shots]]
+split = "train"
+native_id = "train:14754"
+
+[prompts.olmes_rc_piqa]
+attempt = "score"
+admits = ["score"]
+shot_separator = "\n\n"
+
+[prompts.olmes_rc_piqa.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
+[prompts.olmes_rc_piqa.item_format]
+question_prefix = "Goal: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+candidates = "choice_text"
+unconditional_context = "Answer:"
+
+[[prompts.olmes_rc_piqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:piqa"]'
+license = "Apache-2.0"
+covers = "shots (first five entries, located in the pinned train split)"
+
+[[prompts.olmes_rc_piqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/piqa.py"
+symbol = 'PiQA._process_doc; PiQA.unconditioned_prompt'
+license = "Apache-2.0"
+covers = "query layout, choice text candidates, and unconditional context"
+
+[[prompts.olmes_rc_piqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/configs/tasks.py"
+symbol = 'TASK_CONFIGS["piqa:rc::olmes"]'
+license = "Apache-2.0"
+covers = "evaluation split and five shots"
+
+[[prompts.olmes_rc_piqa.shots]]
+split = "train"
+native_id = "train:9"
+
+[[prompts.olmes_rc_piqa.shots]]
+split = "train"
+native_id = "train:3"
+
+[[prompts.olmes_rc_piqa.shots]]
+split = "train"
+native_id = "train:4"
+
+[[prompts.olmes_rc_piqa.shots]]
+split = "train"
+native_id = "train:5"
+
+[[prompts.olmes_rc_piqa.shots]]
+split = "train"
+native_id = "train:6"
+
+[prompts.olmes_rc_boolq]
+attempt = "score"
+admits = ["score"]
+shot_separator = "\n\n"
+
+[prompts.olmes_rc_boolq.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
+[prompts.olmes_rc_boolq.item_format]
+question_prefix = "Question: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+candidates = "choice_text"
+
+[[prompts.olmes_rc_boolq.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:BoolQ"]'
+license = "Apache-2.0"
+covers = "shots (first five entries, located in the pinned train split)"
+
+[[prompts.olmes_rc_boolq.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/boolq.py"
+symbol = 'BoolQ._process_doc; BoolQ.unconditioned_prompt'
+license = "Apache-2.0"
+covers = "query layout, choice text candidates, and unconditional context"
+
+[[prompts.olmes_rc_boolq.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/configs/tasks.py"
+symbol = 'TASK_CONFIGS["boolq:rc::olmes"]'
+license = "Apache-2.0"
+covers = "evaluation split and five shots"
+
+[[prompts.olmes_rc_boolq.shots]]
+split = "train"
+native_id = "train:0"
+
+[[prompts.olmes_rc_boolq.shots]]
+split = "train"
+native_id = "train:1"
+
+[[prompts.olmes_rc_boolq.shots]]
+split = "train"
+native_id = "train:7"
+
+[[prompts.olmes_rc_boolq.shots]]
+split = "train"
+native_id = "train:11"
+
+[[prompts.olmes_rc_boolq.shots]]
+split = "train"
+native_id = "train:3"
+
+[prompts.olmes_rc_openbookqa]
+attempt = "score"
+admits = ["score"]
+shot_separator = "\n\n"
+
+[prompts.olmes_rc_openbookqa.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
+[prompts.olmes_rc_openbookqa.item_format]
+question_prefix = "Question: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+candidates = "choice_text"
+unconditional_context = "Answer:"
+
+[[prompts.olmes_rc_openbookqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:openbookqa"]'
+license = "Apache-2.0"
+covers = "shots (first five entries, located in the pinned train split)"
+
+[[prompts.olmes_rc_openbookqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/openbookqa.py"
+symbol = 'OpenBookQA._process_doc; OpenBookQA.unconditioned_prompt'
+license = "Apache-2.0"
+covers = "query layout, choice text candidates, and unconditional context"
+
+[[prompts.olmes_rc_openbookqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/configs/tasks.py"
+symbol = 'TASK_CONFIGS["openbookqa:rc::olmes"]'
+license = "Apache-2.0"
+covers = "evaluation split and five shots"
+
+[[prompts.olmes_rc_openbookqa.shots]]
+split = "train"
+native_id = "7-584"
+
+[[prompts.olmes_rc_openbookqa.shots]]
+split = "train"
+native_id = "7-870"
+
+[[prompts.olmes_rc_openbookqa.shots]]
+split = "train"
+native_id = "9-732"
+
+[[prompts.olmes_rc_openbookqa.shots]]
+split = "train"
+native_id = "9-782"
+
+[[prompts.olmes_rc_openbookqa.shots]]
+split = "train"
+native_id = "8-72"
+
+[prompts.olmes_rc_csqa]
+attempt = "score"
+admits = ["score"]
+shot_separator = "\n\n"
+
+[prompts.olmes_rc_csqa.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
+[prompts.olmes_rc_csqa.item_format]
+question_prefix = "Question: "
+answer_prefix = "Answer:"
+answer_break = "\n"
+continuation_prefix = " "
+candidates = "choice_text"
+unconditional_context = "Answer:"
+
+[[prompts.olmes_rc_csqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:commonsense_qa"]'
+license = "Apache-2.0"
+covers = "shots (first five entries, located in the pinned train split)"
+
+[[prompts.olmes_rc_csqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/csqa.py"
+symbol = 'CommonsenseQA._process_doc; CommonsenseQA.unconditioned_prompt'
+license = "Apache-2.0"
+covers = "query layout, choice text candidates, and unconditional context"
+
+[[prompts.olmes_rc_csqa.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/configs/tasks.py"
+symbol = 'TASK_CONFIGS["csqa:rc::olmes"]'
+license = "Apache-2.0"
+covers = "evaluation split and five shots"
+
+[[prompts.olmes_rc_csqa.shots]]
+split = "train"
+native_id = "61fe6e879ff18686d7552425a36344c8"
+
+[[prompts.olmes_rc_csqa.shots]]
+split = "train"
+native_id = "02e821a3e53cb320790950aab4489e85"
+
+[[prompts.olmes_rc_csqa.shots]]
+split = "train"
+native_id = "23505889b94e880c3e89cff4ba119860"
+
+[[prompts.olmes_rc_csqa.shots]]
+split = "train"
+native_id = "a76403b4921a9281b6ee2a7241a5ec9f"
+
+[[prompts.olmes_rc_csqa.shots]]
+split = "train"
+native_id = "6dc921840aa1e5dda3333b79007f630b"
+
+[prompts.olmes_rc_winogrande]
+attempt = "score"
+admits = ["score"]
+shot_separator = "\n\n"
+
+[prompts.olmes_rc_winogrande.chat]
+enable_thinking = false
+shots_as_turns = false
+preamble_as_system = false
+
+[prompts.olmes_rc_winogrande.item_format]
+question_prefix = ""
+answer_prefix = ""
+answer_break = ""
+continuation_prefix = " "
+candidates = "blank_fill"
+
+[[prompts.olmes_rc_winogrande.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/fewshot_sources.py"
+symbol = 'FEWSHOT_SOURCES["OLMES:winogrande"]'
+license = "Apache-2.0"
+covers = "shots (first five entries, located in the pinned train split)"
+
+[[prompts.olmes_rc_winogrande.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/tasks/oe_eval_tasks/winogrande.py"
+symbol = 'Winogrande.partial_context; Winogrande.partial_target; Winogrande.construct_requests; Winogrande.append_context'
+license = "Apache-2.0"
+covers = "partial scoring: one context per option up to the blank, the shared remainder as the scored continuation, no unconditional request"
+
+[[prompts.olmes_rc_winogrande.provenance]]
+repo = "https://github.com/allenai/olmes"
+commit = "5a51f502d463b8cdc4a2dcad7d7096c41ff1197e"
+path = "oe_eval/configs/tasks.py"
+symbol = 'TASK_CONFIGS["winogrande:rc::olmes"]'
+license = "Apache-2.0"
+covers = "evaluation split and five shots"
+
+[[prompts.olmes_rc_winogrande.shots]]
+split = "train"
+native_id = "train:19875"
+
+[[prompts.olmes_rc_winogrande.shots]]
+split = "train"
+native_id = "train:26035"
+
+[[prompts.olmes_rc_winogrande.shots]]
+split = "train"
+native_id = "train:2302"
+
+[[prompts.olmes_rc_winogrande.shots]]
+split = "train"
+native_id = "train:13568"
+
+[[prompts.olmes_rc_winogrande.shots]]
+split = "train"
+native_id = "train:7412"

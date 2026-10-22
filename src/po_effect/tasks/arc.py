@@ -2,21 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from dr_hf import DatasetPin
 from pydantic import BaseModel, ConfigDict, Field
 
-from po_effect.config import DEFAULT_CONFIG_DIR, load_config
 from po_effect.identity import FrozenContract
 from po_effect.tasks.items import (
-    AttemptKind,
-    IndexReference,
-    Item,
     MultipleChoiceProblem,
+    SourceTask,
+    TaskConfig,
 )
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from dr_hf import SourceRow
 
 
@@ -28,17 +23,9 @@ class NumericAnswerKeys(FrozenContract):
     five: str = Field(alias="5")
 
 
-class ArcChallengeConfig(FrozenContract):
-    task_id: str
-    version: int = Field(ge=1)
-    source: DatasetPin
-    split: str
+class ArcConfig(TaskConfig):
     answer_letters: str
     numeric_answer_keys: NumericAnswerKeys
-
-
-class TasksConfig(FrozenContract):
-    arc_challenge: ArcChallengeConfig
 
 
 class ArcChoices(BaseModel):
@@ -55,18 +42,8 @@ class ArcRow(BaseModel):
     answer_key: str = Field(alias="answerKey")
 
 
-class ArcChallengeTask:
-    admissible_kinds = frozenset({AttemptKind.SCORE, AttemptKind.GENERATE})
-
-    def __init__(self, config: ArcChallengeConfig) -> None:
-        self.config = config
-        self.task_id = config.task_id
-        self.version = config.version
-        self.source = config.source
-
-    def build(self, row: SourceRow) -> Item:
-        if row.pin != self.source:
-            raise ValueError("source row belongs to a different dataset pin")
+class ArcTask(SourceTask[ArcConfig]):
+    def parse(self, row: SourceRow) -> tuple[MultipleChoiceProblem, int]:
         fields = ArcRow.model_validate(row.fields)
         if fields.id != row.native_id:
             raise ValueError("native id differs from source row id")
@@ -75,21 +52,9 @@ class ArcChallengeTask:
         )
         if letter not in self.config.answer_letters:
             raise ValueError(f"unknown answer key {fields.answer_key!r}")
-        return Item(
-            task_id=self.task_id,
-            task_version=self.version,
-            native_id=row.native_id,
-            problem=MultipleChoiceProblem(
+        return (
+            MultipleChoiceProblem(
                 question=fields.question, choices=fields.choices.text
             ),
-            reference=IndexReference(
-                gold_index=self.config.answer_letters.index(letter)
-            ),
+            self.config.answer_letters.index(letter),
         )
-
-
-def load_arc_challenge(
-    config_dir: Path = DEFAULT_CONFIG_DIR,
-) -> ArcChallengeTask:
-    config = load_config(config_dir / "tasks.toml", TasksConfig)
-    return ArcChallengeTask(config.arc_challenge)

@@ -13,6 +13,11 @@ A **task** reads rows from a Hugging Face dataset pinned by commit and turns
 each into an item with a typed problem half and a typed reference half.
 Solvers never see the reference and judges never see the prompt. Item ids are
 content-addressed, so a re-pin that changes nothing keeps every id.
+`configs/tasks.toml` pins ARC-Challenge and the OLMES likelihood tasks
+ARC-Easy, HellaSwag, PIQA, WinoGrande, BoolQ, OpenBookQA, and CommonsenseQA,
+each with the evaluation split OLMES uses and only the splits that carry
+labels. WinoGrande scores one context per option, ending at the filled blank,
+against the shared rest of the sentence, as OLMES does.
 
 A **prompt** is data: a format, a list of shots, and chat settings for
 models with a chat template. Shots reference items by split and native id

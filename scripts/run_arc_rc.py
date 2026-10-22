@@ -43,7 +43,7 @@ from po_effect.prompts import (
 )
 from po_effect.records import export_wide, open_record_store
 from po_effect.tasks import (
-    ArcChallengeTask,
+    ArcTask,
     AttemptKind,
     ItemIndex,
     ItemSet,
@@ -167,7 +167,7 @@ def model_help(models: ModelsConfig) -> str:
     return "\n".join(lines)
 
 
-def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
+def evaluation_item_set(task: ArcTask, items: ItemIndex) -> ItemSet:
     origin = items.splits.get(task.config.split)
     if origin is None:
         raise ValueError(f"unknown evaluation split {task.config.split!r}")
@@ -186,7 +186,7 @@ def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
 def measure(  # noqa: PLR0913, PLR0917
     spec: MeasurementSpec,
     conditions: RunConditions,
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     solver: Solver,
     store: RecordStore,

@@ -56,7 +56,7 @@ from po_effect.prompts import (
     resolve_prompt,
 )
 from po_effect.tasks import (
-    ArcChallengeTask,
+    ArcTask,
     AttemptKind,
     Item,
     ItemIndex,
@@ -249,7 +249,7 @@ def template_label(template: ChatTemplate) -> Text:
     )
 
 
-def evaluation_item_set(task: ArcChallengeTask, items: ItemIndex) -> ItemSet:
+def evaluation_item_set(task: ArcTask, items: ItemIndex) -> ItemSet:
     origin = items.splits.get(task.config.split)
     if origin is None:
         raise ValueError(f"unknown evaluation split {task.config.split!r}")

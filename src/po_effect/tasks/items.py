@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import UNIQUE, StrEnum, auto, verify
 from typing import TYPE_CHECKING, ClassVar
 
-from dr_hf import origin_subsets
+from dr_hf import DatasetPin, origin_subsets
 from dr_serialize import IdentityDocument, build_identity_document, json_hash
 from pydantic import Field, model_validator
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from dr_hf import NamedSubset, SourceRow
 
-    from po_effect.tasks.arc_challenge import ArcChallengeTask
+    from po_effect.tasks.registry import Task
 
 ITEM_SCHEMA = "po_effect.item"
 ITEM_SCHEMA_VERSION = 2
@@ -101,6 +101,48 @@ class ItemSet(FrozenContract):
     derivation: ItemSetDerivation
 
 
+class TaskConfig(FrozenContract):
+    task_id: str
+    version: int = Field(ge=1)
+    source: DatasetPin
+    split: str
+    splits: tuple[str, ...] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_split(self) -> TaskConfig:
+        if self.split not in self.splits:
+            raise ValueError(
+                f"evaluation split {self.split!r} is not a loaded split"
+            )
+        return self
+
+
+class SourceTask[Config: TaskConfig]:
+    admissible_kinds = frozenset({AttemptKind.SCORE, AttemptKind.GENERATE})
+
+    def __init__(self, config: Config) -> None:
+        self.config = config
+        self.task_id = config.task_id
+        self.version = config.version
+        self.source = config.source
+        self.splits = config.splits
+
+    def build(self, row: SourceRow) -> Item:
+        if row.pin != self.source:
+            raise ValueError("source row belongs to a different dataset pin")
+        problem, gold = self.parse(row)
+        return Item(
+            task_id=self.task_id,
+            task_version=self.version,
+            native_id=row.native_id,
+            problem=problem,
+            reference=IndexReference(gold_index=gold),
+        )
+
+    def parse(self, row: SourceRow) -> tuple[MultipleChoiceProblem, int]:
+        raise NotImplementedError
+
+
 @dataclass(frozen=True, slots=True)
 class ItemIndex:
     items: Mapping[str, Item]
@@ -126,9 +168,7 @@ class ItemIndex:
         return self.items[self.item_ids[native_id]]
 
 
-def build_item_index(
-    task: ArcChallengeTask, rows: Sequence[SourceRow]
-) -> ItemIndex:
+def build_item_index(task: Task, rows: Sequence[SourceRow]) -> ItemIndex:
     splits = {
         subset.key.name: subset for subset in origin_subsets(task.source, rows)
     }

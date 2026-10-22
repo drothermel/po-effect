@@ -60,7 +60,7 @@ if TYPE_CHECKING:
     from dr_providers.surfaces.testing.fake_backend import FakeLocalBackend
 
     from po_effect.records import DrStoreRecordStore
-    from po_effect.tasks import ArcChallengeTask, ItemIndex, ItemSet
+    from po_effect.tasks import ArcTask, ItemIndex, ItemSet
 
 TEMPLATE = (
     "{% for m in messages %}<{{ m.role }}>{{ m.content }}</{{ m.role }}>"
@@ -426,7 +426,7 @@ def test_letter_readouts_read_the_answer_part(
 
 
 def chat_measurement(  # noqa: PLR0913, PLR0917
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
@@ -458,7 +458,7 @@ def chat_measurement(  # noqa: PLR0913, PLR0917
 
 
 def test_chat_measurement_records_template_and_reasoning_visibility(
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
@@ -508,7 +508,7 @@ def test_chat_measurement_records_template_and_reasoning_visibility(
 
 
 def test_measurement_refuses_session_with_other_chat_settings(
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,

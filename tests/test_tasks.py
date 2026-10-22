@@ -7,12 +7,12 @@ from conftest import make_item, make_row
 from dr_hf import SourceRow
 
 if TYPE_CHECKING:
-    from po_effect.tasks import ArcChallengeTask, Item, ItemIndex, ItemSet
+    from po_effect.tasks import ArcTask, Item, ItemIndex, ItemSet
 
 
 @pytest.mark.parametrize(("key", "gold"), [("C", 2), ("3", 2), ("5", 4)])
 def test_numeric_answer_mapping(
-    task: ArcChallengeTask,
+    task: ArcTask,
     key: str,
     gold: int,
 ) -> None:
@@ -34,7 +34,7 @@ def test_numeric_answer_mapping(
 
 
 @pytest.mark.parametrize("key", ["Z", "5"])
-def test_bad_answer_mapping(task: ArcChallengeTask, key: str) -> None:
+def test_bad_answer_mapping(task: ArcTask, key: str) -> None:
     row = make_row("test", "x", "q", ("a", "b"), key)
     with pytest.raises(ValueError, match=r"unknown answer|beyond the choices"):
         task.build(row)

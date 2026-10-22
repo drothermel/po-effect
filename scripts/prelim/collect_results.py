@@ -31,6 +31,7 @@ FAMILY_ITEMS_FILE = "items.jsonl"
 FAMILY_SEED_PHASE = "naive_heldout"
 FAMILY_BEST_PHASE = "best_heldout"
 ARC_TASK = "arc"
+ARC_CHALLENGE_TASK_ID = "arc_challenge"
 HELDOUT = "heldout"
 MISSING = "-"
 THINK_BLOCK = re.compile(r"<think>.*?(?:</think>|$)", re.DOTALL)
@@ -327,13 +328,20 @@ def arc_attempt(results: Mapping[str, Any], source: Source) -> Attempt:
     return Attempt(raw)
 
 
+def run_task(results: Mapping[str, Any]) -> str:
+    task = results.get("task")
+    if task is None or task == ARC_CHALLENGE_TASK_ID:
+        return ARC_TASK
+    return str(task)
+
+
 def arc_row(run_dir: Path, results: Mapping[str, Any]) -> RunRow:
     source = arc_source(results)
     screen = results.get("screen") or {}
     best = results.get("best_heldout")
     return RunRow(
         source=source.value,
-        task=ARC_TASK,
+        task=run_task(results),
         task_model=results.get("task_model") or results.get("model"),
         reasoning=results.get("reasoning"),
         attempt=arc_attempt(results, source).value,

@@ -16,6 +16,7 @@ from gepa.utils.stop_condition import TimeoutStopCondition
 
 from po_effect.config import DEFAULT_CONFIG_DIR
 from po_effect.measurement import GenerationRule
+from po_effect.tasks import TaskName
 
 if TYPE_CHECKING:
     import argparse
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
     from gepa.core.state import GEPAState
 
     from po_effect.prompts import PromptSpec
-    from po_effect.tasks import ItemIndex
+    from po_effect.tasks import ItemIndex, Task
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1"
 API_KEY_ENV = "OPENROUTER_API_KEY"
@@ -39,7 +40,6 @@ INSTRUCTION_ID_LENGTH = 12
 MAX_EMPTY_PROPOSALS = 3
 TRAIN_SPLIT = "train"
 VAL_SPLIT = "validation"
-HELDOUT_SPLIT = "test"
 DEFAULT_REFLECTION_MODEL = "openai/gpt-5-nano"
 DEFAULT_REFLECTION_REASONING = "low"
 DEFAULT_TRAIN_N = 60
@@ -143,6 +143,17 @@ class ItemEvaluator(Protocol):
 def add_arm_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--config-dir", type=Path, default=DEFAULT_CONFIG_DIR)
     parser.add_argument(
+        "--task",
+        choices=[name.value for name in TaskName],
+        default=TaskName.ARC_CHALLENGE.value,
+        help=(
+            "task from tasks.toml (default arc_challenge); held-out items "
+            "come from its evaluation split, validation items from its "
+            "validation split when that is not the evaluation split and "
+            "otherwise from the train items after the train prefix"
+        ),
+    )
+    parser.add_argument(
         "--arm",
         choices=[arm.value for arm in Arm],
         required=True,
@@ -205,6 +216,7 @@ class Splits:
     train: tuple[str, ...]
     val: tuple[str, ...]
     heldout: tuple[str, ...]
+    sources: Mapping[Split, str]
 
     def split_of(self, item_id: str) -> Split:
         if item_id in self.train:
@@ -233,24 +245,46 @@ class Splits:
 
 
 def build_splits(
-    items: ItemIndex, prompt: PromptSpec, args: argparse.Namespace
+    task: Task, items: ItemIndex, prompt: PromptSpec, args: argparse.Namespace
 ) -> Splits:
     shots = set(prompt.shot_item_ids)
+    heldout_split = task.config.split
+    val_split = (
+        VAL_SPLIT
+        if VAL_SPLIT in task.splits and heldout_split != VAL_SPLIT
+        else TRAIN_SPLIT
+    )
 
-    def first(split: str, count: int) -> tuple[str, ...]:
-        ids = [
+    def ordered(split: str) -> list[str]:
+        return [
             items.item_ids[native]
             for native in sorted(items.splits[split].native_ids)
             if items.item_ids[native] not in shots
         ]
+
+    def take(split: str, ids: list[str], count: int) -> tuple[str, ...]:
         if not 0 < count <= len(ids):
             raise SystemExit(f"{split} has {len(ids)} items, asked {count}")
         return tuple(ids[:count])
 
+    train_ids = ordered(TRAIN_SPLIT)
+    train = take(TRAIN_SPLIT, train_ids, args.train_n)
+    val = take(
+        val_split,
+        train_ids[args.train_n :]
+        if val_split == TRAIN_SPLIT
+        else ordered(val_split),
+        args.val_n,
+    )
     return Splits(
-        train=first(TRAIN_SPLIT, args.train_n),
-        val=first(VAL_SPLIT, args.val_n),
-        heldout=first(HELDOUT_SPLIT, args.heldout_n),
+        train=train,
+        val=val,
+        heldout=take(heldout_split, ordered(heldout_split), args.heldout_n),
+        sources={
+            Split.TRAIN: TRAIN_SPLIT,
+            Split.VAL: val_split,
+            Split.HELDOUT: heldout_split,
+        },
     )
 
 

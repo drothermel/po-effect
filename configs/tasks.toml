@@ -2,6 +2,7 @@
 task_id = "arc_challenge"
 version = 1
 split = "test"
+splits = ["train", "validation", "test"]
 answer_letters = "ABCDE"
 
 [arc_challenge.source]
@@ -16,3 +17,95 @@ native_id_field = "id"
 "3" = "C"
 "4" = "D"
 "5" = "E"
+
+[arc_easy]
+task_id = "arc_easy"
+version = 1
+split = "test"
+splits = ["train", "validation", "test"]
+answer_letters = "ABCDE"
+
+[arc_easy.source]
+repo_id = "allenai/ai2_arc"
+config = "ARC-Easy"
+revision = "210d026faf9955653af8916fad021475a3f00453"
+native_id_field = "id"
+
+[arc_easy.numeric_answer_keys]
+"1" = "A"
+"2" = "B"
+"3" = "C"
+"4" = "D"
+"5" = "E"
+
+[hellaswag]
+task_id = "hellaswag"
+version = 1
+split = "validation"
+splits = ["train", "validation"]
+
+[hellaswag.source]
+repo_id = "allenai/hellaswag"
+config = "default"
+revision = "55aa56627db098098f50549e650a00be2684f4bf"
+native_id_field = "__row__"
+
+[piqa]
+task_id = "piqa"
+version = 1
+split = "validation"
+splits = ["train", "validation"]
+
+[piqa.source]
+repo_id = "ybisk/piqa"
+config = "default"
+revision = "142c51238b3ca2bc61e9a075913871b8b600e8e1"
+native_id_field = "__row__"
+
+[winogrande]
+task_id = "winogrande"
+version = 1
+split = "validation"
+splits = ["train", "validation"]
+
+[winogrande.source]
+repo_id = "allenai/winogrande"
+config = "winogrande_xl"
+revision = "01e74176c63542e6b0bcb004dcdea22d94fb67b5"
+native_id_field = "__row__"
+
+[boolq]
+task_id = "boolq"
+version = 1
+split = "validation"
+splits = ["train", "validation"]
+
+[boolq.source]
+repo_id = "aps/super_glue"
+config = "boolq"
+revision = "3de24cf8022e94f4ee4b9d55a6f539891524d646"
+native_id_field = "__row__"
+
+[openbookqa]
+task_id = "openbookqa"
+version = 1
+split = "test"
+splits = ["train", "validation", "test"]
+
+[openbookqa.source]
+repo_id = "allenai/openbookqa"
+config = "main"
+revision = "388097ea7776314e93a529163e0fea805b8a6454"
+native_id_field = "id"
+
+[csqa]
+task_id = "csqa"
+version = 1
+split = "validation"
+splits = ["train", "validation"]
+
+[csqa.source]
+repo_id = "tau/commonsense_qa"
+config = "default"
+revision = "94630fe30dad47192a8546eb75f094926d47e155"
+native_id_field = "id"

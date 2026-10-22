@@ -71,7 +71,7 @@ if TYPE_CHECKING:
 
     from po_effect.measurement import MeasurementResult
     from po_effect.records import DrStoreRecordStore
-    from po_effect.tasks import ArcChallengeTask, ItemIndex
+    from po_effect.tasks import ArcTask, ItemIndex
 
 
 def test_solver_rejects_shots_in_evaluated_set() -> None:
@@ -467,7 +467,7 @@ def test_resume_proceeds_with_identical_run_conditions(
 
 
 def test_format_without_unconditional_context_scores_conditionally(
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
