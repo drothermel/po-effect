@@ -84,6 +84,7 @@ POST_TRAINED = {
     "olmo3_7b_dpo",
     "olmo3_7b_instruct",
     "olmoe_1b_7b_instruct",
+    "mistral_7b_v0_3_instruct",
 }
 
 

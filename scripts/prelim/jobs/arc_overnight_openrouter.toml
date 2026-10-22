@@ -1,0 +1,39 @@
+[[jobs]]
+name = "or-llama-3.2-3b-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "naive", "--seed", "0", "--task-model", "meta-llama/llama-3.2-3b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.2-3b-instruct"
+
+[[jobs]]
+name = "or-llama-3.2-3b-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--task-model", "meta-llama/llama-3.2-3b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.2-3b-instruct"
+
+[[jobs]]
+name = "or-llama-3.2-3b-gepa300-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--task-model", "meta-llama/llama-3.2-3b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.2-3b-instruct"
+
+[[jobs]]
+name = "or-llama-3.2-3b-gepa300-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--task-model", "meta-llama/llama-3.2-3b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.2-3b-instruct"
+
+[[jobs]]
+name = "or-llama-3.1-8b-naive-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "naive", "--seed", "0", "--task-model", "meta-llama/llama-3.1-8b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.1-8b-instruct"
+
+[[jobs]]
+name = "or-llama-3.1-8b-gepa300-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--task-model", "meta-llama/llama-3.1-8b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.1-8b-instruct"
+
+[[jobs]]
+name = "or-llama-3.1-8b-gepa300-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--task-model", "meta-llama/llama-3.1-8b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.1-8b-instruct"
+
+[[jobs]]
+name = "or-llama-3.1-8b-gepa300-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_openrouter.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--task-model", "meta-llama/llama-3.1-8b-instruct", "--prompt", "cfpo", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--max-tokens", "64", "--out", "{out_root}/arc_openrouter/{name}"]
+model = "meta-llama/llama-3.1-8b-instruct"
