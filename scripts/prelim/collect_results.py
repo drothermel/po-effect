@@ -37,6 +37,11 @@ THINK_BLOCK = re.compile(r"<think>.*?(?:</think>|$)", re.DOTALL)
 ARC_LETTERS = "ABCDE"
 ARC_DIGITS = "12345"
 ANYWHERE_LETTER = re.compile(r"\b([A-E])\b", re.IGNORECASE)
+CHOICES_HEADER = "Choices:"
+CHOICE_LINE = re.compile(r"([A-E]):[ \t]*(.*)")
+CHOICE_TOKEN = re.compile(r"[^\W_]+")
+BARE_LETTER = re.compile(r"[(\[]?([A-E])[)\].:]?", re.IGNORECASE)
+NAIVE_ARM = "naive"
 C23_RUN = re.compile(r"(?<![A-Za-z])([a-d]+)(?![A-Za-z])")
 C23_MARKED = re.compile(r"(?:(?i:output)\s*:|->)[ \t*_`]*([a-d]+)(?![A-Za-z])")
 OPENROUTER_START = re.compile(
@@ -78,6 +83,15 @@ class Grade(StrEnum):
     LENIENT = auto()
     CFPO = auto()
     ANYWHERE = auto()
+    CHOICE = auto()
+
+
+@verify(UNIQUE)
+class Shape(StrEnum):
+    BARE_LETTER = auto()
+    LETTER_ANYWHERE = auto()
+    CHOICE_TEXT_ONLY = auto()
+    NEITHER = auto()
 
 
 @verify(UNIQUE)
@@ -134,6 +148,8 @@ class RunRow:
     cfpo_best: float | None = None
     anywhere_naive: float | None = None
     anywhere_best: float | None = None
+    choice_naive: float | None = None
+    choice_best: float | None = None
 
 
 SCHEMA = pa.schema(
@@ -167,6 +183,8 @@ SCHEMA = pa.schema(
         ("cfpo_best", pa.float64()),
         ("anywhere_naive", pa.float64()),
         ("anywhere_best", pa.float64()),
+        ("choice_naive", pa.float64()),
+        ("choice_best", pa.float64()),
     ]
 )
 COLUMNS = tuple(field.name for field in fields(RunRow))
@@ -186,6 +204,7 @@ class FormatShare:
     best_strict: float
     seed_graded: dict[Grade, float]
     best_graded: dict[Grade, float]
+    shapes: dict[Shape, float] | None = None
 
     @property
     def seed_lenient(self) -> float:
@@ -455,7 +474,12 @@ def response_text(response: object) -> str | None:
     return None
 
 
-type Grader = Callable[[str, str], bool]
+type GoldCheck = Callable[[str, str], bool]
+type Grader = Callable[[str, Mapping[str, Any]], bool]
+
+
+def on_gold(check: GoldCheck) -> Grader:
+    return lambda text, row: check(text, row["gold"])
 
 
 def cfpo_letter(text: str) -> str | None:
@@ -483,10 +507,79 @@ def arc_anywhere(text: str, gold: str) -> bool:
     return anywhere_letter(text) == gold
 
 
+def presented_choices(prompt: str) -> dict[str, str]:
+    start = prompt.rfind(CHOICES_HEADER)
+    if start < 0:
+        return {}
+    choices: dict[str, str] = {}
+    for line in (
+        prompt[start + len(CHOICES_HEADER) :].lstrip("\n").splitlines()
+    ):
+        match = CHOICE_LINE.fullmatch(line.strip())
+        if match is None:
+            break
+        choices[match[1]] = match[2]
+    return choices
+
+
+def folded(text: str) -> str:
+    return "".join(c.lower()[:1] if c.isalnum() else " " for c in text)
+
+
+def text_mentions(
+    plain: str, choices: Mapping[str, str]
+) -> list[tuple[int, int, str]]:
+    haystack = folded(plain)
+    mentions: list[tuple[int, int, str]] = []
+    for letter, choice in choices.items():
+        tokens = CHOICE_TOKEN.findall(choice.lower())
+        if not tokens:
+            continue
+        pattern = r"(?<!\S)" + r"\s+".join(map(re.escape, tokens)) + r"(?!\S)"
+        mentions.extend(
+            (match.end(), -match.start(), letter)
+            for match in re.finditer(pattern, haystack)
+        )
+    return mentions
+
+
+def letter_mentions(plain: str) -> list[tuple[int, int, str]]:
+    return [
+        (match.end(), -match.start(), match[1].upper())
+        for match in ANYWHERE_LETTER.finditer(plain)
+    ]
+
+
+def choice_answer(text: str, prompt: str) -> str | None:
+    plain = THINK_BLOCK.sub("", text)
+    mentions = letter_mentions(plain) + text_mentions(
+        plain, presented_choices(prompt)
+    )
+    return max(mentions)[2] if mentions else None
+
+
+def arc_choice(text: str, row: Mapping[str, Any]) -> bool:
+    return choice_answer(text, row.get("prompt") or "") == row["gold"]
+
+
+def response_shape(text: str, prompt: str) -> Shape:
+    plain = THINK_BLOCK.sub("", text)
+    lines = [line for line in plain.splitlines() if line.strip()]
+    first = MARKDOWN_EMPHASIS.sub("", lines[0]).strip() if lines else ""
+    if BARE_LETTER.fullmatch(first):
+        return Shape.BARE_LETTER
+    if letter_mentions(plain):
+        return Shape.LETTER_ANYWHERE
+    if text_mentions(plain, presented_choices(prompt)):
+        return Shape.CHOICE_TEXT_ONLY
+    return Shape.NEITHER
+
+
 ARC_GRADERS: dict[Grade, Grader] = {
-    Grade.LENIENT: arc_anywhere,
-    Grade.CFPO: arc_cfpo,
-    Grade.ANYWHERE: arc_anywhere,
+    Grade.LENIENT: arc_choice,
+    Grade.CFPO: on_gold(arc_cfpo),
+    Grade.ANYWHERE: on_gold(arc_anywhere),
+    Grade.CHOICE: arc_choice,
 }
 
 
@@ -572,7 +665,7 @@ def c23_lenient(text: str, gold: str) -> bool:
     return c23_answer(text) == gold
 
 
-FAMILY_LENIENT: dict[str, Grader] = {
+FAMILY_LENIENT: dict[str, GoldCheck] = {
     Family.C11: c11_lenient,
     Family.C18: c18_lenient,
     Family.C19: c19_lenient,
@@ -590,7 +683,7 @@ def scored(
             return None
         scores.strict.append(float(row["score"]))
         for grade, grader in graders.items():
-            scores.graded[grade].append(float(grader(text, row["gold"])))
+            scores.graded[grade].append(float(grader(text, row)))
     return scores if scores.strict else None
 
 
@@ -603,7 +696,10 @@ def graded_means(scores: Scores) -> dict[Grade, float]:
 
 
 def share_of(
-    run: RunRow, seed: Scores | None, best: Scores | None
+    run: RunRow,
+    seed: Scores | None,
+    best: Scores | None,
+    shapes: dict[Shape, float] | None = None,
 ) -> FormatShare | None:
     if seed is None or best is None:
         return None
@@ -614,19 +710,31 @@ def share_of(
         best_strict=mean(best.strict),
         seed_graded=graded_means(seed),
         best_graded=graded_means(best),
+        shapes=shapes,
     )
 
 
 def arc_heldout(
     rows: Sequence[Mapping[str, Any]], identifier: str
-) -> Scores | None:
+) -> list[Mapping[str, Any]]:
     chosen = {
         row["item_id"]: row
         for row in rows
         if row.get("instruction_id") == identifier
         and row.get("split") == HELDOUT
     }
-    return scored(chosen.values(), ARC_GRADERS)
+    return list(chosen.values())
+
+
+def shape_shares(rows: Sequence[Mapping[str, Any]]) -> dict[Shape, float]:
+    shapes = [
+        response_shape(response_text(row.get("response")) or "", row["prompt"])
+        for row in rows
+    ]
+    return {
+        shape: sum(found is shape for found in shapes) / len(shapes)
+        for shape in Shape
+    }
 
 
 def arc_share(run: RunRow) -> FormatShare | None:
@@ -637,18 +745,23 @@ def arc_share(run: RunRow) -> FormatShare | None:
     if not isinstance(seed_id, str) or not isinstance(best_id, str):
         return None
     rows = list(jsonl(run_dir / ARC_RESPONSES_FILE))
+    seed = arc_heldout(rows, seed_id)
+    shapes = shape_shares(seed) if run.arm == NAIVE_ARM and seed else None
     return share_of(
-        run, arc_heldout(rows, seed_id), arc_heldout(rows, best_id)
+        run,
+        scored(seed, ARC_GRADERS),
+        scored(arc_heldout(rows, best_id), ARC_GRADERS),
+        shapes,
     )
 
 
 def family_phase(
-    rows: Sequence[Mapping[str, Any]], phase: str, lenient: Grader
+    rows: Sequence[Mapping[str, Any]], phase: str, lenient: GoldCheck
 ) -> Scores | None:
     chosen = {
         row["instance_id"]: row for row in rows if row.get("phase") == phase
     }
-    return scored(chosen.values(), {Grade.LENIENT: lenient})
+    return scored(chosen.values(), {Grade.LENIENT: on_gold(lenient)})
 
 
 def family_share(run: RunRow) -> FormatShare | None:
@@ -812,18 +925,21 @@ def format_share_lines(
         "",
         (
             "Strict is the runner's own score. Lenient removes think blocks, "
-            "then applies a per-task rule. ARC takes the last standalone "
-            "letter A-E anywhere, case-insensitive; runs.csv also carries "
-            "the CFPO grade (first character A-E or 1-5 of the stripped, "
-            "uppercased response, think blocks kept). c18 takes the last "
-            "True or False token anywhere, ignoring markdown emphasis. c11 "
-            "takes the first JSON object or array anywhere after stripping "
-            "code fences and compares its sorted-key compact form to the "
-            "gold's. c19 takes the last coordinate, heading, front object, "
-            "or yes/no token matching the gold's answer form. c23 takes the "
-            "last standalone run of the letters a-d, preferring runs that "
-            "follow Output: or ->. c22 has no lenient rule. Format part is "
-            "delta strict minus delta lenient."
+            "then applies a per-task rule. ARC takes whichever is mentioned "
+            "last of a standalone letter A-E (case-insensitive) or a "
+            "presented choice's text (case-, whitespace- and "
+            "punctuation-insensitive); runs.csv also carries the CFPO grade "
+            "(first character A-E or 1-5 of the stripped, uppercased "
+            "response, think blocks kept), the anywhere grade (last "
+            "standalone letter only) and this choice grade. c18 takes the "
+            "last True or False token anywhere, ignoring markdown emphasis. "
+            "c11 takes the first JSON object or array anywhere after "
+            "stripping code fences and compares its sorted-key compact form "
+            "to the gold's. c19 takes the last coordinate, heading, front "
+            "object, or yes/no token matching the gold's answer form. c23 "
+            "takes the last standalone run of the letters a-d, preferring "
+            "runs that follow Output: or ->. c22 has no lenient rule. Format "
+            "part is delta strict minus delta lenient."
         ),
         "",
     ]
@@ -836,6 +952,37 @@ def format_share_lines(
             table(
                 SHARE_COLUMNS,
                 (share_row(by_run[run.run_dir]) for run in members),
+            )
+        )
+        lines.append("")
+    shaped = [share for share in shares if share.shapes is not None]
+    if shaped:
+        lines.extend(
+            [
+                "## ARC naive response shapes",
+                "",
+                (
+                    "Held-out seed responses, think blocks removed, each in "
+                    "the first matching class: a bare letter on the first "
+                    "line, a standalone letter anywhere, a choice's text "
+                    "without any standalone letter, or neither."
+                ),
+                "",
+            ]
+        )
+        lines.extend(
+            table(
+                ("task_model", "n", *Shape, "run"),
+                (
+                    [
+                        cell(share.run.task_model),
+                        str(share.n),
+                        *(cell(share.shapes[shape]) for shape in Shape),
+                        share.run.run,
+                    ]
+                    for share in sorted(shaped, key=lambda s: sort_key(s.run))
+                    if share.shapes is not None
+                ),
             )
         )
         lines.append("")
