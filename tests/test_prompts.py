@@ -28,11 +28,11 @@ if TYPE_CHECKING:
     from dr_hf import SourceRow
 
     from po_effect.prompts import PromptConfig
-    from po_effect.tasks import ArcChallengeTask, ItemIndex, ItemSet
+    from po_effect.tasks import ArcTask, ItemIndex, ItemSet
 
 
 def test_shots_resolve_to_built_items(
-    task: ArcChallengeTask,
+    task: ArcTask,
     rows: tuple[SourceRow, ...],
     prompt: PromptSpec,
 ) -> None:
@@ -51,7 +51,7 @@ def test_shots_resolve_to_built_items(
     ],
 )
 def test_unknown_shot_reference_is_named(
-    task: ArcChallengeTask,
+    task: ArcTask,
     prompt_config: PromptConfig,
     items: ItemIndex,
     ref: ShotRef,
@@ -63,7 +63,7 @@ def test_unknown_shot_reference_is_named(
 
 
 def test_prompt_hash_tracks_shot_content(
-    task: ArcChallengeTask,
+    task: ArcTask,
     rows: tuple[SourceRow, ...],
     prompt_config: PromptConfig,
     prompt: PromptSpec,
@@ -318,6 +318,18 @@ def test_prompt_config_declares_attempt_kinds() -> None:
         "olmes_rc": (AttemptKind.SCORE, {AttemptKind.SCORE}),
         "olmes_mc": (AttemptKind.SCORE, set(AttemptKind)),
         "cfpo": (AttemptKind.GENERATE, set(AttemptKind)),
+        **{
+            f"olmes_rc_{task}": (AttemptKind.SCORE, {AttemptKind.SCORE})
+            for task in (
+                "arc_easy",
+                "hellaswag",
+                "piqa",
+                "winogrande",
+                "boolq",
+                "openbookqa",
+                "csqa",
+            )
+        },
     }
 
 

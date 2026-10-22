@@ -8,7 +8,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING, Any
 
-from dr_hf import read_rows
 from prelim_arc import (
     OBJECTIVE_READOUTS,
     Completion,
@@ -46,8 +45,10 @@ from po_effect.tasks import (
     AttemptKind,
     Item,
     ItemIndex,
+    TaskName,
     build_item_index,
-    load_arc_challenge,
+    load_task,
+    task_rows,
 )
 
 if TYPE_CHECKING:
@@ -72,11 +73,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Optimize the preamble of a po-effect prompt entry for "
-            "ARC-Challenge with an OpenRouter task model, under one arm "
-            "(gepa, naive, format_fixed, null, or eval), scoring generations "
-            "with "
-            "the answer-letter readout on the text before the first newline, "
-            "and write per-item responses, candidate instructions, "
+            "ARC-Challenge or another tasks.toml task (--task) with an "
+            "OpenRouter task model, under one arm (gepa, naive, "
+            "format_fixed, null, or eval), scoring generations with the "
+            "--objective readout and recording all three readouts, and write "
+            "per-item responses, candidate instructions, "
             "results.json, and progress.log under --out."
         )
     )
@@ -285,8 +286,8 @@ class OpenRouterEvaluator:
 
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
-    task = load_arc_challenge(args.config_dir)
-    items = build_item_index(task, tuple(read_rows(task.source)))
+    task = load_task(TaskName(args.task), args.config_dir)
+    items = build_item_index(task, task_rows(task))
     prompt = resolve_prompt(
         args.prompt,
         load_prompt_config(args.config_dir, args.prompt),
@@ -297,7 +298,7 @@ def main(argv: list[str] | None = None) -> None:
         prompt.require_admitted(AttemptKind.GENERATE)
     except ValueError as error:
         raise SystemExit(str(error)) from error
-    splits = build_splits(items, prompt, args)
+    splits = build_splits(task, items, prompt, args)
     recorder = RunRecorder(args.out)
     recorder.log(
         f"start: arm {args.arm}, task {args.task_model}, reflection "
@@ -320,6 +321,7 @@ def main(argv: list[str] | None = None) -> None:
                     router, args.reflection_model, args.reflection_reasoning
                 ),
                 {
+                    "task": task.task_id,
                     "task_model": args.task_model,
                     "reasoning": args.reasoning,
                     "task_reasoning_sent": bool(evaluator.reasoning),

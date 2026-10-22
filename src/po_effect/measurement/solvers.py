@@ -82,16 +82,29 @@ class ScoredCandidatesSolver:
         rendered = _render(
             self.renderer, item, _require_spec(spec, self.spec_type), items
         )
-        result = session.score(
-            rendered.context,
-            rendered.candidates,
-            unconditional_context=rendered.unconditional_context,
-        )
+        if rendered.candidate_contexts is None:
+            result = session.score(
+                rendered.context,
+                rendered.candidates,
+                unconditional_context=rendered.unconditional_context,
+            )
+            return ScoredCandidatesAttempt(
+                candidates=rendered.candidates,
+                scores=result.scores,
+                evidence=result.evidence,
+                chat_template=result.chat_template,
+            )
+        results = [
+            session.score(context, (candidate,), unconditional_context=None)
+            for context, candidate in zip(
+                rendered.candidate_contexts, rendered.candidates, strict=True
+            )
+        ]
         return ScoredCandidatesAttempt(
             candidates=rendered.candidates,
-            scores=result.scores,
-            evidence=result.evidence,
-            chat_template=result.chat_template,
+            scores=tuple(score for r in results for score in r.scores),
+            evidence=tuple(ref for r in results for ref in r.evidence),
+            chat_template=results[0].chat_template,
         )
 
 

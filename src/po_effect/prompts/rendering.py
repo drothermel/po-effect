@@ -14,12 +14,14 @@ if TYPE_CHECKING:
 
 CHOICE_LABELS = ascii_uppercase
 CHOICE_LINE_BREAK = "\n"
+BLANK = "_"
 
 
 class RenderedPrompt(FrozenContract):
     context: str
     candidates: tuple[str, ...]
     unconditional_context: str | None
+    candidate_contexts: tuple[str, ...] | None = None
 
 
 def choice_labels(problem: MultipleChoiceProblem) -> tuple[str, ...]:
@@ -40,6 +42,8 @@ def answers(
 
 def query(fmt: ItemFormat, problem: MultipleChoiceProblem) -> str:
     text = fmt.question_prefix + problem.question + fmt.answer_break
+    if problem.passage is not None:
+        text = problem.passage + fmt.answer_break + text
     if (
         fmt.choices_prefix is not None
         and fmt.label_prefix is not None
@@ -59,6 +63,23 @@ def query(fmt: ItemFormat, problem: MultipleChoiceProblem) -> str:
     return text + fmt.answer_prefix
 
 
+def blank_split(problem: MultipleChoiceProblem) -> tuple[str, str]:
+    position = problem.question.find(BLANK)
+    if position < 0:
+        raise ValueError("blank-fill question has no blank")
+    return problem.question[:position], problem.question[position + 1 :]
+
+
+def blank_continuation(fmt: ItemFormat, problem: MultipleChoiceProblem) -> str:
+    return fmt.continuation_prefix + blank_split(problem)[1].strip()
+
+
+def blank_context(
+    fmt: ItemFormat, problem: MultipleChoiceProblem, choice: str
+) -> str:
+    return fmt.question_prefix + blank_split(problem)[0] + choice
+
+
 class MultipleChoiceRenderer:
     def render(
         self,
@@ -75,13 +96,18 @@ class MultipleChoiceRenderer:
                 return query(fmt, item)
             return query(fmt, item) + fmt.continuation_prefix + answer
 
-        shot_blocks = [
-            block(
+        def shot_block(shot: Item) -> str:
+            if fmt.candidates is CandidateKind.BLANK_FILL:
+                gold = shot.problem.choices[shot.reference.gold_index]
+                return blank_context(
+                    fmt, shot.problem, gold
+                ) + blank_continuation(fmt, shot.problem)
+            return block(
                 shot.problem,
                 answers(fmt, shot.problem)[shot.reference.gold_index],
             )
-            for shot in shots
-        ]
+
+        shot_blocks = [shot_block(shot) for shot in shots]
         if (
             spec.shots_header is not None
             and spec.shots_header_break is not None
@@ -91,6 +117,19 @@ class MultipleChoiceRenderer:
             )
         blocks = [] if spec.preamble is None else [spec.preamble]
         blocks.extend(shot_blocks)
+        if fmt.candidates is CandidateKind.BLANK_FILL:
+            prefix = spec.shot_separator.join(
+                [*blocks, fmt.question_prefix + blank_split(problem)[0]]
+            )
+            continuation = blank_continuation(fmt, problem)
+            return RenderedPrompt(
+                context=prefix,
+                candidates=(continuation,) * len(problem.choices),
+                unconditional_context=None,
+                candidate_contexts=tuple(
+                    prefix + choice for choice in problem.choices
+                ),
+            )
         blocks.append(block(problem, None))
         return RenderedPrompt(
             context=spec.shot_separator.join(blocks),

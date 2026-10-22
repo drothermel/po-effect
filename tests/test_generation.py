@@ -63,7 +63,7 @@ if TYPE_CHECKING:
     from conftest import ExampleMeasurement
     from dr_providers.surfaces.testing.fake_backend import FakeLocalBackend
 
-    from po_effect.tasks import ArcChallengeTask, ItemIndex, ItemSet
+    from po_effect.tasks import ArcTask, ItemIndex, ItemSet
 
 MAX_NEW_TOKENS = 7
 
@@ -89,7 +89,7 @@ def label_format() -> ItemFormat:
 
 
 def generate(  # noqa: PLR0913, PLR0917
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
@@ -126,7 +126,7 @@ def generate(  # noqa: PLR0913, PLR0917
 
 
 def test_generation_attempt_records_output_and_evidence(
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
@@ -333,7 +333,7 @@ def readout(measurement: MeasurementSpec, rule: str) -> ReadoutSpec:
 
 
 def test_readouts_apply_by_attempt_kind_and_format(
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,
@@ -400,7 +400,7 @@ def test_score_requires_score_capability() -> None:
 
 
 def test_export_generation_measurement(
-    task: ArcChallengeTask,
+    task: ArcTask,
     items: ItemIndex,
     item_set: ItemSet,
     prompt_config: PromptConfig,

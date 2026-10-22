@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from po_effect.measurement.readouts import Readout
     from po_effect.measurement.solvers import Solver
     from po_effect.models import ModelSession, RunConditions
-    from po_effect.tasks import ArcChallengeTask, ItemIndex
+    from po_effect.tasks import ItemIndex, Task
 
 MEASUREMENT_SPEC_SCHEMA = "po_effect.measurement_spec"
 MEASUREMENT_SPEC_SCHEMA_VERSION = 8
@@ -146,7 +146,7 @@ class RecordStore(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class MeasurementRuntime:
-    task: ArcChallengeTask
+    task: Task
     items: ItemIndex
     session: ModelSession
     solver: Solver

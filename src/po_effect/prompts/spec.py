@@ -12,7 +12,7 @@ from po_effect.tasks.items import AttemptKind
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from po_effect.tasks import ArcChallengeTask, ItemIndex
+    from po_effect.tasks import ItemIndex, Task
 
 PROMPT_SPEC_SCHEMA = "po_effect.prompt_spec"
 PROMPT_SPEC_SCHEMA_VERSION = 5
@@ -22,6 +22,7 @@ PROMPT_SPEC_SCHEMA_VERSION = 5
 class CandidateKind(StrEnum):
     CHOICE_TEXT = auto()
     CHOICE_LABEL = auto()
+    BLANK_FILL = auto()
 
 
 class ItemFormat(FrozenContract):
@@ -51,6 +52,13 @@ class ItemFormat(FrozenContract):
             self.lists_choices
         ):
             raise ValueError("label candidates require a choice listing")
+        if self.candidates is CandidateKind.BLANK_FILL and (
+            self.lists_choices or self.unconditional_context is not None
+        ):
+            raise ValueError(
+                "blank-fill candidates take no choice listing and no "
+                "unconditional context"
+            )
         return self
 
 
@@ -153,7 +161,7 @@ class PromptsConfig(FrozenContract):
 
 
 def resolve_prompt(
-    name: str, config: PromptConfig, task: ArcChallengeTask, items: ItemIndex
+    name: str, config: PromptConfig, task: Task, items: ItemIndex
 ) -> PromptSpec:
     shots = tuple(
         items.lookup(ref.split, ref.native_id) for ref in config.shots
