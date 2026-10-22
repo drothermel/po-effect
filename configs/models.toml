@@ -11,6 +11,17 @@ capabilities = ["generate", "score"]
 repo_id = "drotherm/DataDecide-dclm-baseline-150M"
 revision = "311fb6f863e5d6e348dd62d4af917d7684d2b3b9"
 
+[models.dclm_baseline_150m_seed2]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dclm_baseline_150m_seed2.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-150M"
+revision = "d8093a0f37c45c2adb32cc7e9da55aabc03c1af2"
+
 [models.dclm_baseline_300m_seed0]
 dtype = "float32"
 max_sequence_length = 2048
@@ -76,6 +87,17 @@ capabilities = ["generate", "score"]
 [models.dclm_baseline_1b_seed2.pin]
 repo_id = "drotherm/DataDecide-dclm-baseline-1B"
 revision = "f21bdfddb01ea8dc22dd3e284ba3ef4d50d5c4d7"
+
+[models.dolma1_7_150m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_150m_seed0.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-150M"
+revision = "bb980ef6e4455ff3099f955048d25c72d8336b5c"
 
 [models.dolma1_7_300m_seed0]
 dtype = "float32"
