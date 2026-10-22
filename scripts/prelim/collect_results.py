@@ -34,12 +34,11 @@ ARC_TASK = "arc"
 HELDOUT = "heldout"
 MISSING = "-"
 THINK_BLOCK = re.compile(r"<think>.*?(?:</think>|$)", re.DOTALL)
-ANSWER_PREFIX = re.compile(
-    r"^[\s*_#>(\[]*(?:(?:the\s+)?(?:correct\s+|final\s+)?answer"
-    r"(?:\s+is)?|option|choice)\s*[:\-]?\s*",
-    re.IGNORECASE,
-)
-ANSWER_LETTER = re.compile(r"(?<![A-Za-z])([A-E])(?![A-Za-z])")
+ARC_LETTERS = "ABCDE"
+ARC_DIGITS = "12345"
+ANYWHERE_LETTER = re.compile(r"\b([A-E])\b", re.IGNORECASE)
+C23_RUN = re.compile(r"(?<![A-Za-z])([a-d]+)(?![A-Za-z])")
+C23_MARKED = re.compile(r"(?:(?i:output)\s*:|->)[ \t*_`]*([a-d]+)(?![A-Za-z])")
 OPENROUTER_START = re.compile(
     r"start: arm (?P<arm>\S+), task (?P<model>\S+), reflection \S+, "
     r"prompt (?P<prompt>\S+), splits (?P<splits>\{.*\})"
@@ -72,6 +71,13 @@ class Family(StrEnum):
     C19 = auto()
     C22 = auto()
     C23 = auto()
+
+
+@verify(UNIQUE)
+class Grade(StrEnum):
+    LENIENT = auto()
+    CFPO = auto()
+    ANYWHERE = auto()
 
 
 @verify(UNIQUE)
@@ -124,6 +130,10 @@ class RunRow:
     run_dir: str
     lenient_naive: float | None = None
     lenient_best: float | None = None
+    cfpo_naive: float | None = None
+    cfpo_best: float | None = None
+    anywhere_naive: float | None = None
+    anywhere_best: float | None = None
 
 
 SCHEMA = pa.schema(
@@ -153,9 +163,19 @@ SCHEMA = pa.schema(
         ("run_dir", pa.string()),
         ("lenient_naive", pa.float64()),
         ("lenient_best", pa.float64()),
+        ("cfpo_naive", pa.float64()),
+        ("cfpo_best", pa.float64()),
+        ("anywhere_naive", pa.float64()),
+        ("anywhere_best", pa.float64()),
     ]
 )
 COLUMNS = tuple(field.name for field in fields(RunRow))
+
+
+@dataclass(frozen=True, slots=True)
+class Scores:
+    strict: list[float]
+    graded: dict[Grade, list[float]]
 
 
 @dataclass(frozen=True, slots=True)
@@ -163,9 +183,17 @@ class FormatShare:
     run: RunRow
     n: int
     seed_strict: float
-    seed_lenient: float
     best_strict: float
-    best_lenient: float
+    seed_graded: dict[Grade, float]
+    best_graded: dict[Grade, float]
+
+    @property
+    def seed_lenient(self) -> float:
+        return self.seed_graded[Grade.LENIENT]
+
+    @property
+    def best_lenient(self) -> float:
+        return self.best_graded[Grade.LENIENT]
 
 
 class UnparsedRunError(ValueError):
@@ -188,7 +216,7 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
 
 def run_dirs(roots: Iterable[Path], out: Path) -> list[Path]:
     found: set[Path] = set()
-    for root in roots:
+    for root in (root.expanduser() for root in roots):
         for name in (RESULTS_FILE, PROGRESS_FILE):
             found.update(path.parent.resolve() for path in root.rglob(name))
     excluded = out.resolve()
@@ -419,15 +447,6 @@ def collect_run(run_dir: Path) -> RunRow:
     return arc_progress_row(run_dir, log_lines(run_dir))
 
 
-def lenient_letter(text: str) -> str | None:
-    stripped = THINK_BLOCK.sub("", text).strip()
-    if not stripped:
-        return None
-    first = ANSWER_PREFIX.sub("", stripped.splitlines()[0].strip())
-    match = ANSWER_LETTER.search(first)
-    return None if match is None else match[1]
-
-
 def response_text(response: object) -> str | None:
     if isinstance(response, str):
         return response
@@ -436,11 +455,39 @@ def response_text(response: object) -> str | None:
     return None
 
 
-type Lenient = Callable[[str, str], bool]
+type Grader = Callable[[str, str], bool]
 
 
-def arc_lenient(text: str, gold: str) -> bool:
-    return lenient_letter(text) == gold
+def cfpo_letter(text: str) -> str | None:
+    stripped = text.strip().upper()
+    if not stripped:
+        return None
+    first = stripped[0]
+    if first in ARC_LETTERS:
+        return first
+    if first in ARC_DIGITS:
+        return ARC_LETTERS[ARC_DIGITS.index(first)]
+    return None
+
+
+def anywhere_letter(text: str) -> str | None:
+    letters = ANYWHERE_LETTER.findall(THINK_BLOCK.sub("", text))
+    return letters[-1].upper() if letters else None
+
+
+def arc_cfpo(text: str, gold: str) -> bool:
+    return cfpo_letter(text) == gold
+
+
+def arc_anywhere(text: str, gold: str) -> bool:
+    return anywhere_letter(text) == gold
+
+
+ARC_GRADERS: dict[Grade, Grader] = {
+    Grade.LENIENT: arc_anywhere,
+    Grade.CFPO: arc_cfpo,
+    Grade.ANYWHERE: arc_anywhere,
+}
 
 
 def c18_lenient(text: str, gold: str) -> bool:
@@ -515,58 +562,71 @@ def c19_lenient(text: str, gold: str) -> bool:
     return False
 
 
-FAMILY_LENIENT: dict[str, Lenient] = {
+def c23_answer(text: str) -> str | None:
+    plain = THINK_BLOCK.sub("", text)
+    runs = C23_MARKED.findall(plain) or C23_RUN.findall(plain)
+    return runs[-1] if runs else None
+
+
+def c23_lenient(text: str, gold: str) -> bool:
+    return c23_answer(text) == gold
+
+
+FAMILY_LENIENT: dict[str, Grader] = {
     Family.C11: c11_lenient,
     Family.C18: c18_lenient,
     Family.C19: c19_lenient,
+    Family.C23: c23_lenient,
 }
 
 
 def scored(
-    rows: Iterable[Mapping[str, Any]], lenient: Lenient
-) -> tuple[list[float], list[float]] | None:
-    strict: list[float] = []
-    loose: list[float] = []
+    rows: Iterable[Mapping[str, Any]], graders: Mapping[Grade, Grader]
+) -> Scores | None:
+    scores = Scores(strict=[], graded={grade: [] for grade in graders})
     for row in rows:
         text = response_text(row.get("response"))
         if text is None:
             return None
-        strict.append(float(row["score"]))
-        loose.append(float(lenient(text, row["gold"])))
-    return (strict, loose) if strict else None
+        scores.strict.append(float(row["score"]))
+        for grade, grader in graders.items():
+            scores.graded[grade].append(float(grader(text, row["gold"])))
+    return scores if scores.strict else None
 
 
 def mean(values: Sequence[float]) -> float:
     return sum(values) / len(values)
 
 
+def graded_means(scores: Scores) -> dict[Grade, float]:
+    return {grade: mean(values) for grade, values in scores.graded.items()}
+
+
 def share_of(
-    run: RunRow,
-    seed: tuple[list[float], list[float]] | None,
-    best: tuple[list[float], list[float]] | None,
+    run: RunRow, seed: Scores | None, best: Scores | None
 ) -> FormatShare | None:
     if seed is None or best is None:
         return None
     return FormatShare(
         run=run,
-        n=len(seed[0]),
-        seed_strict=mean(seed[0]),
-        seed_lenient=mean(seed[1]),
-        best_strict=mean(best[0]),
-        best_lenient=mean(best[1]),
+        n=len(seed.strict),
+        seed_strict=mean(seed.strict),
+        best_strict=mean(best.strict),
+        seed_graded=graded_means(seed),
+        best_graded=graded_means(best),
     )
 
 
 def arc_heldout(
     rows: Sequence[Mapping[str, Any]], identifier: str
-) -> tuple[list[float], list[float]] | None:
+) -> Scores | None:
     chosen = {
         row["item_id"]: row
         for row in rows
         if row.get("instruction_id") == identifier
         and row.get("split") == HELDOUT
     }
-    return scored(chosen.values(), arc_lenient)
+    return scored(chosen.values(), ARC_GRADERS)
 
 
 def arc_share(run: RunRow) -> FormatShare | None:
@@ -583,12 +643,12 @@ def arc_share(run: RunRow) -> FormatShare | None:
 
 
 def family_phase(
-    rows: Sequence[Mapping[str, Any]], phase: str, lenient: Lenient
-) -> tuple[list[float], list[float]] | None:
+    rows: Sequence[Mapping[str, Any]], phase: str, lenient: Grader
+) -> Scores | None:
     chosen = {
         row["instance_id"]: row for row in rows if row.get("phase") == phase
     }
-    return scored(chosen.values(), lenient)
+    return scored(chosen.values(), {Grade.LENIENT: lenient})
 
 
 def family_share(run: RunRow) -> FormatShare | None:
@@ -752,15 +812,18 @@ def format_share_lines(
         "",
         (
             "Strict is the runner's own score. Lenient removes think blocks, "
-            "then applies a per-task rule. ARC reads the first letter A-E in "
-            "the first line after answer prefixes. c18 takes the last "
+            "then applies a per-task rule. ARC takes the last standalone "
+            "letter A-E anywhere, case-insensitive; runs.csv also carries "
+            "the CFPO grade (first character A-E or 1-5 of the stripped, "
+            "uppercased response, think blocks kept). c18 takes the last "
             "True or False token anywhere, ignoring markdown emphasis. c11 "
             "takes the first JSON object or array anywhere after stripping "
             "code fences and compares its sorted-key compact form to the "
             "gold's. c19 takes the last coordinate, heading, front object, "
-            "or yes/no token matching the gold's answer form. c22 and c23 "
-            "have no lenient rule. Format part is delta strict minus delta "
-            "lenient."
+            "or yes/no token matching the gold's answer form. c23 takes the "
+            "last standalone run of the letters a-d, preferring runs that "
+            "follow Output: or ->. c22 has no lenient rule. Format part is "
+            "delta strict minus delta lenient."
         ),
         "",
     ]
@@ -795,6 +858,12 @@ def rescorable(run: RunRow) -> bool:
     )
 
 
+def graded_fields(share: FormatShare) -> dict[str, float]:
+    seed = {f"{g}_naive": v for g, v in share.seed_graded.items()}
+    best = {f"{g}_best": v for g, v in share.best_graded.items()}
+    return {**seed, **best}
+
+
 def write_tables(runs: Sequence[RunRow], out: Path) -> None:
     records = [asdict(run) for run in runs]
     with (out / "runs.csv").open("w", newline="", encoding="utf-8") as f:
@@ -822,11 +891,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     for index, run in enumerate(runs):
         share = format_share(run) if rescorable(run) else None
         if share is not None:
-            runs[index] = replace(
-                run,
-                lenient_naive=share.seed_lenient,
-                lenient_best=share.best_lenient,
-            )
+            runs[index] = replace(run, **graded_fields(share))
             shares.append(replace(share, run=runs[index]))
         elif run.best_heldout is not None:
             skipped.append(run)
