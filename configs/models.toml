@@ -411,3 +411,25 @@ capabilities = ["chat_template", "generate", "score"]
 [models.olmoe_1b_7b_instruct.pin]
 repo_id = "allenai/OLMoE-1B-7B-0125-Instruct"
 revision = "b89a7c4bc24fb9e55ce2543c9458ce0ca5c4650e"
+
+[models.mistral_7b_v0_1_base]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.mistral_7b_v0_1_base.pin]
+repo_id = "mistralai/Mistral-7B-v0.1"
+revision = "27d67f1b5f57dc0953326b2601d68371d40ea8da"
+
+[models.mistral_7b_v0_3_instruct]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["chat_template", "generate", "score"]
+
+[models.mistral_7b_v0_3_instruct.pin]
+repo_id = "mistralai/Mistral-7B-Instruct-v0.3"
+revision = "c170c708c41dac9275d15a8fff4eca08d52bab71"
