@@ -98,6 +98,14 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
     parser.add_argument("--max-tokens", type=int, default=DEFAULT_MAX_TOKENS)
     parser.add_argument(
+        "--provider",
+        help=(
+            "OpenRouter provider name that serves every task request, sent "
+            "as provider.order with fallbacks disabled (default: OpenRouter "
+            "routing)"
+        ),
+    )
+    parser.add_argument(
         "--concurrency",
         type=int,
         default=DEFAULT_CONCURRENCY,
@@ -180,6 +188,11 @@ class OpenRouterEvaluator:
         self.model = args.task_model
         self.max_tokens = args.max_tokens
         self.reasoning = router.reasoning(args.task_model, args.reasoning)
+        self.routing = (
+            {"provider": {"order": [args.provider], "allow_fallbacks": False}}
+            if args.provider
+            else {}
+        )
         self.prompt = prompt
         self.items = items
         self.shots = tuple(items.get(i) for i in prompt.shot_item_ids)
@@ -269,6 +282,7 @@ class OpenRouterEvaluator:
             "max_tokens": self.max_tokens,
             "temperature": 0,
             **self.reasoning,
+            **self.routing,
         }
         attempt = 0
         while True:
@@ -325,6 +339,7 @@ def main(argv: list[str] | None = None) -> None:
                     "task_model": args.task_model,
                     "reasoning": args.reasoning,
                     "task_reasoning_sent": bool(evaluator.reasoning),
+                    "provider_pinned": args.provider,
                     "reflection_model": args.reflection_model,
                     "reflection_reasoning": args.reflection_reasoning,
                     "prompt": args.prompt,
