@@ -34,8 +34,8 @@ declaration can be checked against a backend.
 ## dr-providers needs
 
 Collected during the above and shipped as one release afterward: stop
-sequences for generation (po-effect's generation readouts truncate at the
-first newline until then), templated scoring and chat template kwargs (po-effect
+sequences for generation (po-effect's first-line generation readouts truncate
+at the first newline until then), templated scoring and chat template kwargs (po-effect
 applies the chat template itself and sends flat text for both scoring and
 generation, because the local backend applies a template only on generate,
 without kwargs, and its execution evidence names no template), response

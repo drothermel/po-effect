@@ -37,6 +37,8 @@ class GenerationRule(StrEnum):
     FIRST_LETTER = auto()
     CHOICE_TEXT_PREFIX = auto()
     ANSWER_LETTER = auto()
+    LETTER_ANYWHERE = auto()
+    CHOICE_TEXT = auto()
 
 
 @verify(UNIQUE)
@@ -58,6 +60,10 @@ ANSWER_PHRASE = re.compile(
 )
 WHOLE_LETTER = re.compile(r"\(?([a-z])\)?[.:)]?", re.IGNORECASE)
 LETTER_TOKEN = re.compile(r"(?<![A-Za-z])([A-Z])(?![A-Za-z])")
+THINK_BLOCK = re.compile(r"<think>.*?(?:</think>|$)", re.DOTALL)
+ANYWHERE_LETTER = re.compile(r"\b([A-E])\b", re.IGNORECASE)
+CHOICE_TOKEN = re.compile(r"[^\W_]+")
+NO_MENTION = "text mentions no choice letter or choice text"
 
 
 class IndexCandidate(FrozenContract):
@@ -313,11 +319,98 @@ class AnswerLetterReadout(GenerationReadout):
         return Abstention(reason="text contains no choice letter")
 
 
+Mention = tuple[int, int, str]
+
+
+def letter_mentions(plain: str) -> list[Mention]:
+    return [
+        (match.end(), -match.start(), match[1].upper())
+        for match in ANYWHERE_LETTER.finditer(plain)
+    ]
+
+
+def folded(text: str) -> str:
+    return "".join(c.lower()[:1] if c.isalnum() else " " for c in text)
+
+
+def text_mentions(
+    plain: str, choices: tuple[str, ...], labels: tuple[str, ...]
+) -> list[Mention]:
+    haystack = folded(plain)
+    mentions: list[Mention] = []
+    for letter, choice in zip(labels, choices, strict=True):
+        tokens = CHOICE_TOKEN.findall(choice.lower())
+        if not tokens:
+            continue
+        pattern = r"(?<!\S)" + r"\s+".join(map(re.escape, tokens)) + r"(?!\S)"
+        mentions.extend(
+            (match.end(), -match.start(), letter)
+            for match in re.finditer(pattern, haystack)
+        )
+    return mentions
+
+
+class ForgivingReadout(GenerationReadout):
+    candidates = CandidateKind.CHOICE_LABEL
+
+    def read(
+        self, attempt: Attempt, problem: MultipleChoiceProblem
+    ) -> Candidate:
+        return self.choose(self.split(attempt).answer, problem)
+
+    def choose(self, text: str, problem: MultipleChoiceProblem) -> Candidate:
+        plain = THINK_BLOCK.sub("", text)
+        if not plain.strip():
+            return Abstention(reason="text is empty")
+        labels = choice_labels(problem)
+        mentions = self.mentions(plain, problem, labels)
+        if not mentions:
+            return Abstention(reason=NO_MENTION)
+        return _label_candidate(max(mentions)[2], labels, "last mention")
+
+    def mentions(
+        self,
+        plain: str,
+        problem: MultipleChoiceProblem,
+        labels: tuple[str, ...],
+    ) -> list[Mention]:
+        raise NotImplementedError
+
+
+class LetterAnywhereReadout(ForgivingReadout):
+    readout_id = GenerationRule.LETTER_ANYWHERE
+
+    def mentions(
+        self,
+        plain: str,
+        problem: MultipleChoiceProblem,
+        labels: tuple[str, ...],
+    ) -> list[Mention]:
+        del problem, labels
+        return letter_mentions(plain)
+
+
+class ChoiceTextReadout(ForgivingReadout):
+    readout_id = GenerationRule.CHOICE_TEXT
+
+    def mentions(
+        self,
+        plain: str,
+        problem: MultipleChoiceProblem,
+        labels: tuple[str, ...],
+    ) -> list[Mention]:
+        return letter_mentions(plain) + text_mentions(
+            plain, problem.choices, labels
+        )
+
+
 Readout = (
     LikelihoodArgmaxReadout
     | FirstLetterReadout
     | ChoiceTextPrefixReadout
     | AnswerLetterReadout
+    | LetterAnywhereReadout
+    | ChoiceTextReadout
 )
 
 
@@ -333,6 +426,10 @@ def readout_for(
             return ChoiceTextPrefixReadout(response_template)
         case GenerationRule.ANSWER_LETTER:
             return AnswerLetterReadout(response_template)
+        case GenerationRule.LETTER_ANYWHERE:
+            return LetterAnywhereReadout(response_template)
+        case GenerationRule.CHOICE_TEXT:
+            return ChoiceTextReadout(response_template)
 
 
 def readout_ids_for(kind: AttemptKind) -> tuple[ReadoutId, ...]:

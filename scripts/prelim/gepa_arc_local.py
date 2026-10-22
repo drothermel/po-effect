@@ -6,14 +6,17 @@ from typing import TYPE_CHECKING
 
 from dr_hf import read_rows
 from prelim_arc import (
+    OBJECTIVE_READOUTS,
     Harness,
     ItemResult,
+    Objective,
     OpenRouter,
     ReflectionModel,
     RunRecorder,
     Split,
     Splits,
     Status,
+    Verdict,
     add_arm_arguments,
     build_splits,
     instruction_id,
@@ -23,13 +26,11 @@ from prelim_arc import (
 
 from po_effect.measurement import (
     Abstention,
-    AnswerLetterReadout,
     Attempt,
     AttemptRecord,
     AttemptTiming,
     Candidate,
     DecisionRule,
-    FirstLetterReadout,
     GenerationAttempt,
     GenerationRule,
     GenerationSolver,
@@ -45,6 +46,7 @@ from po_effect.measurement import (
     SingleCallSpec,
     apply_readout,
     decision_value,
+    readout_for,
 )
 from po_effect.models import (
     Device,
@@ -99,9 +101,9 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
             "Optimize the preamble of a po-effect prompt entry for "
             "ARC-Challenge with a local po-effect model, either scored by "
             "likelihood over the answer candidates or generating greedily "
-            "and read out by answer letter, under one arm (gepa, naive, "
-            "format_fixed, null, or eval), with an OpenRouter reflection "
-            "model; "
+            "and read out by the --objective readout, under one arm "
+            "(gepa, naive, format_fixed, null, or eval), with an OpenRouter "
+            "reflection model; "
             "attempts go to a dr-store record store under --out/records and "
             "per-item responses, candidate instructions, results.json, and "
             "progress.log go under --out."
@@ -240,21 +242,27 @@ class GenerationMode:
         renderer: MultipleChoiceRenderer,
         max_new_tokens: int,
         response_template: NamedResponseTemplate | None,
+        objective: Objective,
     ) -> None:
         self.max_new_tokens = max_new_tokens
         self.solver = GenerationSolver(renderer)
         template = (
             None if response_template is None else response_template.template
         )
-        self.readout = AnswerLetterReadout(template)
-        self.first_letter = FirstLetterReadout(template)
+        self.objective = OBJECTIVE_READOUTS[objective]
         self.readout_ids: tuple[ReadoutId, ...] = (
             GenerationRule.ANSWER_LETTER,
             GenerationRule.FIRST_LETTER,
+            GenerationRule.LETTER_ANYWHERE,
+            GenerationRule.CHOICE_TEXT,
         )
+        self.readouts = {
+            rule: readout_for(rule, template) for rule in self.readout_ids
+        }
         self.describe = {
             "attempt": AttemptKind.GENERATE.value,
-            "readout": GenerationRule.ANSWER_LETTER.value,
+            "objective": objective.value,
+            "readout": self.objective.value,
             "max_new_tokens": max_new_tokens,
         }
 
@@ -266,10 +274,18 @@ class GenerationMode:
     def result(self, item: Item, context: str, attempt: Attempt) -> ItemResult:
         if not isinstance(attempt, GenerationAttempt):
             raise TypeError("stored attempt is not a generation attempt")
-        candidate = self.readout.read(attempt, item.problem)
-        first = self.first_letter.read(attempt, item.problem)
-        score = judged(candidate, item)
-        chosen = label(candidate, item)
+        candidates = {
+            rule.value: readout.read(attempt, item.problem)
+            for rule, readout in self.readouts.items()
+        }
+        verdicts = {
+            name: Verdict(
+                candidate=label(found, item), score=judged(found, item)
+            )
+            for name, found in candidates.items()
+        }
+        chosen = verdicts[self.objective.value].candidate
+        score = verdicts[self.objective.value].score
         gold = choice_labels(item.problem)[item.reference.gold_index]
         text = attempt.output.text
         return ItemResult(
@@ -279,11 +295,6 @@ class GenerationMode:
             response={
                 "text": text,
                 "stop_reason": attempt.output.stop_reason,
-                GenerationRule.ANSWER_LETTER.value: chosen,
-                GenerationRule.FIRST_LETTER.value: label(first, item),
-                f"{GenerationRule.FIRST_LETTER.value}_score": judged(
-                    first, item
-                ),
             },
             output=text,
             gold=gold,
@@ -297,6 +308,7 @@ class GenerationMode:
                     f"{chosen}, the right answer is {gold}"
                 )
             ),
+            readouts=verdicts,
         )
 
 
@@ -479,10 +491,15 @@ def resolve_mode(
             }
         )
         return prompt, GenerationMode(
-            renderer, args.max_new_tokens, response_template
+            renderer,
+            args.max_new_tokens,
+            response_template,
+            Objective(args.objective),
         )
     if args.enable_thinking:
         raise SystemExit("--enable-thinking applies to --attempt generate")
+    if Objective(args.objective) is not Objective.STRICT:
+        raise SystemExit("--objective applies to --attempt generate")
     rule = DecisionRule(args.rule)
     if (
         rule is DecisionRule.PMI

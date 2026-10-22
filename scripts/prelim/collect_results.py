@@ -35,6 +35,7 @@ HELDOUT = "heldout"
 MISSING = "-"
 THINK_BLOCK = re.compile(r"<think>.*?(?:</think>|$)", re.DOTALL)
 ARC_LETTERS = "ABCDE"
+STRICT_READOUT = "answer_letter"
 ARC_DIGITS = "12345"
 ANYWHERE_LETTER = re.compile(r"\b([A-E])\b", re.IGNORECASE)
 CHOICES_HEADER = "Choices:"
@@ -673,6 +674,14 @@ FAMILY_LENIENT: dict[str, GoldCheck] = {
 }
 
 
+def strict_score(row: Mapping[str, Any]) -> float:
+    readouts = row.get("readouts") or {}
+    verdict = readouts.get(STRICT_READOUT)
+    if isinstance(verdict, dict):
+        return float(verdict["score"])
+    return float(row["score"])
+
+
 def scored(
     rows: Iterable[Mapping[str, Any]], graders: Mapping[Grade, Grader]
 ) -> Scores | None:
@@ -681,7 +690,7 @@ def scored(
         text = response_text(row.get("response"))
         if text is None:
             return None
-        scores.strict.append(float(row["score"]))
+        scores.strict.append(strict_score(row))
         for grade, grader in graders.items():
             scores.graded[grade].append(float(grader(text, row)))
     return scores if scores.strict else None

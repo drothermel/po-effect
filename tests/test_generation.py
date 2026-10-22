@@ -20,6 +20,7 @@ from dr_providers.surfaces.testing.fake_backend import GenerateCall
 from po_effect.measurement import (
     Abstention,
     ChoiceTextPrefixReadout,
+    ChoiceTextReadout,
     DecisionRule,
     FirstLetterReadout,
     GenerationAttempt,
@@ -28,6 +29,7 @@ from po_effect.measurement import (
     GenerationSpec,
     IndexCandidate,
     IndexMatchJudge,
+    LetterAnywhereReadout,
     MeasurementRuntime,
     MeasurementSpec,
     ReadoutSpec,
@@ -51,7 +53,11 @@ from po_effect.prompts import (
 )
 from po_effect.records import DrStoreRecordStore, export_wide
 from po_effect.records.store import evidence_key
-from po_effect.tasks import IndexReference, MultipleChoiceProblem
+from po_effect.tasks import (
+    AttemptKind,
+    IndexReference,
+    MultipleChoiceProblem,
+)
 
 if TYPE_CHECKING:
     from conftest import ExampleMeasurement
@@ -245,6 +251,67 @@ def test_choice_text_prefix_readout(
     assert readout.read(attempt(text), choices) == expected
 
 
+NO_MENTION = "text mentions no choice letter or choice text"
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("The answer is (B).", IndexCandidate(index=1)),
+        ("B. blue", IndexCandidate(index=1)),
+        ("C: red\nso A", IndexCandidate(index=0)),
+        ("<think>maybe A</think>\nAnswer: c", IndexCandidate(index=2)),
+        ("<think>A or B", Abstention(reason="text is empty")),
+        ("blue sky", Abstention(reason=NO_MENTION)),
+        ("ABC", Abstention(reason=NO_MENTION)),
+        (
+            "then D",
+            Abstention(reason="last mention 'D' is outside the 3 choices"),
+        ),
+        ("", Abstention(reason="text is empty")),
+    ],
+)
+def test_letter_anywhere_readout(
+    text: str, expected: IndexCandidate | Abstention
+) -> None:
+    readout = LetterAnywhereReadout(None)
+    choices = problem("blue", "red", "blue sky")
+    assert readout.read(attempt(text), choices) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("Blue Sky!", IndexCandidate(index=2)),
+        ("It is red.", IndexCandidate(index=1)),
+        ("B, then blue", IndexCandidate(index=0)),
+        ("blue, so the answer is C", IndexCandidate(index=2)),
+        ("bluesky", Abstention(reason=NO_MENTION)),
+        ("<think>red</think>blue", IndexCandidate(index=0)),
+        ("", Abstention(reason="text is empty")),
+    ],
+)
+def test_choice_text_readout(
+    text: str, expected: IndexCandidate | Abstention
+) -> None:
+    readout = ChoiceTextReadout(None)
+    choices = problem("blue", "red", "blue sky")
+    assert readout.read(attempt(text), choices) == expected
+
+
+def test_forgiving_readouts_apply_to_label_formats_only() -> None:
+    for readout in (LetterAnywhereReadout(None), ChoiceTextReadout(None)):
+        assert (
+            readout.inapplicable_reason(
+                AttemptKind.GENERATE, CandidateKind.CHOICE_LABEL, ()
+            )
+            is None
+        )
+        assert readout.inapplicable_reason(
+            AttemptKind.GENERATE, CandidateKind.CHOICE_TEXT, ()
+        ) == ("applies to choice_label formats, not choice_text formats")
+
+
 def test_index_match_scores_abstention() -> None:
     judge = IndexMatchJudge()
     reference = IndexReference(gold_index=0)
@@ -371,5 +438,11 @@ def test_export_generation_measurement(
         "answer_letter_index_match_predicted_index": [1, None],
         "answer_letter_index_match_correct": [True, False],
         "answer_letter_index_match_abstained": [False, True],
+        "letter_anywhere_index_match_predicted_index": [1, None],
+        "letter_anywhere_index_match_correct": [True, False],
+        "letter_anywhere_index_match_abstained": [False, True],
+        "choice_text_index_match_predicted_index": [1, None],
+        "choice_text_index_match_correct": [True, False],
+        "choice_text_index_match_abstained": [False, True],
         "reasoning_visibility": ["none", "none"],
     }
