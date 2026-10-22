@@ -15,6 +15,7 @@ import httpx
 from gepa.utils.stop_condition import TimeoutStopCondition
 
 from po_effect.config import DEFAULT_CONFIG_DIR
+from po_effect.measurement import GenerationRule
 
 if TYPE_CHECKING:
     import argparse
@@ -76,6 +77,20 @@ OPTIMIZING_ARMS = frozenset({Arm.GEPA, Arm.NULL})
 
 
 @verify(UNIQUE)
+class Objective(StrEnum):
+    STRICT = auto()
+    ANYWHERE = auto()
+    CHOICE = auto()
+
+
+OBJECTIVE_READOUTS = {
+    Objective.STRICT: GenerationRule.ANSWER_LETTER,
+    Objective.ANYWHERE: GenerationRule.LETTER_ANYWHERE,
+    Objective.CHOICE: GenerationRule.CHOICE_TEXT,
+}
+
+
+@verify(UNIQUE)
 class Split(StrEnum):
     TRAIN = auto()
     VAL = auto()
@@ -99,6 +114,12 @@ class Status(StrEnum):
 
 
 @dataclass(frozen=True, slots=True)
+class Verdict:
+    candidate: str
+    score: float
+
+
+@dataclass(frozen=True, slots=True)
 class ItemResult:
     item_id: str
     native_id: str
@@ -110,6 +131,7 @@ class ItemResult:
     score: float
     feedback: str
     details: Mapping[str, object] = field(default_factory=dict)
+    readouts: Mapping[str, Verdict] = field(default_factory=dict)
 
 
 class ItemEvaluator(Protocol):
@@ -129,6 +151,17 @@ def add_arm_arguments(parser: argparse.ArgumentParser) -> None:
             "plus --format-sentence; null: paraphrases of the seed with no "
             "feedback, best by validation, same budget; eval: no search, "
             "the --instruction-file text in place of the best instruction"
+        ),
+    )
+    parser.add_argument(
+        "--objective",
+        choices=[objective.value for objective in Objective],
+        default=Objective.STRICT.value,
+        help=(
+            "generate-attempt readout the arm optimizes and reports as its "
+            "score: strict reads the answer letter on the first line, "
+            "anywhere the last standalone letter, choice the last letter or "
+            "choice-text mention (default strict); every run records all three"
         ),
     )
     parser.add_argument(
@@ -277,6 +310,10 @@ class RunRecorder:
                     "candidate": result.candidate,
                     "score": result.score,
                     **result.details,
+                    "readouts": {
+                        name: asdict(verdict)
+                        for name, verdict in result.readouts.items()
+                    },
                 }
                 stream.write(json.dumps(row) + "\n")
 
@@ -293,6 +330,36 @@ def _append_json(path: Path, row: Mapping[str, object]) -> None:
 
 def accuracy(results: Sequence[ItemResult]) -> float:
     return sum(result.score for result in results) / len(results)
+
+
+def readout_accuracies(results: Sequence[ItemResult]) -> dict[str, float]:
+    names = results[0].readouts.keys() if results else ()
+    return {
+        name: sum(result.readouts[name].score for result in results)
+        / len(results)
+        for name in names
+    }
+
+
+def readout_summaries(
+    seed_val: Sequence[ItemResult],
+    seed_heldout: Sequence[ItemResult] | None,
+    best_heldout: Sequence[ItemResult] | None,
+) -> dict[str, dict[str, float]]:
+    summaries: dict[str, dict[str, float]] = {}
+    for phase, results in (
+        ("seed_val", seed_val),
+        ("seed_heldout", seed_heldout),
+        ("best_heldout", best_heldout),
+    ):
+        for name, value in readout_accuracies(results or ()).items():
+            summaries.setdefault(name, {})[phase] = value
+    for summary in summaries.values():
+        if "seed_heldout" in summary and "best_heldout" in summary:
+            summary["delta"] = (
+                summary["best_heldout"] - summary["seed_heldout"]
+            )
+    return summaries
 
 
 class Harness:
@@ -660,9 +727,11 @@ def run_arm(  # noqa: PLR0913, PLR0917
         recorder.log(f"done: {status.value}")
         return results
 
-    seed_val = accuracy(
-        harness.evaluate(harness.splits.val, seed_text, Origin.SEED)
+    seed_val_results = harness.evaluate(
+        harness.splits.val, seed_text, Origin.SEED
     )
+    seed_val = accuracy(seed_val_results)
+    results["readouts"] = readout_summaries(seed_val_results, None, None)
     in_band = args.band_low <= seed_val <= args.band_high
     results["screen"] = {
         "seed_val": seed_val,
@@ -679,16 +748,21 @@ def run_arm(  # noqa: PLR0913, PLR0917
         candidates=outcome.candidates,
         search_error=outcome.error,
     )
-    seed_heldout = accuracy(
-        harness.evaluate(harness.splits.heldout, seed_text, Origin.SEED)
+    seed_heldout_results = harness.evaluate(
+        harness.splits.heldout, seed_text, Origin.SEED
     )
-    best_heldout = accuracy(
-        harness.evaluate(harness.splits.heldout, outcome.best, Origin.GEPA)
+    best_heldout_results = harness.evaluate(
+        harness.splits.heldout, outcome.best, Origin.GEPA
     )
+    seed_heldout = accuracy(seed_heldout_results)
+    best_heldout = accuracy(best_heldout_results)
     results.update(
         seed_heldout=seed_heldout,
         best_heldout=best_heldout,
         delta=best_heldout - seed_heldout,
+        readouts=readout_summaries(
+            seed_val_results, seed_heldout_results, best_heldout_results
+        ),
     )
     recorder.log(
         f"heldout: seed {seed_heldout:.3f}, best {best_heldout:.3f} "

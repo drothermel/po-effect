@@ -10,12 +10,15 @@ from typing import TYPE_CHECKING, Any
 
 from dr_hf import read_rows
 from prelim_arc import (
+    OBJECTIVE_READOUTS,
     Completion,
     Harness,
     ItemResult,
+    Objective,
     OpenRouter,
     ReflectionModel,
     RunRecorder,
+    Verdict,
     add_arm_arguments,
     build_splits,
     preamble_for,
@@ -25,8 +28,11 @@ from prelim_arc import (
 from po_effect.measurement import (
     Abstention,
     AnswerLetterReadout,
+    ChoiceTextReadout,
+    GenerationRule,
     IndexCandidate,
     IndexMatchJudge,
+    LetterAnywhereReadout,
     truncated_text,
 )
 from po_effect.prompts import (
@@ -178,6 +184,11 @@ class OpenRouterEvaluator:
         self.shots = tuple(items.get(i) for i in prompt.shot_item_ids)
         self.renderer = MultipleChoiceRenderer()
         self.readout = AnswerLetterReadout(None)
+        self.forgiving = (
+            LetterAnywhereReadout(None),
+            ChoiceTextReadout(None),
+        )
+        self.objective = OBJECTIVE_READOUTS[Objective(args.objective)]
         self.judge = IndexMatchJudge()
         self.pool = pool
 
@@ -196,14 +207,31 @@ class OpenRouterEvaluator:
         response = completion.content if completion else ""
         empty = not response.strip()
         text = answer_text(response)
-        candidate: Candidate
+        strict: Candidate
         if empty:
-            candidate = Abstention(reason=EMPTY_RESPONSE)
+            strict = Abstention(reason=EMPTY_RESPONSE)
         elif not text:
-            candidate = Abstention(reason=EMPTY_ANSWER)
+            strict = Abstention(reason=EMPTY_ANSWER)
         else:
-            candidate = self.readout.choose(text, item.problem)
-        score = self.judge.judge(candidate, item.reference).accuracy
+            strict = self.readout.choose(text, item.problem)
+        candidates: dict[GenerationRule, Candidate] = {
+            GenerationRule.ANSWER_LETTER: strict
+        }
+        for readout in self.forgiving:
+            candidates[readout.readout_id] = (
+                Abstention(reason=EMPTY_RESPONSE)
+                if empty
+                else readout.choose(response, item.problem)
+            )
+        verdicts = {
+            rule.value: Verdict(
+                candidate=candidate_label(found, item),
+                score=self.judge.judge(found, item.reference).accuracy,
+            )
+            for rule, found in candidates.items()
+        }
+        candidate = candidates[self.objective]
+        score = verdicts[self.objective.value].score
         gold = choice_labels(item.problem)[item.reference.gold_index]
         return ItemResult(
             item_id=item_id,
@@ -228,6 +256,7 @@ class OpenRouterEvaluator:
                 "call_failed": completion is None,
                 EMPTY_RESPONSE: empty,
             },
+            readouts=verdicts,
         )
 
     def complete(
@@ -273,7 +302,7 @@ def main(argv: list[str] | None = None) -> None:
     recorder.log(
         f"start: arm {args.arm}, task {args.task_model}, reflection "
         f"{args.reflection_model}, prompt {args.prompt}, splits "
-        f"{splits.sizes()}"
+        f"{splits.sizes()}, objective {args.objective}"
     )
     router = OpenRouter(recorder.log)
     empties = EmptyTracker(args.out, recorder.log)
@@ -298,6 +327,10 @@ def main(argv: list[str] | None = None) -> None:
                     "reflection_reasoning": args.reflection_reasoning,
                     "prompt": args.prompt,
                     "max_tokens": args.max_tokens,
+                    "objective": args.objective,
+                    "readout": OBJECTIVE_READOUTS[
+                        Objective(args.objective)
+                    ].value,
                 },
                 lambda: {"api": router.summary(), **empties.summary()},
             )
