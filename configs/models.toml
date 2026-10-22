@@ -22,6 +22,28 @@ capabilities = ["generate", "score"]
 repo_id = "drotherm/DataDecide-dclm-baseline-300M"
 revision = "0850a6041eb5bc505f517b036b494b41e7bdac28"
 
+[models.dclm_baseline_530m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dclm_baseline_530m_seed0.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-530M"
+revision = "5bbac1a906e5e44d8f99efacbc2ed3a3025e519b"
+
+[models.dclm_baseline_750m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dclm_baseline_750m_seed0.pin]
+repo_id = "drotherm/DataDecide-dclm-baseline-750M"
+revision = "100c6acd7ee36c827563465725172326d24992ac"
+
 [models.dclm_baseline_1b_seed0]
 dtype = "float32"
 max_sequence_length = 2048
@@ -76,6 +98,28 @@ capabilities = ["generate", "score"]
 [models.dolma1_7_300m_seed1.pin]
 repo_id = "drotherm/DataDecide-dolma1.7-300M"
 revision = "36fdf594d80418074509ee24817b73e8b44dfacb"
+
+[models.dolma1_7_530m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_530m_seed0.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-530M"
+revision = "94450e7fc2eb1c62af4dc0566d8dc8bf77fc6acd"
+
+[models.dolma1_7_750m_seed0]
+dtype = "float32"
+max_sequence_length = 2048
+add_bos_token = false
+continuation_tokenization = "lm_eval_encode_pair"
+capabilities = ["generate", "score"]
+
+[models.dolma1_7_750m_seed0.pin]
+repo_id = "drotherm/DataDecide-dolma1.7-750M"
+revision = "cd382f0d579c70bf3f953b5225e649fbc529c276"
 
 [models.dolma1_7_1b_seed0]
 dtype = "float32"
