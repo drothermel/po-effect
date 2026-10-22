@@ -1,0 +1,1583 @@
+[[jobs]]
+name = "p0-00-0-arc-dclm-baseline-150m-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_150m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p0-00-1-arc-dclm-baseline-150m-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_150m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p0-00-2-arc-dclm-baseline-150m-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_150m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p0-00-3-arc-dclm-baseline-150m-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_150m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p0-01-0-arc-dclm-baseline-300m-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p0-01-1-arc-dclm-baseline-300m-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p0-01-2-arc-dclm-baseline-300m-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p0-01-3-arc-dclm-baseline-300m-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p0-02-0-arc-dclm-baseline-1b-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p0-02-1-arc-dclm-baseline-1b-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p0-02-2-arc-dclm-baseline-1b-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p0-02-3-arc-dclm-baseline-1b-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p0-03-0-arc-dclm-baseline-1b-seed1-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p0-03-1-arc-dclm-baseline-1b-seed1-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p0-03-2-arc-dclm-baseline-1b-seed1-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p0-03-3-arc-dclm-baseline-1b-seed1-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p0-04-0-arc-dclm-baseline-1b-seed2-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p0-04-1-arc-dclm-baseline-1b-seed2-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p0-04-2-arc-dclm-baseline-1b-seed2-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p0-04-3-arc-dclm-baseline-1b-seed2-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p0-05-0-arc-dolma1-7-300m-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p0-05-1-arc-dolma1-7-300m-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p0-05-2-arc-dolma1-7-300m-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p0-05-3-arc-dolma1-7-300m-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p0-06-0-arc-dolma1-7-300m-seed1-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_300m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p0-06-1-arc-dolma1-7-300m-seed1-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p0-06-2-arc-dolma1-7-300m-seed1-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p0-06-3-arc-dolma1-7-300m-seed1-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p0-07-0-arc-dolma1-7-1b-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p0-07-1-arc-dolma1-7-1b-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p0-07-2-arc-dolma1-7-1b-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p0-07-3-arc-dolma1-7-1b-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p0-08-0-arc-dolma1-7-1b-seed1-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p0-08-1-arc-dolma1-7-1b-seed1-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p0-08-2-arc-dolma1-7-1b-seed1-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p0-08-3-arc-dolma1-7-1b-seed1-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p0-09-0-arc-dolma1-7-1b-seed2-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-naive-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p0-09-1-arc-dolma1-7-1b-seed2-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p0-09-2-arc-dolma1-7-1b-seed2-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p0-09-3-arc-dolma1-7-1b-seed2-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p0-10-0-arc-pythia-160m-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_160m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p0-10-1-arc-pythia-160m-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_160m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p0-10-2-arc-pythia-160m-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_160m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p0-10-3-arc-pythia-160m-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_160m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p0-11-0-arc-pythia-160m-seed1-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_160m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p0-11-1-arc-pythia-160m-seed1-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_160m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p0-11-2-arc-pythia-160m-seed1-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_160m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p0-11-3-arc-pythia-160m-seed1-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_160m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p0-12-0-arc-pythia-160m-seed2-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_160m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p0-12-1-arc-pythia-160m-seed2-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_160m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p0-12-2-arc-pythia-160m-seed2-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_160m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p0-12-3-arc-pythia-160m-seed2-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_160m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p0-13-0-arc-pythia-410m-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_410m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p0-13-1-arc-pythia-410m-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_410m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p0-13-2-arc-pythia-410m-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_410m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p0-13-3-arc-pythia-410m-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_410m_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p0-14-0-arc-pythia-410m-seed1-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_410m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p0-14-1-arc-pythia-410m-seed1-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_410m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p0-14-2-arc-pythia-410m-seed1-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_410m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p0-14-3-arc-pythia-410m-seed1-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_410m_seed1", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p0-15-0-arc-pythia-410m-seed2-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_410m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_410m_seed2"
+
+[[jobs]]
+name = "p0-15-1-arc-pythia-410m-seed2-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_410m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_410m_seed2"
+
+[[jobs]]
+name = "p0-15-2-arc-pythia-410m-seed2-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_410m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_410m_seed2"
+
+[[jobs]]
+name = "p0-15-3-arc-pythia-410m-seed2-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_410m_seed2", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_410m_seed2"
+
+[[jobs]]
+name = "p0-16-0-arc-pythia-1b-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p0-16-1-arc-pythia-1b-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p0-16-2-arc-pythia-1b-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p0-16-3-arc-pythia-1b-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_1b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p0-17-0-arc-pythia-1-4b-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_1_4b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p0-17-1-arc-pythia-1-4b-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_1_4b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p0-17-2-arc-pythia-1-4b-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_1_4b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p0-17-3-arc-pythia-1-4b-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_1_4b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p0-18-0-arc-pythia-2-8b-seed0-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_2_8b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-naive-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p0-18-1-arc-pythia-2-8b-seed0-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_2_8b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p0-18-2-arc-pythia-2-8b-seed0-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_2_8b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p0-18-3-arc-pythia-2-8b-seed0-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_2_8b_seed0", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p0-19-0-arc-qwen3-0-6b-base-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_0_6b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p0-19-1-arc-qwen3-0-6b-base-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_0_6b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p0-19-2-arc-qwen3-0-6b-base-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_0_6b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p0-19-3-arc-qwen3-0-6b-base-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_0_6b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p0-20-0-arc-qwen3-0-6b-instruct-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_0_6b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p0-20-1-arc-qwen3-0-6b-instruct-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_0_6b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p0-20-2-arc-qwen3-0-6b-instruct-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_0_6b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p0-20-3-arc-qwen3-0-6b-instruct-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_0_6b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p0-21-0-arc-qwen3-1-7b-base-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_1_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p0-21-1-arc-qwen3-1-7b-base-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_1_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p0-21-2-arc-qwen3-1-7b-base-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_1_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p0-21-3-arc-qwen3-1-7b-base-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_1_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p0-22-0-arc-qwen3-1-7b-instruct-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_1_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p0-22-1-arc-qwen3-1-7b-instruct-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_1_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p0-22-2-arc-qwen3-1-7b-instruct-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_1_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p0-22-3-arc-qwen3-1-7b-instruct-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_1_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p0-23-0-arc-qwen3-4b-base-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_4b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p0-23-1-arc-qwen3-4b-base-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_4b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p0-23-2-arc-qwen3-4b-base-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_4b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p0-23-3-arc-qwen3-4b-base-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_4b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p0-24-0-arc-qwen3-4b-instruct-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_4b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p0-24-1-arc-qwen3-4b-instruct-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_4b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p0-24-2-arc-qwen3-4b-instruct-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_4b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p0-24-3-arc-qwen3-4b-instruct-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_4b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p0-25-0-arc-qwen3-8b-base-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_8b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p0-25-1-arc-qwen3-8b-base-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_8b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p0-25-2-arc-qwen3-8b-base-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_8b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p0-25-3-arc-qwen3-8b-base-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_8b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p0-26-0-arc-qwen3-8b-instruct-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_8b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-naive-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p0-26-1-arc-qwen3-8b-instruct-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_8b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p0-26-2-arc-qwen3-8b-instruct-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_8b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p0-26-3-arc-qwen3-8b-instruct-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_8b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p0-27-0-arc-olmo3-7b-base-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-naive-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p0-27-1-arc-olmo3-7b-base-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p0-27-2-arc-olmo3-7b-base-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p0-27-3-arc-olmo3-7b-base-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p0-28-0-arc-olmo3-7b-sft-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_sft", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-naive-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p0-28-1-arc-olmo3-7b-sft-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_sft", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p0-28-2-arc-olmo3-7b-sft-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_sft", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p0-28-3-arc-olmo3-7b-sft-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_sft", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p0-29-0-arc-olmo3-7b-dpo-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_dpo", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-naive-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p0-29-1-arc-olmo3-7b-dpo-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_dpo", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p0-29-2-arc-olmo3-7b-dpo-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_dpo", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p0-29-3-arc-olmo3-7b-dpo-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_dpo", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p0-30-0-arc-olmo3-7b-instruct-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-naive-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p0-30-1-arc-olmo3-7b-instruct-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p0-30-2-arc-olmo3-7b-instruct-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p0-30-3-arc-olmo3-7b-instruct-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p0-31-0-arc-olmoe-1b-7b-base-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmoe_1b_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-naive-lik-raw-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p0-31-1-arc-olmoe-1b-7b-base-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p0-31-2-arc-olmoe-1b-7b-base-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p0-31-3-arc-olmoe-1b-7b-base-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_base", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p0-32-0-arc-olmoe-1b-7b-instruct-naive-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmoe_1b_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-naive-lik-raw-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p0-32-1-arc-olmoe-1b-7b-instruct-gepa300-lik-raw-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-gepa300-lik-raw-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p0-32-2-arc-olmoe-1b-7b-instruct-gepa300-lik-raw-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-gepa300-lik-raw-s1"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p0-32-3-arc-olmoe-1b-7b-instruct-gepa300-lik-raw-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_instruct", "--attempt", "score", "--rule", "raw", "--prompt", "olmes_rc", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-gepa300-lik-raw-s2"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p1-02-0-arc-dclm-baseline-1b-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p1-02-1-arc-dclm-baseline-1b-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p1-02-2-arc-dclm-baseline-1b-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p1-02-3-arc-dclm-baseline-1b-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed0"
+
+[[jobs]]
+name = "p1-03-0-arc-dclm-baseline-1b-seed1-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p1-03-1-arc-dclm-baseline-1b-seed1-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p1-03-2-arc-dclm-baseline-1b-seed1-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p1-03-3-arc-dclm-baseline-1b-seed1-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed1-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed1"
+
+[[jobs]]
+name = "p1-04-0-arc-dclm-baseline-1b-seed2-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p1-04-1-arc-dclm-baseline-1b-seed2-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p1-04-2-arc-dclm-baseline-1b-seed2-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p1-04-3-arc-dclm-baseline-1b-seed2-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-1b-seed2-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dclm_baseline_1b_seed2"
+
+[[jobs]]
+name = "p1-07-0-arc-dolma1-7-1b-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p1-07-1-arc-dolma1-7-1b-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p1-07-2-arc-dolma1-7-1b-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p1-07-3-arc-dolma1-7-1b-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dolma1_7_1b_seed0"
+
+[[jobs]]
+name = "p1-08-0-arc-dolma1-7-1b-seed1-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p1-08-1-arc-dolma1-7-1b-seed1-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p1-08-2-arc-dolma1-7-1b-seed1-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p1-08-3-arc-dolma1-7-1b-seed1-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed1-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dolma1_7_1b_seed1"
+
+[[jobs]]
+name = "p1-09-0-arc-dolma1-7-1b-seed2-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p1-09-1-arc-dolma1-7-1b-seed2-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p1-09-2-arc-dolma1-7-1b-seed2-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p1-09-3-arc-dolma1-7-1b-seed2-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_1b_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-1b-seed2-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dolma1_7_1b_seed2"
+
+[[jobs]]
+name = "p1-16-0-arc-pythia-1b-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p1-16-1-arc-pythia-1b-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p1-16-2-arc-pythia-1b-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p1-16-3-arc-pythia-1b-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_1b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1b-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_1b_seed0"
+
+[[jobs]]
+name = "p1-17-0-arc-pythia-1-4b-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_1_4b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p1-17-1-arc-pythia-1-4b-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_1_4b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p1-17-2-arc-pythia-1-4b-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_1_4b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p1-17-3-arc-pythia-1-4b-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_1_4b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-1-4b-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_1_4b_seed0"
+
+[[jobs]]
+name = "p1-18-0-arc-pythia-2-8b-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_2_8b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p1-18-1-arc-pythia-2-8b-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_2_8b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p1-18-2-arc-pythia-2-8b-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_2_8b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p1-18-3-arc-pythia-2-8b-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_2_8b_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-2-8b-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_2_8b_seed0"
+
+[[jobs]]
+name = "p1-21-0-arc-qwen3-1-7b-base-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_1_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p1-21-1-arc-qwen3-1-7b-base-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_1_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p1-21-2-arc-qwen3-1-7b-base-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_1_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p1-21-3-arc-qwen3-1-7b-base-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_1_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-base-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_1_7b_base"
+
+[[jobs]]
+name = "p1-22-0-arc-qwen3-1-7b-instruct-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_1_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p1-22-1-arc-qwen3-1-7b-instruct-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_1_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p1-22-2-arc-qwen3-1-7b-instruct-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_1_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p1-22-3-arc-qwen3-1-7b-instruct-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_1_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-1-7b-instruct-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_1_7b_instruct"
+
+[[jobs]]
+name = "p1-23-0-arc-qwen3-4b-base-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_4b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p1-23-1-arc-qwen3-4b-base-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_4b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p1-23-2-arc-qwen3-4b-base-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_4b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p1-23-3-arc-qwen3-4b-base-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_4b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-base-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_4b_base"
+
+[[jobs]]
+name = "p1-24-0-arc-qwen3-4b-instruct-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_4b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p1-24-1-arc-qwen3-4b-instruct-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_4b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p1-24-2-arc-qwen3-4b-instruct-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_4b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p1-24-3-arc-qwen3-4b-instruct-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_4b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-4b-instruct-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_4b_instruct"
+
+[[jobs]]
+name = "p1-25-0-arc-qwen3-8b-base-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_8b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p1-25-1-arc-qwen3-8b-base-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_8b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p1-25-2-arc-qwen3-8b-base-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_8b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p1-25-3-arc-qwen3-8b-base-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_8b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-base-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_8b_base"
+
+[[jobs]]
+name = "p1-26-0-arc-qwen3-8b-instruct-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_8b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p1-26-1-arc-qwen3-8b-instruct-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_8b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p1-26-2-arc-qwen3-8b-instruct-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_8b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p1-26-3-arc-qwen3-8b-instruct-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_8b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-8b-instruct-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_8b_instruct"
+
+[[jobs]]
+name = "p1-27-0-arc-olmo3-7b-base-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p1-27-1-arc-olmo3-7b-base-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p1-27-2-arc-olmo3-7b-base-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p1-27-3-arc-olmo3-7b-base-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-base-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "olmo3_7b_base"
+
+[[jobs]]
+name = "p1-28-0-arc-olmo3-7b-sft-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_sft", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p1-28-1-arc-olmo3-7b-sft-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_sft", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p1-28-2-arc-olmo3-7b-sft-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_sft", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p1-28-3-arc-olmo3-7b-sft-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_sft", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-sft-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "olmo3_7b_sft"
+
+[[jobs]]
+name = "p1-29-0-arc-olmo3-7b-dpo-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_dpo", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p1-29-1-arc-olmo3-7b-dpo-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_dpo", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p1-29-2-arc-olmo3-7b-dpo-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_dpo", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p1-29-3-arc-olmo3-7b-dpo-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_dpo", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-dpo-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "olmo3_7b_dpo"
+
+[[jobs]]
+name = "p1-30-0-arc-olmo3-7b-instruct-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmo3_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p1-30-1-arc-olmo3-7b-instruct-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmo3_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p1-30-2-arc-olmo3-7b-instruct-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmo3_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p1-30-3-arc-olmo3-7b-instruct-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmo3_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmo3-7b-instruct-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "olmo3_7b_instruct"
+
+[[jobs]]
+name = "p1-31-0-arc-olmoe-1b-7b-base-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmoe_1b_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p1-31-1-arc-olmoe-1b-7b-base-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p1-31-2-arc-olmoe-1b-7b-base-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p1-31-3-arc-olmoe-1b-7b-base-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-base-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "olmoe_1b_7b_base"
+
+[[jobs]]
+name = "p1-32-0-arc-olmoe-1b-7b-instruct-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "olmoe_1b_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p1-32-1-arc-olmoe-1b-7b-instruct-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p1-32-2-arc-olmoe-1b-7b-instruct-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p1-32-3-arc-olmoe-1b-7b-instruct-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "olmoe_1b_7b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-olmoe-1b-7b-instruct-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "olmoe_1b_7b_instruct"
+
+[[jobs]]
+name = "p2-19-0-arc-qwen3-0-6b-base-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_0_6b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p2-19-1-arc-qwen3-0-6b-base-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_0_6b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p2-19-2-arc-qwen3-0-6b-base-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_0_6b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p2-19-3-arc-qwen3-0-6b-base-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_0_6b_base", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-base-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_0_6b_base"
+
+[[jobs]]
+name = "p2-20-0-arc-qwen3-0-6b-instruct-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "qwen3_0_6b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p2-20-1-arc-qwen3-0-6b-instruct-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "qwen3_0_6b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p2-20-2-arc-qwen3-0-6b-instruct-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "qwen3_0_6b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p2-20-3-arc-qwen3-0-6b-instruct-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "qwen3_0_6b_instruct", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-qwen3-0-6b-instruct-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "qwen3_0_6b_instruct"
+
+[[jobs]]
+name = "p3-00-0-arc-dclm-baseline-150m-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_150m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p3-00-1-arc-dclm-baseline-150m-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_150m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p3-00-2-arc-dclm-baseline-150m-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_150m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p3-00-3-arc-dclm-baseline-150m-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_150m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-150m-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dclm_baseline_150m_seed0"
+
+[[jobs]]
+name = "p3-01-0-arc-dclm-baseline-300m-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dclm_baseline_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p3-01-1-arc-dclm-baseline-300m-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dclm_baseline_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p3-01-2-arc-dclm-baseline-300m-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dclm_baseline_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p3-01-3-arc-dclm-baseline-300m-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dclm_baseline_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dclm-baseline-300m-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dclm_baseline_300m_seed0"
+
+[[jobs]]
+name = "p3-05-0-arc-dolma1-7-300m-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p3-05-1-arc-dolma1-7-300m-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p3-05-2-arc-dolma1-7-300m-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p3-05-3-arc-dolma1-7-300m-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dolma1_7_300m_seed0"
+
+[[jobs]]
+name = "p3-06-0-arc-dolma1-7-300m-seed1-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "dolma1_7_300m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p3-06-1-arc-dolma1-7-300m-seed1-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p3-06-2-arc-dolma1-7-300m-seed1-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p3-06-3-arc-dolma1-7-300m-seed1-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "dolma1_7_300m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-dolma1-7-300m-seed1-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "dolma1_7_300m_seed1"
+
+[[jobs]]
+name = "p3-10-0-arc-pythia-160m-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_160m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p3-10-1-arc-pythia-160m-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_160m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p3-10-2-arc-pythia-160m-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_160m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p3-10-3-arc-pythia-160m-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_160m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_160m_seed0"
+
+[[jobs]]
+name = "p3-11-0-arc-pythia-160m-seed1-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_160m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p3-11-1-arc-pythia-160m-seed1-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_160m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p3-11-2-arc-pythia-160m-seed1-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_160m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p3-11-3-arc-pythia-160m-seed1-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_160m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed1-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_160m_seed1"
+
+[[jobs]]
+name = "p3-12-0-arc-pythia-160m-seed2-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_160m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p3-12-1-arc-pythia-160m-seed2-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_160m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p3-12-2-arc-pythia-160m-seed2-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_160m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p3-12-3-arc-pythia-160m-seed2-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_160m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-160m-seed2-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_160m_seed2"
+
+[[jobs]]
+name = "p3-13-0-arc-pythia-410m-seed0-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_410m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p3-13-1-arc-pythia-410m-seed0-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_410m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p3-13-2-arc-pythia-410m-seed0-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_410m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p3-13-3-arc-pythia-410m-seed0-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_410m_seed0", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed0-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_410m_seed0"
+
+[[jobs]]
+name = "p3-14-0-arc-pythia-410m-seed1-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_410m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p3-14-1-arc-pythia-410m-seed1-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_410m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p3-14-2-arc-pythia-410m-seed1-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_410m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p3-14-3-arc-pythia-410m-seed1-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_410m_seed1", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed1-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_410m_seed1"
+
+[[jobs]]
+name = "p3-15-0-arc-pythia-410m-seed2-naive-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "naive", "--seed", "0", "--model", "pythia_410m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-naive-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_410m_seed2"
+
+[[jobs]]
+name = "p3-15-1-arc-pythia-410m-seed2-gepa300-strict-gen64-s0"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "0", "--max-metric-calls", "300", "--model", "pythia_410m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-gepa300-strict-gen64-s0"]
+needs_gpu = true
+model = "pythia_410m_seed2"
+
+[[jobs]]
+name = "p3-15-2-arc-pythia-410m-seed2-gepa300-strict-gen64-s1"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "1", "--max-metric-calls", "300", "--model", "pythia_410m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-gepa300-strict-gen64-s1"]
+needs_gpu = true
+model = "pythia_410m_seed2"
+
+[[jobs]]
+name = "p3-15-3-arc-pythia-410m-seed2-gepa300-strict-gen64-s2"
+command = ["uv", "run", "python", "scripts/prelim/gepa_arc_local.py", "--arm", "gepa", "--seed", "2", "--max-metric-calls", "300", "--model", "pythia_410m_seed2", "--attempt", "generate", "--prompt", "cfpo", "--max-new-tokens", "64", "--device", "cuda", "--train-n", "60", "--val-n", "60", "--heldout-n", "1172", "--minibatch", "5", "--reflection-model", "openai/gpt-5-nano", "--band-low", "0", "--band-high", "1", "--out", "{out_root}/arc-pythia-410m-seed2-gepa300-strict-gen64-s2"]
+needs_gpu = true
+model = "pythia_410m_seed2"
