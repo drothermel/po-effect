@@ -67,7 +67,8 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         description=(
             "Optimize the preamble of a po-effect prompt entry for "
             "ARC-Challenge with an OpenRouter task model, under one arm "
-            "(gepa, naive, format_fixed, or null), scoring generations with "
+            "(gepa, naive, format_fixed, null, or eval), scoring generations "
+            "with "
             "the answer-letter readout on the text before the first newline, "
             "and write per-item responses, candidate instructions, "
             "results.json, and progress.log under --out."
