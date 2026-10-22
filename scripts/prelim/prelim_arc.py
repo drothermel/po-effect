@@ -69,6 +69,7 @@ class Arm(StrEnum):
     NAIVE = auto()
     FORMAT_FIXED = auto()
     NULL = auto()
+    EVAL = auto()
 
 
 OPTIMIZING_ARMS = frozenset({Arm.GEPA, Arm.NULL})
@@ -87,6 +88,7 @@ class Origin(StrEnum):
     FORMAT_FIXED = auto()
     PARAPHRASE = auto()
     GEPA = auto()
+    GIVEN = auto()
 
 
 @verify(UNIQUE)
@@ -125,8 +127,14 @@ def add_arm_arguments(parser: argparse.ArgumentParser) -> None:
         help=(
             "gepa: reflective search; naive: seed only; format_fixed: seed "
             "plus --format-sentence; null: paraphrases of the seed with no "
-            "feedback, best by validation, same budget"
+            "feedback, best by validation, same budget; eval: no search, "
+            "the --instruction-file text in place of the best instruction"
         ),
+    )
+    parser.add_argument(
+        "--instruction-file",
+        type=Path,
+        help="file whose exact text the eval arm scores on held-out",
     )
     parser.add_argument("--reflection-model", default=DEFAULT_REFLECTION_MODEL)
     parser.add_argument(
@@ -727,6 +735,13 @@ def search(
                     {"instruction_id": instruction_id(text), "val": score},
                 ],
             )
+        case Arm.EVAL:
+            if args.instruction_file is None:
+                msg = "--arm eval requires --instruction-file"
+                raise SystemExit(msg)
+            text = args.instruction_file.read_text(encoding="utf-8")
+            harness.recorder.register(text, Origin.GIVEN)
+            return SearchOutcome(best=text, metric_calls=0, candidates=[])
         case Arm.NULL:
             return null_search(args, harness, seed_text, propose, seed_val)
         case Arm.GEPA:
