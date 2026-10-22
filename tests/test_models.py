@@ -46,7 +46,7 @@ def test_model_entry_requires_known_tokenization_fields(
 
 def test_config_declares_every_model_entry() -> None:
     config = load_models_config()
-    assert len(config.models) == 43
+    assert len(config.models) == 45
 
 
 def test_default_resolves_to_dclm_baseline_1b_seed0() -> None:
